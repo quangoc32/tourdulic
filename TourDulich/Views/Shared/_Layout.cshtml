@@ -1,0 +1,275 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewBag.Title - Tour Du Lịch</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: -10px;
+        }
+        
+        /* Floating Contact Widgets */
+        .floating-contact {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-end;
+            z-index: 1000;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 22px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .icon-circle::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            border: 2px solid;
+            animation: pulse-ring 2s infinite;
+            z-index: -1;
+        }
+
+        .bg-call::after { border-color: #4285F4; }
+        .bg-zalo::after { border-color: #0088FF; }
+        .bg-messenger::after { border-color: #006AFF; }
+
+        .icon-circle:hover {
+            transform: scale(1.1);
+            color: white;
+        }
+
+        .bg-call { background-color: #4285F4; }
+        .bg-zalo { background-color: #0088FF; }
+        .bg-messenger { background-color: #006AFF; }
+
+        .phone-number {
+            background: white;
+            color: #d32f2f;
+            font-weight: 900;
+            font-size: 18px;
+            padding: 6px 14px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+
+
+        @@keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm fixed-top py-2">
+        <div class="container">
+
+            <a class="navbar-brand d-flex align-items-center" href="@Url.Action("Index", "Home")">
+                <img src="https://dulichviet.com.vn/images/logo-dlv-new.png" alt="Logo" height="60" class="me-2" />
+                <span class="text-primary fw-bold" style="font-size:30px">DuLichViet</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+
+            @{
+                var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+            }
+            <div class="collapse navbar-collapse" id="mainNavbar">
+
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link px-3 py-2 rounded @(currentController == "Home" && currentAction == "Index" ? "bg-light text-primary" : "text-dark")" href="@Url.Action("Index", "Home")">Trang chủ</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-3 py-2 rounded @(currentController == "GioiThieu" ? "bg-light text-primary" : "text-dark")" href="@Url.Action("Index", "GioiThieu")">Giới thiệu</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-3 py-2 rounded @(currentController == "Tour" ? "bg-light text-primary" : "text-dark")" href="@Url.Action("Index", "Tour")">Tour du lịch</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-3 py-2 rounded @(currentController == "Tintuc" ? "bg-light text-primary" : "text-dark")" href="@Url.Action("Index", "Tintuc")">Tin tức</a>
+                    </li>
+
+
+                    <li class="nav-item">
+                        <a class="nav-link px-3 py-2 rounded @(currentController == "LienHe"  ? "bg-light text-primary" : "text-dark")" href="@Url.Action("Index", "LienHe")">Liên hệ</a>
+                    </li>
+                </ul>
+
+
+                <ul class="navbar-nav d-flex flex-row align-items-center gap-3">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-primary d-flex align-items-center" href="#" id="searchDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                            <i class="bi bi-search fs-5"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end p-3 shadow-lg" aria-labelledby="searchDropdown" style="min-width: 300px; border-radius: 12px;">
+                            <li>
+                                <form action="@Url.Action("Index", "Tour")" method="get" class="d-flex">
+                                    <input type="text" name="searchString" class="form-control me-2" placeholder="Tìm kiếm tên tour..." value="@(ViewBag.SearchString ?? "")" required style="border-radius: 20px;">
+                                    <button type="submit" class="btn btn-primary" style="border-radius: 20px; padding: 5px 15px;"><i class="bi bi-search"></i></button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="dropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            @if (Session["HoTen"] != null)
+                            {
+                                <span class="fw-semibold me-2" style="line-height: 1; margin-top: 2px;">@Session["HoTen"]</span>
+                            }
+                            <i class="bi bi-person fs-3 text-primary"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
+                            @if (Session["HoTen"] != null)
+                            {
+                                <li><a class="dropdown-item" href="@Url.Action("DangXuat", "NguoiDung")">Đăng xuất</a></li>
+                            }
+                            else
+                            {
+                                <li><a class="dropdown-item" href="@Url.Action("DangNhap", "NguoiDung")">Đăng nhập</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("DangKy", "NguoiDung")">Đăng ký</a></li>
+                            }
+                            <li><a class="dropdown-item" href="@Url.Action("LichSuDatTour", "Home")">Lịch sử</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li>
+                        @{
+                            var dsTourDaDat = Session["DanhSachTourTamThoi"] as List<TourDulich.ModelView.TourDaDatTamThoi>;
+                            int soLuong = 0;
+                            if (dsTourDaDat != null && dsTourDaDat.Any())
+                            {
+                                soLuong = dsTourDaDat.Count;
+
+                            }
+                        }
+                        <a href="@Url.Action("XacNhanDatTour", "Home")" class="text-primary position-relative d-inline-block" style="padding-right: 10px;">
+                            <i class="bi bi-cart fs-4"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                @soLuong
+                            </span>
+                        </a>
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5 pt-4">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-light text-center py-4 mt-5 border-top">
+        <div class="container">
+            <p class="mb-1">&copy; @DateTime.Now.Year - Đặt Tour Du Lịch Việt Nam. All rights reserved.</p>
+            <p class="mb-0">
+                <a href="@Url.Action("Privacy", "Home")" class="text-dark text-decoration-none">Chính sách bảo mật</a> |
+                <a href="@Url.Action("Terms", "Home")" class="text-dark text-decoration-none">Điều khoản sử dụng</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts", required: false)
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationModalLabel">Thông báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body" id="notificationMessage">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var successMsg = '@TempData["Success"]';
+    var errorMsg = '@TempData["Error"]';
+    var redirectAfterModal = '@TempData["RedirectUrl"]'; 
+
+    var notificationModalEl = document.getElementById('notificationModal');
+    var notificationModal = new bootstrap.Modal(notificationModalEl);
+    var modalTitle = document.getElementById('notificationModalLabel');
+    var modalBody = document.getElementById('notificationMessage');
+
+    if (successMsg || errorMsg) {
+      modalTitle.textContent = successMsg ? 'Thành công' : 'Lỗi';
+      modalBody.innerHTML = successMsg || errorMsg;
+      notificationModal.show();
+
+      if (redirectAfterModal) {
+        notificationModalEl.addEventListener('hidden.bs.modal', function () {
+          window.location.href = redirectAfterModal;
+        });
+      }
+    }
+  });
+    </script>
+
+
+
+    <!-- Floating Contact Widgets -->
+    <div class="floating-contact">
+        <div class="contact-item call">
+            <span class="phone-number">0909 123 456</span>
+            <a href="tel:0909123456" class="icon-circle bg-call">
+                <i class="bi bi-telephone-fill"></i>
+            </a>
+        </div>
+        <div class="contact-item">
+            <a href="https://zalo.me/0909123456" target="_blank" class="icon-circle bg-zalo">
+                <strong style="font-size: 12px; font-family: sans-serif;">Zalo</strong>
+            </a>
+        </div>
+        <div class="contact-item">
+            <a href="https://m.me/yourfacebookpage" target="_blank" class="icon-circle bg-messenger">
+                <i class="bi bi-messenger"></i>
+            </a>
+        </div>
+
+    </div>
+
+</body>
+</html>

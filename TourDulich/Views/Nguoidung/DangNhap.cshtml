@@ -1,0 +1,109 @@
+﻿@{
+    ViewBag.Title = "DangNhap";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        background: url('@Url.Content("~/Images/Banner/snapedit_1748574711624.jpeg")') no-repeat center center fixed;
+        background-size: cover;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 80px;
+
+    }
+
+    .login-card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 40px 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        max-width: 420px;
+        width: 100%;
+    }
+</style>
+
+<div class="container my-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb shadow-sm bg-white p-3 rounded mb-0" style="font-size: 1rem;">
+            <li class="breadcrumb-item">
+                <a href="@Url.Action("Index", "Home")" class="text-decoration-none text-primary">
+                    Trang chủ
+                </a>
+            </li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">
+                <i class="bi bi-chevron-right mx-1"></i>Đăng nhập
+            </li>
+        </ol>
+    </nav>
+</div>
+
+
+<div class="login-container">
+    <div class="login-card">
+        <h3 class="text-center mb-4 text-primary">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Đăng Nhập
+        </h3>
+
+        @using (Html.BeginForm("DangNhap", "NguoiDung", FormMethod.Post))
+        {
+            <div class="mb-3">
+                <label for="taiKhoan" class="form-label">Tài khoản</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" class="form-control" id="taiKhoan" name="taiKhoan" placeholder="Nhập tài khoản" required />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="matKhau" class="form-label">Mật khẩu</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control" id="matKhau" name="matKhau" placeholder="Nhập mật khẩu" required />
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                        <i class="bi bi-eye" id="toggleIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 rounded-pill mt-3">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập
+            </button>
+
+            if (ViewBag.ThongBao != null)
+            {
+                <div class="alert alert-danger mt-3 text-center">@ViewBag.ThongBao</div>
+            }
+
+            <div class="text-center mt-3">
+                <a href="@Url.Action("DangKy", "NguoiDung")" class="text-decoration-none">Chưa có tài khoản? Đăng ký</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function togglePassword() {
+            var input = document.getElementById("matKhau");
+            var icon = document.getElementById("toggleIcon");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("bi-eye");
+                icon.classList.add("bi-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("bi-eye-slash");
+                icon.classList.add("bi-eye");
+            }
+        }
+    </script>
+}

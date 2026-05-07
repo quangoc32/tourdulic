@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewBag.Title = "DangKy";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container my-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb shadow-sm bg-white p-3 rounded mb-0" style="font-size: 1rem;">
+            <li class="breadcrumb-item">
+                <a href="@Url.Action("Index", "Home")" class="text-decoration-none text-primary">
+                    <i></i>Trang chủ
+                </a>
+            </li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">
+                <i class="bi bi-chevron-right mx-1"></i>Đăng ký
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        background: url('@Url.Content("~/Images/Banner/snapedit_1748574711624.jpeg")') no-repeat center center fixed;
+        background-size: cover;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .register-container {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding-top: 50px;
+    }
+
+    .register-card {
+        background: rgba(255, 255, 255, 0.95);
+        height: 450px;
+        padding: 50px 50px;
+        border-radius: 15px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        max-width: 600px;
+        width: 100%;
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <h3 class="text-center mb-4 fw-bold text-primary">
+            <i class="bi bi-person-plus-fill me-2"></i> Đăng Ký
+        </h3>
+
+        @using (Html.BeginForm("DangKy", "NguoiDung", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold text-secondary">Họ Tên</label>
+                    <input type="text" class="form-control shadow-sm" name="HoTen" autocomplete="off" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold text-secondary">Email</label>
+                    <input type="email" class="form-control shadow-sm" name="Email" autocomplete="off" required />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold text-secondary">Tài khoản</label>
+                    <input type="text" class="form-control shadow-sm" name="TaiKhoan" autocomplete="off" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold text-secondary">Mật khẩu</label>
+                    <input type="password" class="form-control shadow-sm" name="MatKhau" autocomplete="new-password" required />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold text-secondary">Số điện thoại</label>
+                    <input type="text" class="form-control shadow-sm" name="SoDienThoai" autocomplete="off" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold text-secondary">Địa chỉ</label>
+                    <input type="text" class="form-control shadow-sm" name="DiaChi" autocomplete="off" />
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary w-100 rounded-pill py-2 shadow-sm mt-3"
+                    style="background: linear-gradient(45deg, #007bff, #00c6ff); border: none; font-weight: 600;">
+                <i class="bi bi-person-plus-fill me-2"></i> Đăng ký
+            </button>
+
+
+            if (ViewBag.ThongBao != null)
+            {
+                <div class="alert alert-danger mt-3 text-center fw-semibold">@ViewBag.ThongBao</div>
+            }
+        }
+    </div>
+</div>
+

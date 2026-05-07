@@ -1,0 +1,382 @@
+﻿@model TourDulich.ModelView.TourView
+
+@{
+    ViewBag.Title = "DetailsTour";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb shadow-sm bg-white p-3 rounded mb-0" style="font-size: 1rem;">
+            <li class="breadcrumb-item">
+                <a href="@Url.Action("Index", "Home")" class="text-decoration-none text-primary">
+                    <i></i>Trang chủ
+                </a>
+            </li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">
+                <i class="bi bi-chevron-right mx-1"></i>Chi tiết tour
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container my-4">
+    <h2 class="fw-bold">@Model.TenTour</h2>
+
+    <div class="mb-3">
+        @for (int i = 1; i <= 5; i++)
+        {
+            if (i <= Model.SoSao)
+            {
+                <span style="color: gold; font-size: 1.5rem;">&#9733;</span>
+            }
+            else
+            {
+                <span style="color: lightgray; font-size: 1.5rem;">&#9733;</span> 
+            }
+        }
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-lg-9">
+            <img src="~/Images/ImagesTour/@Model.HinhAnh" class="card-img-top mb-4" alt="@Model.TenTour" style="height: 300px; object-fit: cover;">
+            <div class="d-flex flex-wrap" style="font-size: 0.95rem; gap: 1.5rem;">
+                <div class="d-flex align-items-start" style="min-width: 170px;">
+                    <i class="bi bi-airplane-engines-fill text-primary" style="font-size: 2rem; margin-right: 10px;"></i>
+                    <div>
+                        <div class="text-secondary fw-semibold">Khởi hành từ:</div>
+                        <div class="text-primary fw-bold">@Model.DiemKhoiHanh</div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start" style="min-width: 170px;">
+                    <i class="bi bi-geo-alt-fill text-danger" style="font-size: 2rem; margin-right: 10px;"></i>
+                    <div>
+                        <div class="text-secondary fw-semibold">Điểm đến:</div>
+                        <div class="text-primary fw-bold">@Model.DiemDen</div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start" style="min-width: 170px;">
+                    <i class="bi bi-clock-history text-warning" style="font-size: 2rem; margin-right: 10px;"></i>
+                    <div>
+                        <div class="text-secondary fw-semibold">Thời gian:</div>
+                        <div class="text-primary fw-bold">@Model.SoNgay</div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start" style="min-width: 170px;">
+                    <i class="bi bi-people-fill text-success" style="font-size: 2rem; margin-right: 10px;"></i>
+                    <div>
+                        <div class="text-secondary fw-semibold">Số lượng tối đa:</div>
+                        <div class="text-primary fw-bold">@Model.SoLuongToiDa</div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start" style="min-width: 170px;">
+                    <i class="bi bi-bus-front-fill text-info" style="font-size: 2rem; margin-right: 10px;"></i>
+                    <div>
+                        <div class="text-secondary fw-semibold">Di chuyển bằng:</div>
+                        <div class="text-primary fw-bold">@Model.PhuongTien</div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 border-4 border-primary">
+
+            <ul class="nav nav-tabs" id="tourTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="gioi-thieu-tab" data-bs-toggle="tab" data-bs-target="#gioi-thieu"
+                            type="button" role="tab" aria-controls="gioi-thieu" aria-selected="true">
+                        Giới thiệu
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="lich-trinh-tab" data-bs-toggle="tab" data-bs-target="#lich-trinh"
+                            type="button" role="tab" aria-controls="lich-trinh" aria-selected="false">
+                        Lịch trình
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="vi-tri-tab" data-bs-toggle="tab" data-bs-target="#vi-tri"
+                            type="button" role="tab" aria-controls="vi-tri" aria-selected="false">
+                        Vị trí
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="thu-vien-tab" data-bs-toggle="tab" data-bs-target="#thu-vien"
+                            type="button" role="tab" aria-controls="thu-vien" aria-selected="false">
+                        Thư viện ảnh
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="danh-gia-tab" data-bs-toggle="tab" data-bs-target="#danh-gia"
+                            type="button" role="tab" aria-controls="danh-gia" aria-selected="false">
+                        Đánh giá
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content border border-top-0 p-4 mb-4" id="tourTabContent">
+                <div class="tab-pane fade show active" id="gioi-thieu" role="tabpanel" aria-labelledby="gioi-thieu-tab">
+                    @Html.Raw(Model.MoTa)
+
+                    <div class="mt-4">
+                        <h4>Bộ sưu tập</h4>
+                        <p>"Khám phá bộ sưu tập ảnh du lịch của chúng tôi – nơi lưu giữ những khoảnh khắc tuyệt đẹp và hành trình đáng nhớ trên mọi miền đất nước."</p>
+                        @if (Model.HinhAnhKhac != null && Model.HinhAnhKhac.Any())
+                        {
+                            var firstThreeImages = Model.HinhAnhKhac.Take(3);
+                            <div class="d-flex gap-3">
+
+                                @foreach (var img in firstThreeImages)
+                                {
+                                    <img src="@Url.Content("~/Images/ImagesTour/" + img)"
+                                         alt="@Model.TenTour"
+                                         style="width: 270px; height: 230px; object-fit: cover; border-radius: 6px;" />
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="lich-trinh" role="tabpanel" aria-labelledby="lich-trinh-tab">
+                    @if (Model.LichTrinhTours != null && Model.LichTrinhTours.Any())
+                    {
+                        <ul class="list-group">
+                            @{
+                                var lichTrinhList = Model.LichTrinhTours.OrderBy(lt => lt.NgayThu).ToList();
+                                for (int i = 0; i < lichTrinhList.Count(); i++)
+                                {
+                                    var item = lichTrinhList[i];
+                                    <li class="list-group-item mb-3">
+                                        <div class="row">
+                                            <div class="col-auto">
+                                                <div class="fw-bold text-primary fs-5">@((i + 1)).</div>
+                                            </div>
+                                            <div class="col">
+                                                <h5>Ngày @item.NgayThu: @item.TieuDe</h5>
+                                                <p>@item.NoiDung</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Đang cập nhật lịch trình tour...</p>
+                    }
+                </div>
+
+                <div class="tab-pane fade" id="vi-tri" role="tabpanel" aria-labelledby="vi-tri-tab">
+                    <div class="mb-3">
+                        <h5 class="fw-semibold">Điểm đến: @Model.DiemDen</h5>
+                        <p class="text-muted">Dưới đây là bản đồ vị trí của điểm đến tour.</p>
+                    </div>
+
+                    <div class="ratio ratio-16x9 border rounded shadow-sm">
+                        <iframe src="https://www.google.com/maps?q=@Uri.EscapeDataString(Model.DiemDen)&output=embed"
+                                width="100"
+                                height="100"
+                                style="border:0;"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="thu-vien" role="tabpanel" aria-labelledby="thu-vien-tab">
+                    @if (Model.HinhAnhKhac != null && Model.HinhAnhKhac.Any())
+                    {
+                        <div class="row g-3">
+                            @foreach (var img in Model.HinhAnhKhac)
+                            {
+                                <div class="col-4">
+                                    <img src="@Url.Content("~/Images/ImagesTour/" + img)"
+                                         alt="@Model.TenTour"
+                                         class="img-fluid rounded"
+                                         style="height: 230px; object-fit: cover; width: 100%;" />
+                                </div>
+                            }
+                        </div>
+                    }
+
+                </div>
+
+                <div class="tab-pane fade" id="danh-gia" role="tabpanel" aria-labelledby="danh-gia-tab">
+                    @if (ViewBag.DanhGiaList != null && ViewBag.DanhGiaList.Count > 0)
+                    {
+                        foreach (var dg in ViewBag.DanhGiaList)
+                        {
+                            <div class="mb-3 border-bottom pb-2">
+                                <strong>@dg.HoTen</strong>
+                                <div>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= dg.SoSao)
+                                        {
+                                            <span style="color: gold;">&#9733;</span> 
+                                        }
+                                        else
+                                        {
+                                            <span style="color: lightgray;">&#9733;</span> 
+                                        }
+                                    }
+                                </div>
+                                <small class="text-muted">@dg.NgayDanhGia.ToString("dd/MM/yyyy")</small>
+                                <p>@dg.NoiDung</p>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>Chưa có đánh giá nào cho tour này.</p>
+                    }
+
+                    <hr />
+                    @if (Session["ID_NguoiDung"] != null && !(ViewBag.DaDanhGia ?? false))
+                    {
+                        <h5 class="mt-4">Gửi đánh giá của bạn:</h5>
+                        <form method="post" action="@Url.Action("GuiDanhGia", "Home")">
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden" name="ID_Tour" value="@Model.ID_Tour" />
+
+                            <div class="mb-2">
+                                <label for="SoSao">Số sao:</label>
+                                <select name="SoSao" class="form-select" required>
+                                    <option value="">-- Chọn sao --</option>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <option value="@i">@i sao</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="NoiDung">Nội dung:</label>
+                                <textarea name="NoiDung" class="form-control" required rows="3"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                        </form>
+                    }
+                    else if (Session["ID_NguoiDung"] == null)
+                    {
+                        <p class="text-danger">Vui lòng <a href="@Url.Action("DangNhap", "NguoiDung")">đăng nhập</a> để đánh giá tour.</p>
+                    }
+                    else
+                    {
+                        <p class="text-success">Bạn đã đánh giá tour này rồi.</p>
+                    }
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 d-flex justify-content-center">
+            <div class="card p-4 shadow rounded-4 border-0" style="max-width: 360px; width: 100%; max-height: 550px; overflow-y: auto;">
+                <h4 class="mb-3 text-center fw-bold text-primary">Đặt Tour Ngay</h4>
+
+                <div class="text-center mb-2">
+                    <span class="text-primary fw-bold" style="font-size: 1.6rem;">
+                        <i class="bi bi-ticket-perforated-fill me-2" style="font-size: 1.8rem;"></i>
+                        @string.Format("{0:N0} VNĐ", Model.Gia)
+                    </span>
+                </div>
+
+                <div class="text-center mb-4">
+                    <small class="text-muted fst-italic">Mã tour: <span class="fw-semibold text-dark">@Model.ID_Tour</span></small>
+                </div>
+
+                <form method="post" action="@Url.Action("DatTourTam", "Home")" id="formDatTour">
+                    <div class="mb-3">
+                        <label for="selectedDate" class="form-label fw-semibold">Chọn ngày khởi hành</label>
+                        <input type="date"
+                               class="form-control"
+                               id="selectedDate"
+                               name="SelectedDate"
+                               required
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Số lượng vé</label>
+                        <div class="input-group">
+                            <button class="btn btn-outline-secondary" type="button" id="btnDecrement">-</button>
+                            <input type="number"
+                                   class="form-control text-center fw-bold"
+                                   id="ticketQuantity"
+                                   name="TicketQuantity"
+                                   value="1"
+                                   min="1"
+                                   max="@Model.SoLuongToiDa"
+                                   readonly />
+                            <button class="btn btn-outline-secondary" type="button" id="btnIncrement">+</button>
+                        </div>
+                        <small class="text-muted mt-1 d-block">Tối đa còn: @Model.SoLuongToiDa vé</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Tổng tiền dự kiến</label>
+                        <div class="text-success fw-bold fs-5" id="totalPrice">
+                            @string.Format("{0:N0} VNĐ", Model.Gia)
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="TourId" value="@Model.ID_Tour" />
+                    <input type="hidden" name="Gia" value="@Model.Gia" />
+                    <input type="hidden" name="TenTour" value="@Model.TenTour" />
+                    <input type="hidden" name="HinhAnh" value="@Model.HinhAnh" />
+
+                    <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">
+                        Đặt Tour
+                    </button>
+                </form>
+            </div>
+        </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const btnDecrement = document.getElementById('btnDecrement');
+                const btnIncrement = document.getElementById('btnIncrement');
+                const ticketQuantity = document.getElementById('ticketQuantity');
+                const totalPrice = document.getElementById('totalPrice');
+                const pricePerTicket = parseFloat("@Model.Gia");
+
+                btnDecrement.addEventListener('click', function () {
+                    let currentValue = parseInt(ticketQuantity.value);
+                    if (currentValue > 1) {
+                        ticketQuantity.value = currentValue - 1;
+                        updateTotal();
+                    }
+                });
+
+                btnIncrement.addEventListener('click', function () {
+                    let currentValue = parseInt(ticketQuantity.value);
+                    if (currentValue < parseInt("@Model.SoLuongToiDa")) {
+                        ticketQuantity.value = currentValue + 1;
+                        updateTotal();
+                    }
+                });
+
+                function updateTotal() {
+                    let quantity = parseInt(ticketQuantity.value);
+                    let total = quantity * pricePerTicket;
+                    totalPrice.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
+                }
+            });
+        </script>
+
+    </div>
+</div>
+
+

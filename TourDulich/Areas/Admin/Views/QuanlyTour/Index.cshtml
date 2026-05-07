@@ -1,0 +1,67 @@
+﻿@model IEnumerable<TourDulich.ModelView.TourView>
+
+@{
+    ViewBag.Title = "Quản lý Tour";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-center mb-4 pt-2">Quản lý Tour</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    @Html.ActionLink("Thêm mới", "ThemTour", null, new { @class = "btn btn-primary" })
+    
+    <form method="get" action="@Url.Action("Index", "QuanlyTour")" class="d-flex w-25">
+        <input type="text" name="searchString" class="form-control me-2" placeholder="Tìm kiếm theo tên tour..." value="@ViewBag.SearchString" />
+        <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+    </form>
+</div>
+
+<table class="table table-bordered table-hover align-middle text-nowrap">
+    <thead class="table-light">
+        <tr class="text-center">
+            <th>@Html.DisplayNameFor(model => model.TenTour)</th>
+            <th>@Html.DisplayNameFor(model => model.HinhAnh)</th>
+            <th>@Html.DisplayNameFor(model => model.TenDanhMuc)</th>
+            <th>@Html.DisplayNameFor(model => model.Gia)</th>
+            <th>@Html.DisplayNameFor(model => model.SoNgay)</th>
+            <th>@Html.DisplayNameFor(model => model.DiemKhoiHanh)</th>
+            <th>@Html.DisplayNameFor(model => model.DiemDen)</th>
+            <th>Trạng Thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="align-middle text-center">
+                <td class="text-start px-1">@Html.DisplayFor(modelItem => item.TenTour)</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.HinhAnh))
+                    {
+                        <img src="~/Images/ImagesTour/@item.HinhAnh" alt="Ảnh tour" style="width:150px; height:100px; object-fit:cover; border-radius:4px; border:1px solid #ddd;" />
+                    }
+                </td>
+                <td class="text-start px-1">@Html.DisplayFor(modelItem => item.TenDanhMuc)</td>
+                <td class="text-end px-1">@String.Format("{0:N0} VNĐ", item.Gia)</td>
+                <td>@Html.DisplayFor(modelItem => item.SoNgay)</td>
+                <td class="text-start px-1">@Html.DisplayFor(modelItem => item.DiemKhoiHanh)</td>
+                <td class="text-start px-1">@Html.DisplayFor(modelItem => item.DiemDen)</td>
+                <td>
+                    @if(item.TrangThaiHoatDong) {
+                        <span class="badge bg-success">Đang hoạt động</span>
+                    } else {
+                        <span class="badge bg-secondary">Tạm ẩn</span>
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Sửa", "SuaTour", new { id = item.ID_Tour }, new { @class = "btn btn-sm btn-warning me-1" })
+                    @using (Html.BeginForm("XoaTour", "QuanlyTour", new { id = item.ID_Tour }, FormMethod.Post, new { onsubmit = "return confirm('Bạn có chắc chắn muốn xóa tour này?');", style = "display:inline;" }))
+                    {
+                        <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                    }
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

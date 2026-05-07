@@ -1,0 +1,54 @@
+﻿@model List<TourDulich.ModelView.TourView>
+
+@{
+    ViewBag.Title = "XoaTour";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+<h2>Danh sách tour</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Ảnh</th>
+            <th>Tên Tour</th>
+            <th>Giá</th>
+            <th>Điểm đến</th>
+            <th>Phương tiện</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <img src="~/Images/ImagesTour/@item.HinhAnh" style="width:100px;" />
+                </td>
+                <td>@item.TenTour</td>
+                <td>@item.Gia?.ToString("N0") VNĐ</td>
+                <td>@item.DiemDen</td>
+                <td>@item.PhuongTien</td>
+                <td>
+                    @Html.ActionLink("Sửa", "SuaTour", new { id = item.ID_Tour }, new { @class = "btn btn-warning btn-sm" })
+
+                    @using (Html.BeginForm("XoaTour", "QuanlyTour", new { id = item.ID_Tour }, FormMethod.Post, new { onsubmit = "return confirm('Bạn có chắc muốn xóa tour này?');", style = "display:inline;" }))
+                    {
+                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

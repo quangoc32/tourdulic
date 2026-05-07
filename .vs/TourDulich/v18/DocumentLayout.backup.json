@@ -1,0 +1,359 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|d:\\\u0111\u1ED3 \u00E1n c\u1EE7a quang\\tourdulich\\tourdulich\\tourdulich\\areas\\admin\\controllers\\quanlylienhecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\controllers\\quanlylienhecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\models\\modeldb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\models\\modeldb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\models\\tour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\models\\tour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\models\\nguoidung.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\models\\nguoidung.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\models\\lichtrinhtour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\models\\lichtrinhtour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\models\\hinhanhtour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\models\\hinhanhtour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\models\\danhmuc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\models\\danhmuc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\models\\danhgia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\models\\danhgia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\views\\quanlydattour\\danhsachdattour.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\views\\quanlydattour\\danhsachdattour.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\views\\quanlydattour\\_chitietdattourpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\views\\quanlydattour\\_chitietdattourpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\controllers\\quanlynguoidungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\controllers\\quanlynguoidungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\controllers\\dangnhapcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\controllers\\dangnhapcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\views\\quanlynguoidung\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\views\\quanlynguoidung\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\controllers\\quanlydattourcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\controllers\\quanlydattourcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\views\\quanlylichtrinh\\_lichtrinheditpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\views\\quanlylichtrinh\\_lichtrinheditpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\models\\dattour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\models\\dattour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\models\\diadiem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\models\\diadiem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\views\\dangnhap\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\views\\dangnhap\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\views\\quanlylichtrinh\\_lichtrinhpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\views\\quanlylichtrinh\\_lichtrinhpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\views\\quanlylichtrinh\\_lichtrinhaddpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\views\\quanlylichtrinh\\_lichtrinhaddpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Web.config",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Web.config",
+              "RelativeDocumentMoniker": "TourDulich\\Web.config",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Web.config",
+              "RelativeToolTip": "TourDulich\\Web.config",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAACcAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-08-01T03:09:03.062Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "QuanlyLienHeController.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Controllers\\QuanlyLienHeController.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Controllers\\QuanlyLienHeController.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Controllers\\QuanlyLienHeController.cs",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Controllers\\QuanlyLienHeController.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABcAAABMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T17:18:16.9Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "DanhSachDatTour.cshtml",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyDatTour\\DanhSachDatTour.cshtml",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Views\\QuanlyDatTour\\DanhSachDatTour.cshtml",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyDatTour\\DanhSachDatTour.cshtml",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Views\\QuanlyDatTour\\DanhSachDatTour.cshtml",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACgAAABuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-25T07:16:30.624Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "QuanlyDatTourController.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Controllers\\QuanlyDatTourController.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Controllers\\QuanlyDatTourController.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Controllers\\QuanlyDatTourController.cs",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Controllers\\QuanlyDatTourController.cs",
+              "ViewState": "AgIAADUAAAAAAAAAAAAwwCkAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-25T05:32:43.417Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ModelDB.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\ModelDB.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Models\\ModelDB.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\ModelDB.cs",
+              "RelativeToolTip": "TourDulich\\Models\\ModelDB.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAcAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T16:25:55.242Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "DanhGia.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\DanhGia.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Models\\DanhGia.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\DanhGia.cs",
+              "RelativeToolTip": "TourDulich\\Models\\DanhGia.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T16:25:49.109Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DanhMuc.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\DanhMuc.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Models\\DanhMuc.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\DanhMuc.cs",
+              "RelativeToolTip": "TourDulich\\Models\\DanhMuc.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T16:25:50.819Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "HinhAnhTour.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\HinhAnhTour.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Models\\HinhAnhTour.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\HinhAnhTour.cs",
+              "RelativeToolTip": "TourDulich\\Models\\HinhAnhTour.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T16:25:54.222Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "LichTrinhTour.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\LichTrinhTour.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Models\\LichTrinhTour.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\LichTrinhTour.cs",
+              "RelativeToolTip": "TourDulich\\Models\\LichTrinhTour.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T16:25:55.907Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "NguoiDung.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\NguoiDung.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Models\\NguoiDung.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\NguoiDung.cs",
+              "RelativeToolTip": "TourDulich\\Models\\NguoiDung.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAQwBMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T16:25:58.256Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Tour.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\Tour.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Models\\Tour.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\Tour.cs",
+              "RelativeToolTip": "TourDulich\\Models\\Tour.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T16:25:59.139Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyNguoidung\\Index.cshtml",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Views\\QuanlyNguoidung\\Index.cshtml",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyNguoidung\\Index.cshtml",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Views\\QuanlyNguoidung\\Index.cshtml",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-25T07:22:29.18Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "DangnhapController.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Controllers\\DangnhapController.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Controllers\\DangnhapController.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Controllers\\DangnhapController.cs",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Controllers\\DangnhapController.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-25T07:23:16.305Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "QuanlyNguoidungController.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Controllers\\QuanlyNguoidungController.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Controllers\\QuanlyNguoidungController.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Controllers\\QuanlyNguoidungController.cs",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Controllers\\QuanlyNguoidungController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-25T07:30:29.605Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "_ChiTietDatTourPartial.cshtml",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyDatTour\\_ChiTietDatTourPartial.cshtml",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Views\\QuanlyDatTour\\_ChiTietDatTourPartial.cshtml",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyDatTour\\_ChiTietDatTourPartial.cshtml",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Views\\QuanlyDatTour\\_ChiTietDatTourPartial.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-25T09:54:38.19Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "DiaDiem.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\DiaDiem.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Models\\DiaDiem.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\DiaDiem.cs",
+              "RelativeToolTip": "TourDulich\\Models\\DiaDiem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T16:25:53.397Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "DatTour.cs",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\DatTour.cs",
+              "RelativeDocumentMoniker": "TourDulich\\Models\\DatTour.cs",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Models\\DatTour.cs",
+              "RelativeToolTip": "TourDulich\\Models\\DatTour.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T16:25:51.826Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\Dangnhap\\Index.cshtml",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Views\\Dangnhap\\Index.cshtml",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\Dangnhap\\Index.cshtml",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Views\\Dangnhap\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-12T02:58:50.451Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "_LichTrinhEditPartial.cshtml",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhEditPartial.cshtml",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhEditPartial.cshtml",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhEditPartial.cshtml",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhEditPartial.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-12T02:58:36.184Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "_LichTrinhPartial.cshtml",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhPartial.cshtml",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhPartial.cshtml",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhPartial.cshtml",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhPartial.cshtml",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-12T02:58:37.48Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "_LichTrinhAddPartial.cshtml",
+              "DocumentMoniker": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhAddPartial.cshtml",
+              "RelativeDocumentMoniker": "TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhAddPartial.cshtml",
+              "ToolTip": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhAddPartial.cshtml",
+              "RelativeToolTip": "TourDulich\\Areas\\Admin\\Views\\QuanlyLichTrinh\\_LichTrinhAddPartial.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-12T02:58:33.416Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

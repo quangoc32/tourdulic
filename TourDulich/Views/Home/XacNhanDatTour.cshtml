@@ -1,0 +1,103 @@
+﻿@using System.Linq
+@model List<TourDulich.ModelView.TourDaDatTamThoi>
+
+@{
+    ViewBag.Title = "XacNhanDatTour";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb shadow-sm bg-white p-3 rounded mb-0" style="font-size: 1rem;">
+            <li class="breadcrumb-item">
+                <a href="@Url.Action("Index", "Home")" class="text-decoration-none text-primary">
+                    <i></i>Trang chủ
+                </a>
+            </li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">
+                <i class="bi bi-chevron-right mx-1"></i>Đặt tour
+            </li>
+        </ol>
+    </nav>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning text-center p-4">
+        <i class="bi bi-exclamation-triangle-fill text-warning fs-3"></i><br />
+        Không có dữ liệu đặt tour.
+    </div>
+}
+else
+{
+    <div class="container">
+        <h4 class="fw-bold mb-4">Xác nhận đặt tour</h4>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-warning text-center p-4">
+                <i class="bi bi-exclamation-triangle-fill text-warning fs-3"></i><br />
+                Không có dữ liệu đặt tour.
+            </div>
+        }
+        else
+        {
+            <table class="table align-middle table-borderless">
+                <thead class="border-bottom fw-bold">
+                    <tr>
+                        <th style="width: 40%;">Thông tin sản phẩm</th>
+                        <th class="text-center" style="width: 15%;">Đơn giá</th>
+                        <th class="text-center" style="width: 15%;">Số lượng</th>
+                        <th class="text-center" style="width: 15%;">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tour in Model)
+                    {
+                        <tr class="border-bottom">
+                            <td>
+                                <div class="d-flex">
+                                    <img src="~/Images/ImagesTour/@tour.HinhAnh" alt="ảnh" class="img-thumbnail me-3" style="width: 100px; height: 75px; object-fit: cover;" />
+                                    <div>
+                                        <div class="fw-semibold">@tour.TenTour</div>
+                                        <div class="text-muted small fst-italic">Ngày đi: @tour.NgayDi.ToString("dd/MM/yyyy")</div>
+                                        @using (Html.BeginForm("XoaTourTamThoi", "Home", FormMethod.Post))
+                                        {
+                                            <input type="hidden" name="TourId" value="@tour.TourId" />
+                                            <input type="hidden" name="NgayDi" value="@tour.NgayDi.ToString("yyyy-MM-dd")" />
+                                            <button type="submit" class="btn btn-link text-danger p-0 mt-1" style="font-size: 0.875rem;">Xoá</button>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center text-primary fw-semibold">@string.Format("{0:N0}₫", tour.Gia)</td>
+                            <td class="text-center">
+                                <div class="d-inline-flex align-items-center border rounded px-2">
+                                    <span class="px-2">-</span>
+                                    <span>@tour.SoLuong</span>
+                                    <span class="px-2">+</span>
+                                </div>
+                            </td>
+                            <td class="text-center fw-bold text-success">
+                                @string.Format("{0:N0}₫", tour.Gia * tour.SoLuong)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="text-end">
+                <h5 class="fw-bold">
+                    Tổng tiền:
+                    <span class="text-success">
+                        @string.Format("{0:N0}₫", Model.Sum(t => t.Gia * t.SoLuong))
+                    </span>
+                </h5>
+                <a href="@Url.Action("ThanhToan", "Home")" class="btn btn-success fw-semibold px-4 mt-3">
+                    <i class="bi bi-credit-card"></i> Thanh toán
+                </a>
+
+            </div>
+        }
+    </div>
+}

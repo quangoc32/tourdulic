@@ -1,0 +1,166 @@
+﻿@{
+    ViewBag.Title = "Quản lý liên hệ";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@model List<TourDulich.Models.LienHe>
+
+<h2 class="text-center mb-4 pt-2 text-primary fw-bold">Quản lý Yêu cầu Liên hệ</h2>
+
+<div class="d-flex justify-content-end mb-3">
+    <form method="get" action="@Url.Action("Index", "QuanlyLienHe")" class="d-flex w-25">
+        <input type="text" name="searchString" class="form-control me-2" placeholder="Tìm tên, email, tiêu đề..." value="@ViewBag.SearchString" />
+        <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+    </form>
+</div>
+
+<div class="card shadow mb-4" style="border-radius: 15px; border: none;">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Khách Hàng</th>
+                        <th>Nội Dung</th>
+                        <th>Ngày Gửi</th>
+                        <th>Trạng Thái</th>
+                        <th style="width: 250px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold">@item.HoTen</div>
+                                <div class="text-muted small">@item.Email</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-primary">@item.TieuDe</div>
+                                <div class="text-truncate" style="max-width: 300px;" title="@item.NoiDung">
+                                    @item.NoiDung
+                                </div>
+                            </td>
+                            <td>@(item.NgayGui.HasValue ? item.NgayGui.Value.ToString("dd/MM/yyyy HH:mm") : "")</td>
+                            <td>
+                                @if (item.TrangThai == "Chưa xử lý")
+                                {
+                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">Chưa xử lý</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success px-3 py-2 rounded-pill">Đã xử lý</span>
+                                }
+                            </td>
+                            <td>
+                                <button class="btn btn-info btn-sm text-white btnXemChiTiet" data-id="@item.ID_LienHe"
+                                        data-hoten="@item.HoTen" data-email="@item.Email" data-tieude="@item.TieuDe"
+                                        data-noidung="@item.NoiDung" data-ngaygui="@(item.NgayGui.HasValue ? item.NgayGui.Value.ToString("dd/MM/yyyy HH:mm") : "")">
+                                    <i class="bi bi-eye-fill"></i> Xem chi tiết
+                                </button>
+                                <button class="btn btn-danger btn-sm btnXoaLienHe" data-id="@item.ID_LienHe">
+                                    <i class="bi bi-trash-fill"></i> Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">Không có yêu cầu liên hệ nào.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chi Tiết Liên Hệ -->
+<div class="modal fade" id="modalChiTietLienHe" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-header bg-primary text-white" style="border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title"><i class="bi bi-envelope-paper-fill me-2"></i>Chi tiết Yêu cầu Liên hệ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Khách hàng:</strong> <span id="detailHoTen" class="fw-bold"></span>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <strong>Ngày gửi:</strong> <span id="detailNgayGui"></span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>Email liên hệ:</strong> <a href="#" id="detailEmailLink" class="text-primary text-decoration-none"><span id="detailEmail"></span></a>
+                </div>
+                <div class="mb-3">
+                    <strong>Tiêu đề:</strong> <span id="detailTieuDe" class="fw-bold text-dark"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Nội dung:</strong>
+                    <div id="detailNoiDung" class="p-3 bg-light border rounded mt-2" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto; color: #495057;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <a href="#" id="btnPhanHoiModal" class="btn btn-success btnPhanHoi" data-id="">
+                    <i class="bi bi-envelope-fill me-1"></i> Phản hồi ngay
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).on("click", ".btnXemChiTiet", function () {
+            var id = $(this).data("id");
+            var hoten = $(this).data("hoten");
+            var email = $(this).data("email");
+            var tieude = $(this).data("tieude");
+            var noidung = $(this).data("noidung");
+            var ngaygui = $(this).data("ngaygui");
+
+            $("#detailHoTen").text(hoten);
+            $("#detailEmail").text(email);
+            $("#detailEmailLink").attr("href", "mailto:" + email);
+            $("#detailTieuDe").text(tieude);
+            $("#detailNoiDung").text(noidung);
+            $("#detailNgayGui").text(ngaygui);
+
+            var mailtoLink = "mailto:" + email + "?subject=" + encodeURIComponent("Phản hồi từ Du Lịch Việt: " + tieude);
+            $("#btnPhanHoiModal").attr("href", mailtoLink);
+            $("#btnPhanHoiModal").data("id", id); 
+
+            var myModal = new bootstrap.Modal(document.getElementById('modalChiTietLienHe'));
+            myModal.show();
+        });
+
+        $(document).on("click", ".btnPhanHoi", function () {
+            // Khi bấm phản hồi, tự động đánh dấu là Đã xử lý (nếu đang là Chưa xử lý)
+            var id = $(this).data("id");
+            $.post('@Url.Action("DanhDauDaXuLy", "QuanlyLienHe", new { area = "Admin" })', { id: id }, function (res) {
+                if (res.success) {
+                    // Cập nhật giao diện sau khi gửi mail xong
+                    setTimeout(function() { location.reload(); }, 2000);
+                }
+            });
+        });
+
+        $(document).on("click", ".btnXoaLienHe", function () {
+            if (!confirm("Bạn có chắc muốn xóa liên hệ này?")) return;
+            var id = $(this).data("id");
+            $.post('@Url.Action("XoaLienHe", "QuanlyLienHe", new { area = "Admin" })', { id: id }, function (res) {
+                if (res.success) {
+                    alert("Đã xóa!");
+                    location.reload();
+                } else {
+                    alert("Lỗi khi xóa: " + res.message);
+                }
+            });
+        });
+    </script>
+}

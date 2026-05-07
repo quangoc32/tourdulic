@@ -1,0 +1,92 @@
+﻿@model TourDulich.ModelView.ThanhToanView
+
+@{
+    ViewBag.Title = "Thanh Toán Đặt Tour";
+}
+
+<div class="container my-4">
+    <h3 class="mb-4">Thông tin khách hàng</h3>
+    <form asp-action="ThanhToan" method="post" class="needs-validation" novalidate>
+        @Html.AntiForgeryToken()
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="HoTen" class="form-label fw-semibold">Họ tên</label>
+                <input type="text" id="HoTen" name="UserInfo.HoTen" class="form-control" value="@Model.UserInfo.HoTen" readonly />
+            </div>
+            <div class="col-md-6">
+                <label for="Email" class="form-label fw-semibold">Email</label>
+                <input type="email" id="Email" name="UserInfo.Email" class="form-control" value="@Model.UserInfo.Email" readonly />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="SoDienThoai" class="form-label fw-semibold">Số điện thoại</label>
+                <input type="text" id="SoDienThoai" name="UserInfo.SoDienThoai" class="form-control" value="@Model.UserInfo.SoDienThoai" readonly />
+            </div>
+            <div class="col-md-6">
+                <label for="DiaChi" class="form-label fw-semibold">Địa chỉ</label>
+                <input type="text" id="DiaChi" name="UserInfo.DiaChi" class="form-control" value="@Model.UserInfo.DiaChi" readonly />
+            </div>
+        </div>
+        <h3 class="mt-5 mb-3">Phương thức thanh toán</h3>
+        <div class="mb-4">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="PhuongThucThanhToan" id="ptTienMat" value="Tiền mặt"
+                       @(Model.PhuongThucThanhToan == "Tiền mặt" ? "checked" : "") required />
+                <label class="form-check-label" for="ptTienMat">
+                    Tiền mặt
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="PhuongThucThanhToan" id="ptChuyenKhoan" value="Chuyển khoản"
+                       @(Model.PhuongThucThanhToan == "Chuyển khoản" ? "checked" : "") required />
+                <label class="form-check-label" for="ptChuyenKhoan">
+                    Chuyển khoản
+                </label>
+            </div>
+        </div>
+
+        <h3 class="mt-5 mb-3">Danh sách tour</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tên tour</th>
+                        <th>Ngày khởi hành</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tour in Model.DanhSachTour)
+                    {
+                        <tr>
+                            <td class="text-start">@tour.TenTour</td>
+                            <td>@tour.NgayDi.ToString("dd/MM/yyyy")</td>
+                            <td>@tour.SoLuong</td>
+                            <td class="text-end text-primary fw-semibold">@string.Format("{0:N0}₫", tour.Gia)</td>
+                            <td class="text-end fw-bold text-success">@string.Format("{0:N0}₫", tour.Gia * tour.SoLuong)</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-end fw-bold fs-5">Tổng tiền:</td>
+                        <td class="text-end fw-bold fs-5 text-success">
+                            @string.Format("{0:N0}₫", Model.DanhSachTour.Sum(t => t.Gia * t.SoLuong))
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg px-5 fw-semibold">
+                <i class="bi bi-credit-card me-2"></i> Xác nhận thanh toán
+            </button>
+        </div>
+    </form>
+</div>

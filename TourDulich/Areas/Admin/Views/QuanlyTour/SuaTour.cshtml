@@ -1,0 +1,188 @@
+﻿@model TourDulich.ModelView.TourView
+
+@{
+    ViewBag.Title = "Sửa Tour";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="mb-4 text-primary pt-3">✏️ Sửa Tour</h2>
+
+@using (Html.BeginForm("SuaTour", "QuanlyTour", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.ID_Tour)
+
+    <div class="card shadow p-4">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.TenTour, "Tên Tour")
+                    @Html.TextBoxFor(m => m.TenTour, new { @class = "form-control", autocomplete = "off", placeholder = "Nhập tên tour" })
+                    @Html.ValidationMessageFor(m => m.TenTour, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.MoTa, "Mô Tả")
+                    @Html.TextAreaFor(m => m.MoTa, new { @class = "form-control", rows = 5, placeholder = "Mô tả chi tiết về tour" })
+                    @Html.ValidationMessageFor(m => m.MoTa, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.Gia, "Giá Tour (VNĐ)")
+                    @Html.TextBoxFor(m => m.Gia, new { @class = "form-control", type = "number", placeholder = "Nhập giá tour" })
+                    @Html.ValidationMessageFor(m => m.Gia, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.SoNgay, "Số Ngày")
+                    @Html.TextBoxFor(m => m.SoNgay, new { @class = "form-control", autocomplete = "off", placeholder = "VD: 3" })
+                    @Html.ValidationMessageFor(m => m.SoNgay, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.Label("Danh Mục")
+                    @Html.DropDownListFor(m => m.ID_DanhMuc, Model.DanhMucSelectList, "-- Chọn Danh Mục --", new { @class = "form-select" })
+                    @Html.ValidationMessageFor(m => m.ID_DanhMuc, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3 form-check form-switch mt-4">
+                    @Html.CheckBoxFor(m => m.TrangThaiHoatDong, new { @class = "form-check-input" })
+                    <label class="form-check-label fw-bold" for="TrangThaiHoatDong">Đang hoạt động (Hiển thị cho khách hàng)</label>
+                </div>
+
+                <div class="form-group mb-3 form-check mt-3">
+                    @Html.CheckBoxFor(m => m.IsGiaTot, new { @class = "form-check-input" })
+                    <label class="form-check-label fw-bold" for="IsGiaTot">Đánh dấu là: Tour Có Giá Tốt</label>
+                </div>
+
+                <div class="form-group mb-3 form-check mt-2">
+                    @Html.CheckBoxFor(m => m.IsUuDai, new { @class = "form-check-input" })
+                    <label class="form-check-label fw-bold" for="IsUuDai">Đánh dấu là: Tour Có Ưu Đãi</label>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.DiemKhoiHanh, "Điểm Khởi Hành")
+                    @Html.TextBoxFor(m => m.DiemKhoiHanh, new { @class = "form-control", autocomplete = "off", placeholder = "VD: Hà Nội" })
+                    @Html.ValidationMessageFor(m => m.DiemKhoiHanh, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.PhuongTien, "Phương Tiện")
+                    @Html.TextBoxFor(m => m.PhuongTien, new { @class = "form-control", autocomplete = "off", placeholder = "VD: Máy bay, Xe khách" })
+                    @Html.ValidationMessageFor(m => m.PhuongTien, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.SoLuongToiDa, "Số Lượng Tối Đa")
+                    @Html.TextBoxFor(m => m.SoLuongToiDa, new { @class = "form-control", type = "number", placeholder = "VD: 20" })
+                    @Html.ValidationMessageFor(m => m.SoLuongToiDa, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.Label("Địa Điểm")
+                    @Html.DropDownListFor(m => m.ID_DiaDiem, Model.DiaDiemSelectList, "-- Chọn Địa Điểm --", new { @class = "form-select" })
+                    @Html.ValidationMessageFor(m => m.ID_DiaDiem, "", new { @class = "text-danger" })
+                </div>
+                
+                <div class="mb-3">
+                    <label>Ảnh Đại Diện Hiện Tại</label><br />
+                    <img id="previewMainImage"
+                         src="@(!string.IsNullOrEmpty(Model.HinhAnh) ? Url.Content("~/Images/ImagesTour/" + Model.HinhAnh) : "")"
+                         alt="Ảnh đại diện"
+                         style="width: 180px; height: auto; border-radius: 5px; @(string.IsNullOrEmpty(Model.HinhAnh) ? "display:none;" : "display:block;")" />
+                    <p id="noMainImageText" style="font-style: italic; display:@(string.IsNullOrEmpty(Model.HinhAnh) ? "block" : "none");">Chưa có ảnh đại diện</p>
+                </div>
+
+                <div class="mb-3">
+                    <label>Danh Sách Ảnh Tour Hiện Tại</label><br />
+                    <div id="previewOtherImages" style="display:flex; flex-wrap: wrap; gap: 10px;">
+                        @if (Model.DanhSachHinhAnhTour != null && Model.DanhSachHinhAnhTour.Any())
+                        {
+                            foreach (var item in Model.DanhSachHinhAnhTour)
+                            {
+                                <img src="@Url.Content("~/Images/ImagesTour/" + item.HinhAnh)" alt="Ảnh tour"
+                                     style="width: 80px; height: auto; border-radius: 3px; display: block;" />
+                            }
+                        }
+                        else
+                        {
+                            <p><i>Chưa có ảnh nào</i></p>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Upload Ảnh Đại Diện Mới (chọn 1 ảnh)</label>
+                    <input type="file" name="HinhAnhFile" id="HinhAnhFile" accept="image/*" class="form-control" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Upload Ảnh Mới Khác (nếu muốn thay đổi, có thể chọn nhiều ảnh)</label>
+                    <input type="file" name="HinhAnhFiles" id="HinhAnhFiles" multiple accept="image/*" class="form-control" />
+                </div>
+
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Cập nhật Tour</button>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('HinhAnhFile').addEventListener('change', function () {
+            const preview = document.getElementById('previewMainImage');
+            const noImgText = document.getElementById('noMainImageText');
+            const file = this.files[0];
+
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    noImgText.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+                noImgText.style.display = 'block';
+            }
+        });
+
+        document.getElementById('HinhAnhFiles').addEventListener('change', function () {
+            const previewContainer = document.getElementById('previewOtherImages');
+
+            previewContainer.innerHTML = '';
+
+            const files = this.files;
+            if (!files.length) {
+                previewContainer.innerHTML = '<p><i>Chưa có ảnh nào</i></p>';
+                return;
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!file.type.startsWith('image/')) continue;
+
+                const img = document.createElement('img');
+                img.style.width = '80px';
+                img.style.height = 'auto';
+                img.style.borderRadius = '3px';
+                img.style.marginRight = '10px';
+                img.style.display = 'block';
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+
+                previewContainer.appendChild(img);
+            }
+        });
+    </script>
+}
+

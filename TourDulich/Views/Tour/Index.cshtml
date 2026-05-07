@@ -1,0 +1,189 @@
+﻿@model List<TourDulich.ModelView.TourView>
+@{
+    ViewBag.Title = "Danh sách tour";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container my-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb shadow-sm bg-white p-3 rounded mb-0" style="font-size: 1rem;">
+            <li class="breadcrumb-item">
+                <a href="@Url.Action("Index", "Home")" class="text-decoration-none text-primary">
+                    <i></i>Trang chủ
+                </a>
+            </li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">
+                <i class="bi bi-chevron-right mx-1"></i>Danh sách Tour
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container my-4">
+    <div class="row">
+        <aside class="col-lg-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">Bộ lọc</h5>
+                    <form method="get" id="filterForm">
+                        @if (!string.IsNullOrEmpty(ViewBag.SearchString))
+                        {
+                            <input type="hidden" name="searchString" value="@ViewBag.SearchString" />
+                        }
+                        <div class="mb-3">
+                            <label class="form-label">Danh mục</label>
+                            @Html.DropDownList("danhMucId", (SelectList)ViewBag.DanhMuc, "Tất cả", new { @class = "form-select", onchange = "submitForm()" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Giá tour</label>
+                            <select name="giaLoai" class="form-select" onchange="submitForm()">
+                                <option value="">Tất cả</option>
+                                <option value="1" @(Request["giaLoai"] == "1" ? "selected" : "")>Dưới 10.000.000</option>
+                                <option value="2" @(Request["giaLoai"] == "2" ? "selected" : "")>Từ 10.000.000 trở lên</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Điểm khởi hành</label>
+                            @Html.DropDownList("diemKhoiHanh", (SelectList)ViewBag.DiemKhoiHanh, "Tất cả", new { @class = "form-select", onchange = "submitForm()" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Điểm đến</label>
+                            @Html.DropDownList("diemDen", (SelectList)ViewBag.DiemDen, "Tất cả", new { @class = "form-select", onchange = "submitForm()" })
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </aside>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0 fw-bold">Danh sách tour</h5>
+                <form method="get" class="d-flex align-items-center gap-2" id="sortForm">
+                    @if (!string.IsNullOrEmpty(ViewBag.SearchString))
+                    {
+                        <input type="hidden" name="searchString" value="@ViewBag.SearchString" />
+                    }
+                    <label for="sortOrder" class="mb-0 fw-semibold">Sắp xếp:</label>
+                    <select id="sortOrder" name="sortOrder" class="form-select form-select-sm w-auto" onchange="submitForm('sortForm')">
+                        <option value="">Mặc định</option>
+                        <option value="price_asc" @(Request["sortOrder"] == "price_asc" ? "selected" : "")>Giá tăng dần</option>
+                        <option value="price_desc" @(Request["sortOrder"] == "price_desc" ? "selected" : "")>Giá giảm dần</option>
+                        <option value="star_desc" @(Request["sortOrder"] == "star_desc" ? "selected" : "")>Đánh giá cao nhất</option>
+                    </select>
+                </form>
+            </div>
+
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var t in Model)
+                {
+                    <div class="card mb-4 shadow-sm border-0">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <a href="@Url.Action("DetailsTour", "Home", new { id = t.ID_Tour })">
+                                    <img src="~/Images/ImagesTour/@t.HinhAnh" alt="@t.TenTour" class="img-fluid rounded-start w-100" style="height: 200px; object-fit: cover;">
+                                </a>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body h-100 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <a href="@Url.Action("DetailsTour", "Home", new { id = t.ID_Tour })" class="text-decoration-none text-dark">
+                                            <h5 class="card-title fw-bold">@t.TenTour</h5>
+                                        </a>
+                                        <div class="mb-2">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= t.SoSao)
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-warning"></i>
+                                                }
+                                            }
+                                        </div>
+
+                                        <p class="mb-1 text-muted"><i class="bi bi-geo-alt-fill me-1"></i> Khởi hành: <strong>@t.DiemKhoiHanh</strong></p>
+                                        <p class="mb-1 text-muted"><i class="bi bi-flag-fill me-1"></i> Điểm đến: <strong>@t.DiemDen</strong></p>
+                                        <p class="mb-1 text-muted"><i class="bi bi-clock-fill me-1"></i> Thời gian: <strong>@t.SoNgay</strong></p>
+                                    </div>
+                                    <p class="text-primary fw-bold fs-5 mt-3 mb-0">@string.Format("{0:N0} VNĐ", t.Gia)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">Không có tour nào phù hợp với tiêu chí lọc.</div>
+            }
+
+            @if (ViewBag.TotalPage > 1)
+            {
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mt-4">
+                        @{
+                            int currentPage = ViewBag.CurrentPage;
+                            int totalPage = ViewBag.TotalPage;
+
+                            var routeValuesFirst = new System.Web.Routing.RouteValueDictionary();
+                            foreach (string key in Request.QueryString.Keys)
+                            {
+                                if (key != "page")
+                                {
+                                    routeValuesFirst[key] = Request.QueryString[key];
+                                }
+                            }
+                            routeValuesFirst["page"] = 1;
+
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" href="@Url.Action("Index", "Tour", routeValuesFirst)">«</a>
+                            </li>
+
+                            for (int i = 1; i <= totalPage; i++)
+                            {
+                                var routeValues = new System.Web.Routing.RouteValueDictionary();
+                                foreach (string key in Request.QueryString.Keys)
+                                {
+                                    if (key != "page")
+                                    {
+                                        routeValues[key] = Request.QueryString[key];
+                                    }
+                                }
+                                routeValues["page"] = i;
+
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", "Tour", routeValues)">@i</a>
+                                </li>
+                            }
+
+                            var routeValuesLast = new System.Web.Routing.RouteValueDictionary();
+                            foreach (string key in Request.QueryString.Keys)
+                            {
+                                if (key != "page")
+                                {
+                                    routeValuesLast[key] = Request.QueryString[key];
+                                }
+                            }
+                            routeValuesLast["page"] = totalPage;
+
+                            <li class="page-item @(currentPage == totalPage ? "disabled" : "")">
+                                <a class="page-link" href="@Url.Action("Index", "Tour", routeValuesLast)">»</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function submitForm(formId = 'filterForm') {
+        document.getElementById(formId).submit();
+    }
+</script>

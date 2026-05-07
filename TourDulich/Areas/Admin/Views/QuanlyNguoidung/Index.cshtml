@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "Quản lý người dùng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@model List<TourDulich.Models.NguoiDung>
+
+<h2 class="text-center mb-4 pt-2">Quản lý người dùng</h2>
+
+<div class="d-flex justify-content-end mb-3">
+    <form method="get" action="@Url.Action("Index", "QuanlyNguoidung")" class="d-flex w-25">
+        <input type="text" name="searchString" class="form-control me-2" placeholder="Tìm tên, email, tài khoản..." value="@ViewBag.SearchString" />
+        <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+    </form>
+</div>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Họ tên</th>
+            <th>Email</th>
+            <th>Tài khoản</th>
+            <th>SĐT</th>
+            <th>Ngày tạo</th>
+            <th style="width: 140px;">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.HoTen</td>
+                <td>@item.Email</td>
+                <td>@item.TaiKhoan</td>
+                <td>@item.SoDienThoai</td>
+                <td>@(item.NgayTao.HasValue ? item.NgayTao.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>
+                    <button class="btn btn-warning btn-sm btnSuaNguoiDung" data-id="@item.ID_NguoiDung">Sửa</button>
+                    <button class="btn btn-danger btn-sm btnXoaNguoiDung" data-id="@item.ID_NguoiDung">Xóa</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="modalNguoiDung" tabindex="-1" role="dialog" aria-labelledby="modalNguoiDungLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalNguoiDungLabel">Sửa thông tin người dùng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="contentNguoiDung">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).on("click", ".btnSuaNguoiDung", function () {
+            var id = $(this).data("id");
+            $.get('@Url.Action("SuaNguoiDungPartial", "QuanlyNguoiDung", new { area = "Admin" })', { id: id }, function (html) {
+                $("#contentNguoiDung").html(html);
+                $("#modalNguoiDung").modal("show");
+            });
+        });
+
+        $(document).on("click", "#btnLuuNguoiDung", function () {
+            var form = $("#formSuaNguoiDung");
+            $.post('@Url.Action("LuuSuaNguoiDung", "QuanlyNguoiDung", new { area = "Admin" })', form.serialize(), function (res) {
+                if (res.success) {
+                    alert("Cập nhật thành công!");
+                    $("#modalNguoiDung").modal("hide");
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + res.message);
+                }
+            });
+        });
+
+        $(document).on("click", ".btnXoaNguoiDung", function () {
+            if (!confirm("Bạn có chắc muốn xóa người dùng này?")) return;
+            var id = $(this).data("id");
+            $.post('@Url.Action("XoaNguoiDung", "QuanlyNguoiDung", new { area = "Admin" })', { id: id }, function (res) {
+                if (res.success) {
+                    alert("Đã xóa!");
+                    location.reload();
+                } else {
+                    alert("Lỗi khi xóa: " + res.message);
+                }
+            });
+        });
+    </script>
+}

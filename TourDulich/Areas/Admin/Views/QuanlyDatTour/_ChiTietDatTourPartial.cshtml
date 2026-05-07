@@ -1,0 +1,26 @@
+﻿@model List<TourDulich.Models.ChiTietDatTour>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Tour</th>
+            <th>Ngày Khởi Hành</th>
+            <th>Số Lượng Người</th>
+            <th>Phương Thức Thanh Toán</th>
+            <th>Giá</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ct in Model)
+        {
+            <tr>
+                <td>@ct.Tour.TenTour</td>
+                <td>@string.Format("{0:dd/MM/yyyy}", ct.NgayKhoiHanh)</td>
+                <td>@ct.SoLuongNguoi</td>
+                <td>@ct.PhuongThucThanhToan</td>
+                <td>@string.Format("{0:N0} VNĐ", ct.Gia)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

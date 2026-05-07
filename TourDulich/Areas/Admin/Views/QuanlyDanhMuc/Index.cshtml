@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "Quản lý danh mục";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@model List<TourDulich.Models.DanhMuc>
+
+<h2 class="text-center mb-4 pt-2">Quản lý danh mục</h2>
+
+<div class="mb-3">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalThemDanhMuc">
+        <i class="bi bi-plus-circle"></i> Thêm Danh Mục Mới
+    </button>
+</div>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Tên Danh Mục</th>
+            <th>Mô Tả</th>
+            <th style="width: 140px;">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="fw-bold">@item.TenDanhMuc</td>
+                <td>@item.MoTa</td>
+                <td>
+                    <button class="btn btn-warning btn-sm btnSuaDanhMuc" data-id="@item.ID_DanhMuc">Sửa</button>
+                    <button class="btn btn-danger btn-sm btnXoaDanhMuc" data-id="@item.ID_DanhMuc">Xóa</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal Thêm Danh Mục -->
+<div class="modal fade" id="modalThemDanhMuc" tabindex="-1" aria-labelledby="modalThemLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-header bg-primary text-white" style="border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title" id="modalThemLabel"><i class="bi bi-plus-circle-fill me-2"></i>Thêm Danh Mục Mới</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="formThemDanhMuc">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tên Danh Mục <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="TenDanhMuc" required placeholder="VD: Du Lịch Châu Âu, Tour Nghỉ Dưỡng...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mô tả ngắn</label>
+                        <textarea class="form-control" name="MoTa" rows="3" placeholder="Nhập mô tả..."></textarea>
+                    </div>
+                    <div class="text-end mt-4">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary" id="btnLuuThem"><i class="bi bi-save-fill me-1"></i> Lưu Danh Mục</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sửa Danh Mục -->
+<div class="modal fade" id="modalSuaDanhMuc" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-header bg-primary text-white" style="border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Sửa Danh Mục</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="contentSuaDanhMuc">
+                <!-- Partial view content -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Thêm
+        $(document).on("click", "#btnLuuThem", function () {
+            var form = $("#formThemDanhMuc");
+            if (!form[0].checkValidity()) {
+                form[0].reportValidity();
+                return;
+            }
+            $.post('@Url.Action("ThemDanhMucAjax", "QuanlyDanhMuc", new { area = "Admin" })', form.serialize(), function (res) {
+                if (res.success) {
+                    alert("Thêm thành công!");
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + res.message);
+                }
+            });
+        });
+
+        // Sửa
+        $(document).on("click", ".btnSuaDanhMuc", function () {
+            var id = $(this).data("id");
+            $.get('@Url.Action("SuaDanhMucPartial", "QuanlyDanhMuc", new { area = "Admin" })', { id: id }, function (html) {
+                $("#contentSuaDanhMuc").html(html);
+                $("#modalSuaDanhMuc").modal("show");
+            });
+        });
+
+        $(document).on("click", "#btnLuuSua", function () {
+            var form = $("#formSuaDanhMuc");
+            $.post('@Url.Action("LuuSuaDanhMuc", "QuanlyDanhMuc", new { area = "Admin" })', form.serialize(), function (res) {
+                if (res.success) {
+                    alert("Cập nhật thành công!");
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + res.message);
+                }
+            });
+        });
+
+        // Xóa
+        $(document).on("click", ".btnXoaDanhMuc", function () {
+            if (!confirm("Bạn có chắc muốn xóa danh mục này? (Sẽ báo lỗi nếu danh mục này đã có Tour đặt)")) return;
+            var id = $(this).data("id");
+            $.post('@Url.Action("XoaDanhMuc", "QuanlyDanhMuc", new { area = "Admin" })', { id: id }, function (res) {
+                if (res.success) {
+                    alert("Đã xóa!");
+                    location.reload();
+                } else {
+                    alert("Lỗi khi xóa: " + res.message);
+                }
+            });
+        });
+    </script>
+}

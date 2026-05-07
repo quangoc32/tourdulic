@@ -1,0 +1,348 @@
+﻿@model List<TourDulich.ModelView.DatTourView>
+
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .dashboard-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .dashboard-card .card-body {
+        position: relative;
+        z-index: 2;
+    }
+    .dashboard-card::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 150px;
+        height: 150px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 50%;
+        z-index: 1;
+    }
+    .bg-gradient-primary { background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); }
+    .bg-gradient-success { background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); }
+    .bg-gradient-warning { background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%); }
+    .bg-gradient-danger { background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%); }
+
+    .chart-container {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+</style>
+
+<h2 class="text-center mb-4 pt-2 text-primary fw-bold">Tổng Quan Hệ Thống</h2>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <a href="@Url.Action("Index", "QuanlyTour")" class="text-decoration-none">
+            <div class="card text-white bg-gradient-primary dashboard-card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold"><i class="bi bi-geo-alt-fill me-2"></i>Tổng Tour</h5>
+                    <p class="card-text display-5 fw-bold">@ViewBag.TotalTours</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="@Url.Action("DanhSachDatTour", "QuanlyDatTour")" class="text-decoration-none">
+            <div class="card text-white bg-gradient-success dashboard-card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold"><i class="bi bi-journal-check me-2"></i>Tổng Đơn Đặt</h5>
+                    <p class="card-text display-5 fw-bold">@ViewBag.TotalDatTours</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="@Url.Action("DanhSachDatTour", "QuanlyDatTour")" class="text-decoration-none">
+            <div class="card text-white bg-gradient-warning dashboard-card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold"><i class="bi bi-hourglass-split me-2"></i>Chờ Xử Lý</h5>
+                    <p class="card-text display-5 fw-bold">@ViewBag.PendingDatTours</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#modalDoanhThu" class="text-decoration-none">
+            <div class="card text-white bg-gradient-danger dashboard-card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold"><i class="bi bi-cash-stack me-2"></i>Doanh Thu Tháng</h5>
+                    <p class="card-text fw-bold" style="font-size:32px;">
+                        @ViewBag.MonthlyRevenue.ToString("N0") <span style="font-size: 20px;">VNĐ</span>
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <!-- Cột trái: Biểu đồ đường -->
+    <div class="col-md-8 mb-4">
+        <div class="chart-container h-100">
+            <h5 class="fw-bold text-primary mb-4"><i class="bi bi-graph-up me-2"></i>Thống Kê Đơn Đặt Tour Theo Tháng</h5>
+            <canvas id="datTourChart" height="100"></canvas>
+        </div>
+    </div>
+
+    <!-- Cột phải: Biểu đồ vành khuyên (Doughnut) -->
+    <div class="col-md-4 mb-4">
+        <div class="chart-container h-100 d-flex flex-column align-items-center justify-content-center">
+            <h5 class="fw-bold text-primary mb-4 w-100 text-center"><i class="bi bi-pie-chart-fill me-2"></i>Tỷ Lệ Tour Theo Miền</h5>
+            <div style="position: relative; height:250px; width:100%">
+                <canvas id="regionChart"></canvas>
+            </div>
+            <div class="mt-4 text-center w-100">
+                <div class="d-flex justify-content-between px-3 mb-2">
+                    <span class="text-secondary"><i class="bi bi-circle-fill text-danger me-2"></i>Miền Bắc:</span>
+                    <span class="fw-bold">@ViewBag.TourMienBac Tour</span>
+                </div>
+                <div class="d-flex justify-content-between px-3 mb-2">
+                    <span class="text-secondary"><i class="bi bi-circle-fill text-success me-2"></i>Miền Trung:</span>
+                    <span class="fw-bold">@ViewBag.TourMienTrung Tour</span>
+                </div>
+                <div class="d-flex justify-content-between px-3">
+                    <span class="text-secondary"><i class="bi bi-circle-fill text-primary me-2"></i>Miền Nam:</span>
+                    <span class="fw-bold">@ViewBag.TourMienNam Tour</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="chart-container mb-4">
+    <h5 class="fw-bold text-primary mb-4"><i class="bi bi-clock-history me-2"></i>5 Đơn Đặt Tour Mới Nhất</h5>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Người Đặt</th>
+                    <th>Ngày Đặt</th>
+                    <th>Tổng Tiền</th>
+                    <th>Trạng Thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">@item.TenNguoiDung</td>
+                        <td>@(item.NgayDat.HasValue ? item.NgayDat.Value.ToString("dd/MM/yyyy") : "")</td>
+                        <td class="text-danger fw-bold">@String.Format("{0:N0} VNĐ", item.TongTien)</td>
+                        <td>
+                            @if (item.TrangThai == "Chờ xử lý")
+                            {
+                                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">@item.TrangThai</span>
+                            }
+                            else if (item.TrangThai == "Đã xác nhận")
+                            {
+                                <span class="badge bg-success px-3 py-2 rounded-pill">@item.TrangThai</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary px-3 py-2 rounded-pill">@item.TrangThai</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Doanh Thu -->
+<div class="modal fade" id="modalDoanhThu" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-header bg-danger text-white" style="border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title"><i class="bi bi-cash-stack me-2"></i>Bảng Doanh Thu Từng Tháng</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-secondary"><i class="bi bi-calendar-event me-2"></i>Chọn năm thống kê:</span>
+                    <select id="selectYear" class="form-select form-select-sm w-auto fw-bold text-danger border-danger" style="cursor: pointer;">
+                        @for(int y = DateTime.Now.Year; y >= DateTime.Now.Year - 5; y--)
+                        {
+                            if(y == DateTime.Now.Year) {
+                                <option value="@y" selected>Năm @y</option>
+                            } else {
+                                <option value="@y">Năm @y</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center py-3">Tháng</th>
+                            <th class="text-end pe-4 py-3">Doanh Thu (VNĐ)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyDoanhThu">
+                        @{
+                            var revenueList = ViewBag.MonthRevenueList as List<decimal>;
+                            if (revenueList != null)
+                            {
+                                for (int i = 0; i < 12; i++)
+                                {
+                                    <tr>
+                                        <td class="text-center fw-bold py-2">Tháng @(i + 1)</td>
+                                        <td class="text-end pe-4 text-danger fw-bold py-2">@revenueList[i].ToString("N0")</td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 1. Line Chart: Thống kê đặt tour theo tháng
+        const ctxLine = document.getElementById('datTourChart').getContext('2d');
+        
+        // Tạo Gradient cho Line Chart
+        let gradientFill = ctxLine.createLinearGradient(0, 0, 0, 400);
+        gradientFill.addColorStop(0, 'rgba(54, 162, 235, 0.6)');
+        gradientFill.addColorStop(1, 'rgba(54, 162, 235, 0.0)');
+
+        const datTourChart = new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.MonthLabels)),
+                datasets: [{
+                    label: 'Số Lượng Đơn',
+                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.MonthData)),
+                    backgroundColor: gradientFill,
+                    borderColor: '#36b9cc',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#36b9cc',
+                    pointHoverBackgroundColor: '#36b9cc',
+                    pointHoverBorderColor: '#fff',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 10,
+                        cornerRadius: 8,
+                        displayColors: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgb(234, 236, 244)',
+                            zeroLineColor: 'rgb(234, 236, 244)',
+                            drawBorder: false,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Doughnut Chart: Thống kê Tour theo Miền
+        const ctxDoughnut = document.getElementById('regionChart').getContext('2d');
+        const regionChart = new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Miền Bắc', 'Miền Trung', 'Miền Nam'],
+                datasets: [{
+                    data: [@ViewBag.TourMienBac, @ViewBag.TourMienTrung, @ViewBag.TourMienNam],
+                    backgroundColor: ['#e74a3b', '#1cc88a', '#4e73df'],
+                    hoverBackgroundColor: ['#be2617', '#13855c', '#224abe'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: false // Ẩn legend mặc định vì đã tự build custom legend ở dưới
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 10,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                }
+            }
+        });
+
+        // 3. Xử lý đổi năm doanh thu
+        $("#selectYear").change(function() {
+            var year = $(this).val();
+            var url = '@Url.Action("GetDoanhThuTheoNam", "HomeAdmin", new { area = "Admin" })';
+            
+            $.post(url, { year: year }, function(res) {
+                if(res.success) {
+                    var tbody = $("#tbodyDoanhThu");
+                    tbody.empty();
+                    for(var i=0; i<12; i++) {
+                        // Định dạng số có dấu chấm hàng nghìn
+                        var amount = res.data[i].toLocaleString('vi-VN');
+                        var tr = `<tr>
+                                    <td class="text-center fw-bold py-2">Tháng ${i+1}</td>
+                                    <td class="text-end pe-4 text-danger fw-bold py-2">${amount}</td>
+                                  </tr>`;
+                        tbody.append(tr);
+                    }
+                } else {
+                    alert("Lỗi khi tải dữ liệu: " + res.message);
+                }
+            }).fail(function() {
+                alert("Lỗi kết nối đến máy chủ.");
+            });
+        });
+    </script>
+}

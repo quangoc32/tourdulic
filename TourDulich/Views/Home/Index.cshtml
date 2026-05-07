@@ -1,0 +1,329 @@
+﻿@model List<TourDulich.ModelView.TourView>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .destination-card {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        height: 100%;
+    }
+
+        .destination-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s ease;
+        }
+
+        .destination-card:hover img {
+            transform: scale(1.05);
+        }
+
+    .destination-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+        color: white;
+        font-size: 1rem;
+    }
+
+    .destination-card.large {
+        height: 250px;
+    }
+
+    .destination-card.small {
+        height: 300px;
+    }
+</style>
+<style>
+    .tour-scroll-container {
+        overflow: hidden;
+        position: relative;
+        cursor: grab;
+    }
+
+    .tour-scroll-inner {
+        display: flex;
+        gap: 1rem;
+        overflow-x: scroll;
+        scroll-behavior: smooth;
+        padding-bottom: 10px;
+    }
+
+        .tour-scroll-inner::-webkit-scrollbar {
+            display: none; 
+        }
+
+    .tour-card {
+        min-width: 25%;
+        max-width: 25%;
+        flex: 0 0 auto;
+    }
+</style>
+
+<div class="mb-5">
+    <img src="https://muanhanh.vn/img/2024/03/bg-banner.png" class="img-fluid w-100 rounded-3 shadow" style="max-height: 400px; object-fit: cover;" alt="Banner Du Lịch">
+</div>
+
+<div class="container-fluid mb-5 py-5" style="background-color: rgba(255, 255, 255, 0.95); box-shadow: 0 0 20px rgba(0,0,0,0.05);">
+    <div class="container text-center">
+        <h3 class="fw-bold text-primary mb-2">Vì sao bạn nên chọn chúng tôi</h3>
+        <p class="text-muted mb-5">Lựa chọn tour chất lượng, trải nghiệm trọn vẹn</p>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <i class="bi bi-star-fill text-warning fs-1 mb-3"></i>
+                <h5 class="fw-bold">Tour chất lượng</h5>
+                <p class="text-muted">Chúng tôi đảm bảo cung cấp những tour du lịch uy tín với dịch vụ tốt nhất.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="bi bi-geo-alt-fill text-danger fs-1 mb-3"></i>
+                <h5 class="fw-bold">Điểm đến hấp dẫn</h5>
+                <p class="text-muted">Khám phá những địa điểm du lịch nổi bật và trải nghiệm văn hóa đa dạng.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="bi bi-wallet2 text-success fs-1 mb-3"></i>
+                <h5 class="fw-bold">Giá cả hợp lý</h5>
+                <p class="text-muted">Giá tour cạnh tranh, phù hợp với nhiều đối tượng khách hàng.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5 py-5">
+    <div class="row align-items-start">
+        <div class="col-lg-5 mb-4 mb-lg-0 text-center">
+            <img src="https://bizweb.dktcdn.net/100/505/645/themes/956063/assets/img-section-about.jpg?1741856854988"
+                 style="max-width: 90%; height: auto;"
+                 alt="Booking Travel">
+        </div>
+
+        <div class="col-lg-7 pt-3" style="padding-left: 80px;">
+            <h3 class="fw-bold text-primary mb-2" style="padding-left: 80px;">Booking cùng chúng tôi</h3>
+            <p class="text-muted mb-4">Chỉ với 3 bước đơn giản và dễ dàng có ngay trải nghiệm tuyệt vời!</p>
+
+            <div class="d-flex align-items-start mb-4">
+                <div class="flex-shrink-0">
+                    <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center"
+                         style="width: 45px; height: 45px; font-weight: bold;">
+                        1
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <strong>Tìm nơi muốn đến</strong>
+                    <p class="text-muted mb-0">Bất cứ nơi đâu bạn muốn đến, chúng tôi có tất cả những gì bạn cần</p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-start mb-4">
+                <div class="flex-shrink-0">
+                    <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center"
+                         style="width: 45px; height: 45px; font-weight: bold;">
+                        2
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <strong>Đặt vé</strong>
+                    <p class="text-muted mb-0">ND Travel hỗ trợ bạn đặt vé trực tiếp nhanh chóng và thuận tiện</p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-start">
+                <div class="flex-shrink-0">
+                    <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center"
+                         style="width: 45px; height: 45px; font-weight: bold;">
+                        3
+                    </div>
+                </div>
+                <div class="ms-3">
+                    <strong>Thanh toán</strong>
+                    <p class="text-muted mb-0">Hoàn tất thanh toán và sẵn sàng cho chuyến đi ngay thôi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-5 mt-5">
+    <h2 class="fw-bold">Tour Có Giá Tốt</h2>
+    <p class="text-muted">Dành cho những ai muốn trải nghiệm đẳng cấp khác biệt</p>
+</div>
+
+<div class="tour-scroll-container">
+    <div class="tour-scroll-inner">
+        @foreach (var t in Model.Where(t => t.IsGiaTot))
+        {
+            <div class="card tour-card me-3">
+                <a href="@Url.Action("DetailsTour", "Home", new { id = t.ID_Tour })" style="text-decoration: none; color: inherit;">
+                    <img src="~/Images/ImagesTour/@t.HinhAnh" class="card-img-top" alt="@t.TenTour" style="height: 200px; object-fit: cover;">
+                </a>
+                <div class="card-body d-flex flex-column">
+                    <a href="@Url.Action("DetailsTour", "Home", new { id = t.ID_Tour })" style="text-decoration: none; color: inherit;">
+                        <h5 class="card-title">@t.TenTour</h5>
+                    </a>
+
+                    <p class="card-text mb-2">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= t.SoSao)
+                            {
+                                <span style="color: gold;">&#9733;</span>
+                            }
+                            else
+                            {
+                                <span style="color: lightgray;">&#9733;</span>
+                            }
+                        }
+                    </p>
+
+                    <p class="card-text mb-1 text-muted">
+                        <i class="bi bi-geo-alt-fill me-1"></i>
+                        Khởi hành từ: @t.DiemKhoiHanh
+                    </p>
+
+                    <p class="card-text mb-1 text-muted" style="font-size: 0.85rem;">
+                        <i class="bi bi-clock me-1"></i>
+                        <strong>Thời gian:</strong> @t.SoNgay
+                    </p>
+
+                    <p class="card-text mb-1" style="color: blue;">@string.Format("{0:N0} VNĐ", t.Gia)</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+<div class="mb-5">
+    <h2 class="fw-bold">Tour Có Ưu đãi</h2>
+    <p class="text-muted">Lên đường ngay hôm nay để trải nghiệm vẻ đẹp Việt Nam</p>
+</div>
+
+<div class="tour-scroll-container">
+    <div class="tour-scroll-inner">
+        @foreach (var t in Model.Where(t => t.IsUuDai))
+        {
+            <div class="card tour-card me-3">
+                <a href="@Url.Action("DetailsTour", "Home", new { id = t.ID_Tour })" style="text-decoration: none; color: inherit;">
+                    <img src="~/Images/ImagesTour/@t.HinhAnh" class="card-img-top" alt="@t.TenTour" style="height: 200px; object-fit: cover;">
+                </a>
+                <div class="card-body d-flex flex-column">
+                    <a href="@Url.Action("DetailsTour", "Home", new { id = t.ID_Tour })" style="text-decoration: none; color: inherit;">
+                        <h5 class="card-title">@t.TenTour</h5>
+                    </a>
+
+                    <p class="card-text mb-2">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= t.SoSao)
+                            {
+                                <span style="color: gold;">&#9733;</span>
+                            }
+                            else
+                            {
+                                <span style="color: lightgray;">&#9733;</span>
+                            }
+                        }
+                    </p>
+
+                    <p class="card-text mb-1 text-muted">
+                        <i class="bi bi-geo-alt-fill me-1"></i>
+                        Khởi hành từ: @t.DiemKhoiHanh
+                    </p>
+
+                    <p class="card-text mb-1 text-muted" style="font-size: 0.85rem;">
+                        <i class="bi bi-clock me-1"></i>
+                        <strong>Thời gian:</strong> @t.SoNgay
+                    </p>
+
+                    <p class="card-text mb-1" style="color: blue;">@string.Format("{0:N0} VNĐ", t.Gia)</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+<div class="mb-5">
+    <h2 class="fw-bold">Điểm đến yêu thích</h2>
+</div>
+@{
+    var listDiaDiem = ViewBag.ListDiaDiem as List<TourDulich.ModelView.DiaDiemView>;
+    var top3 = listDiaDiem.Take(3).ToList();
+    var bottom6 = listDiaDiem.Skip(3).Take(6).ToList();
+}
+
+<div class="container my-5">
+    <div class="row mb-4">
+        @foreach (var item in top3)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="destination-card large">
+                    <img src="~/Images/ImagesDiaDiem/@item.Hinh" alt="@item.TenDiaDiem" />
+                    <div class="destination-overlay">
+                        <h5 class="mb-0">@item.TenDiaDiem</h5>
+                        <p style="font-size: 0.9rem;">Deal du lịch - Combo hot</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        @foreach (var item in bottom6)
+        {
+            <div class="col-md-2 mb-3">
+                <div class="destination-card small">
+                    <img src="~/Images/ImagesDiaDiem/@item.Hinh" alt="@item.TenDiaDiem" />
+                    <div class="destination-overlay">
+                        <strong>@item.TenDiaDiem</strong>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.tour-scroll-inner').forEach(slider => {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2; 
+            slider.scrollLeft = scrollLeft - walk;
+        });
+    });
+</script>
+
+
+

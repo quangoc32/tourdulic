@@ -1,0 +1,87 @@
+﻿@model List<TourDulich.ModelView.LichSuDatTourView>
+
+@{
+    ViewBag.Title = "Lịch sử đặt tour";
+}
+<div class="container my-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb shadow-sm bg-white p-3 rounded mb-0" style="font-size: 1rem;">
+            <li class="breadcrumb-item">
+                <a href="@Url.Action("Index", "Home")" class="text-decoration-none text-primary">
+                    <i></i>Trang chủ
+                </a>
+            </li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">
+                <i class="bi bi-chevron-right mx-1"></i>Lịch sử
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container mt-5 pt-1">
+    <h2 class="text-center mb-5 text-primary fw-bold">
+        <i class="bi bi-clock-history me-2"></i>Lịch sử đặt tour
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center shadow-sm rounded-3">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            Bạn chưa đặt tour nào.
+        </div>
+    }
+    else
+    {
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-header bg-primary text-white rounded-top-4">
+                <strong><i class="bi bi-receipt"></i> Danh sách các tour đã đặt</strong>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center align-middle mb-0">
+                        <thead class="table-light">
+                            <tr class="fw-semibold">
+                                <th>Đơn #</th>
+                                <th>Ngày đặt</th>
+                                <th>Tên tour</th>
+                                <th>Ngày khởi hành</th>
+                                <th>Số người</th>
+                                <th>Giá</th>
+                                <th>Thanh toán</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var don in Model)
+                            {
+                                foreach (var ct in don.ChiTietTours)
+                                {
+                                    <tr>
+                                        <td>@don.ID_DatTour</td>
+                                        <td>@(don.NgayDat?.ToString("dd/MM/yyyy"))</td>
+                                        <td>@ct.TenTour</td>
+                                        <td>@(ct.NgayKhoiHanh?.ToString("dd/MM/yyyy"))</td>
+                                        <td>@ct.SoLuongNguoi</td>
+                                        <td class="text-danger">@string.Format("{0:N0}₫", ct.Gia)</td>
+                                        <td>@ct.PhuongThucThanhToan</td>
+                                        <td>
+                                            <span class="badge bg-warning text-dark">@don.TrangThai</span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-footer text-end bg-light rounded-bottom-4 px-4 py-3">
+                <strong class="me-2">Tổng tiền toàn bộ:</strong>
+                <span class="fs-5 fw-bold text-danger">
+                    @string.Format("{0:N0}₫", Model.Sum(d => d.TongTien))
+                </span>
+            </div>
+        </div>
+    }
+</div>

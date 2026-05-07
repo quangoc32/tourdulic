@@ -1,0 +1,139 @@
+﻿@model IEnumerable<TourDulich.ModelView.TourStatusView>
+
+@{
+    ViewBag.Title = "Quản lý Lịch Trình Tour";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-center mb-4 pt-2">Quản lý Lịch Trình Tour</h2>
+
+<div class="d-flex justify-content-end mb-3">
+    <form method="get" action="@Url.Action("Index", "QuanlyLichTrinh")" class="d-flex w-25">
+        <input type="text" name="searchString" class="form-control me-2" placeholder="Tìm kiếm theo tên tour..." value="@ViewBag.SearchString" />
+        <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+    </form>
+</div>
+
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>STT</th>
+            <th>Tên Tour</th>
+            <th>Trạng thái lịch trình</th>
+            <th class="text-center">Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="4" class="text-center text-muted">Chưa có tour nào.</td>
+            </tr>
+        }
+        else
+        {
+            int stt = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@stt</td>
+                    <td>@item.TenTour</td>
+                    <td>
+                        @if (item.CoLichTrinh)
+                        {
+                            <span class="badge bg-success">Đã có lịch trình</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Chưa có lịch trình</span>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @if (item.CoLichTrinh)
+                        {
+                            <button class="btn btn-info btn-sm btnXemLichTrinh" data-id="@item.ID_Tour">Xem</button>
+                            <button class="btn btn-warning btn-sm btnSuaLichTrinh" data-id="@item.ID_Tour">Sửa</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success btn-sm btnThemLichTrinh" data-id="@item.ID_Tour">Thêm</button>
+                        }
+                    </td>
+                </tr>
+                stt++;
+            }
+        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="modalLichTrinh" tabindex="-1" aria-labelledby="modalLichTrinhLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 900px;">
+        <div class="modal-content" style="max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLichTrinhLabel">Chi tiết Lịch Trình</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body" id="contentLichTrinh">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $(".btnXemLichTrinh").click(function () {
+                const tourId = $(this).data("id");
+                $.get('@Url.Action("GetLichTrinhPartial", "QuanlyLichTrinh", new { area = "Admin" })', { id: tourId }, function (data) {
+                    $("#modalLichTrinhLabel").text("Chi tiết Lịch Trình");
+                    $("#contentLichTrinh").html(data);
+                    $("#modalLichTrinh").modal("show");
+                }).fail(() => alert("Không thể tải lịch trình."));
+            });
+
+            $(".btnSuaLichTrinh").click(function () {
+                const tourId = $(this).data("id");
+                $.get('@Url.Action("GetLichTrinhEditPartial", "QuanlyLichTrinh", new { area = "Admin" })', { id: tourId }, function (data) {
+                    $("#modalLichTrinhLabel").text("Sửa Lịch Trình");
+                    $("#contentLichTrinh").html(data);
+                    $("#modalLichTrinh").modal("show");
+                });
+            });
+
+            $(document).on("click", "#btnLuuLichTrinh", function () {
+                const form = $("#formSuaLichTrinh");
+                $.post('@Url.Action("SuaLichTrinhAjax", "QuanlyLichTrinh", new { area = "Admin" })', form.serialize(), function (res) {
+                    if (res.success) {
+                        alert("Cập nhật thành công!");
+                        $("#modalLichTrinh").modal("hide");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + res.message);
+                    }
+                }).fail(xhr => alert("Lỗi: " + xhr.responseText));
+            });
+
+            $(".btnThemLichTrinh").click(function () {
+                const tourId = $(this).data("id");
+                $.get('@Url.Action("ThemLichTrinh", "QuanlyLichTrinh", new { area = "Admin" })', { id: tourId }, function (html) {
+                    $("#modalLichTrinhLabel").text("Thêm Lịch Trình");
+                    $("#contentLichTrinh").html(html);
+                    $("#modalLichTrinh").modal("show");
+                });
+            });
+
+            $(document).on("click", "#btnLuuThemLichTrinh", function () {
+                const form = $("#formThemLichTrinh");
+                $.post('@Url.Action("ThemLichTrinhAjax", "QuanlyLichTrinh", new { area = "Admin" })', form.serialize(), function (res) {
+                    if (res.success) {
+                        alert("Thêm thành công!");
+                        $("#modalLichTrinh").modal("hide");
+                        location.reload();
+                    } else {
+                        alert("Lỗi khi thêm: " + res.message);
+                    }
+                }).fail(xhr => alert("Lỗi: " + xhr.responseText));
+            });
+        });
+    </script>
+}

@@ -1,0 +1,140 @@
+﻿@model TourDulich.ModelView.TourView
+
+@{
+    ViewBag.Title = "Thêm Tour";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="mb-4 text-primary pt-3">🛫 Thêm Tour Mới</h2>
+
+@using (Html.BeginForm("ThemTour", "QuanlyTour", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="card shadow p-4">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.TenTour, "Tên Tour")
+                    @Html.TextBoxFor(m => m.TenTour, new { @class = "form-control", autocomplete = "off", placeholder = "Nhập tên tour" })
+                    @Html.ValidationMessageFor(m => m.TenTour, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.MoTa, "Mô Tả")
+                    @Html.TextAreaFor(m => m.MoTa, new { @class = "form-control", rows = 5, placeholder = "Mô tả chi tiết về tour" })
+                    @Html.ValidationMessageFor(m => m.MoTa, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.Gia, "Giá Tour (VNĐ)")
+                    @Html.TextBoxFor(m => m.Gia, new { @class = "form-control", type = "number", placeholder = "Nhập giá tour" })
+                    @Html.ValidationMessageFor(m => m.Gia, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.SoNgay, "Số Ngày")
+                    @Html.TextBoxFor(m => m.SoNgay, new { @class = "form-control", autocomplete = "off", placeholder = "VD: 3" })
+                    @Html.ValidationMessageFor(m => m.SoNgay, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.Label("Danh Mục")
+                    @Html.DropDownListFor(m => m.ID_DanhMuc, ViewBag.ID_DanhMuc as SelectList, "-- Chọn Danh Mục --", new { @class = "form-select" })
+                    @Html.ValidationMessageFor(m => m.ID_DanhMuc, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3 form-check form-switch mt-4">
+                    @Html.CheckBoxFor(m => m.TrangThaiHoatDong, new { @class = "form-check-input", @checked = "checked" })
+                    <label class="form-check-label fw-bold" for="TrangThaiHoatDong">Đang hoạt động (Hiển thị cho khách hàng)</label>
+                </div>
+
+                <div class="form-group mb-3 form-check mt-3">
+                    @Html.CheckBoxFor(m => m.IsGiaTot, new { @class = "form-check-input" })
+                    <label class="form-check-label fw-bold" for="IsGiaTot">Đánh dấu là: Tour Có Giá Tốt</label>
+                </div>
+
+                <div class="form-group mb-3 form-check mt-2">
+                    @Html.CheckBoxFor(m => m.IsUuDai, new { @class = "form-check-input" })
+                    <label class="form-check-label fw-bold" for="IsUuDai">Đánh dấu là: Tour Có Ưu Đãi</label>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.DiemKhoiHanh, "Điểm Khởi Hành")
+                    @Html.TextBoxFor(m => m.DiemKhoiHanh, new { @class = "form-control", autocomplete = "off", placeholder = "VD: Hà Nội" })
+                    @Html.ValidationMessageFor(m => m.DiemKhoiHanh, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.PhuongTien, "Phương Tiện")
+                    @Html.TextBoxFor(m => m.PhuongTien, new { @class = "form-control", autocomplete = "off", placeholder = "VD: Máy bay, Xe khách" })
+                    @Html.ValidationMessageFor(m => m.PhuongTien, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.SoLuongToiDa, "Số Lượng Tối Đa")
+                    @Html.TextBoxFor(m => m.SoLuongToiDa, new { @class = "form-control", type = "number", placeholder = "VD: 20" })
+                    @Html.ValidationMessageFor(m => m.SoLuongToiDa, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.Label("Địa Điểm")
+                    @Html.DropDownListFor(m => m.ID_DiaDiem, ViewBag.ID_DiaDiem as SelectList, "-- Chọn Địa Điểm --", new { @class = "form-select" })
+                    @Html.ValidationMessageFor(m => m.ID_DiaDiem, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.Label("Ảnh Đại Diện (1 ảnh)")
+                    <input type="file" id="AnhDaiDien" name="AnhDaiDien" accept="image/*" class="form-control" />
+                    <div id="previewAnhDaiDien" class="mt-2"></div>
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.Label("Ảnh Phụ (nhiều ảnh)")
+                    <input type="file" id="AnhPhu" name="AnhPhu" accept="image/*" multiple class="form-control" />
+                    <div id="previewAnhPhu" class="mt-2 d-flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group mt-4 text-end">
+            <input type="submit" value="➕ Thêm Tour" class="btn btn-success px-4" />
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('AnhDaiDien').addEventListener('change', function (e) {
+            const preview = document.getElementById('previewAnhDaiDien');
+            preview.innerHTML = '';
+            const file = e.target.files[0];
+            if (file) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.style.maxWidth = '200px';
+                img.style.maxHeight = '150px';
+                img.classList.add('img-thumbnail');
+                preview.appendChild(img);
+            }
+        });
+
+        document.getElementById('AnhPhu').addEventListener('change', function (e) {
+            const preview = document.getElementById('previewAnhPhu');
+            preview.innerHTML = '';
+            const files = e.target.files;
+
+            Array.from(files).forEach(file => {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.style.width = '100px';
+                img.style.height = '80px';
+                img.style.objectFit = 'cover';
+                img.classList.add('img-thumbnail');
+                preview.appendChild(img);
+            });
+        });
+    </script>
+}
