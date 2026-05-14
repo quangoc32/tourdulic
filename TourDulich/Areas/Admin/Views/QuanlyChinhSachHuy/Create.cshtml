@@ -1,0 +1,39 @@
+@model TourDulich.Models.ChinhSachHuy
+@{
+    bool isEdit = Model.ID_ChinhSach > 0;
+    ViewBag.Title = isEdit ? "Sửa Chính sách" : "Thêm Chính sách";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-center mb-4 pt-2">@(isEdit ? "✏️ Sửa" : "➕ Thêm") Chính sách Hủy</h2>
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                @{ var action = isEdit ? "Edit" : "Create"; }
+                @using (Html.BeginForm(action, "QuanlyChinhSachHuy", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.ID_ChinhSach)
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Hủy trước bao nhiêu ngày <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.SoNgayTuHuy, new { @class = "form-control", type = "number", min = "0" })
+                        <small class="text-muted">VD: 7 = áp dụng khi hủy trước 7 ngày trở lên</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">% Hoàn tiền (0–100) <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.PhanTramHoan, new { @class = "form-control", type = "number", min = "0", max = "100" })
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mô tả</label>
+                        @Html.TextBoxFor(m => m.MoTa, new { @class = "form-control", placeholder = "VD: Hủy trước 7 ngày: hoàn 70%" })
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i> Lưu</button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

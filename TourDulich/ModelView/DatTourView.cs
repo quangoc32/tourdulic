@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -15,8 +15,16 @@ namespace TourDulich.ModelView
         public string TrangThai { get; set; }
         public string GhiChu { get; set; }
 
+        // Loại đặt (Khách lẻ / Đoàn)
+        public string LoaiDat { get; set; }
+        public bool LaDoan => LoaiDat == "Đoàn";
+        public string TruongDoan { get; set; }
+        public string SdtTruongDoan { get; set; }
+        public string GhiChuDoan { get; set; }
+
         // Chi tiết
         public List<ChiTietDatTour> ChiTietTours { get; set; }
     }
+
 
 }

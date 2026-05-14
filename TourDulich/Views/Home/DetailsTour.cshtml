@@ -1,4 +1,4 @@
-﻿@model TourDulich.ModelView.TourView
+@model TourDulich.ModelView.TourView
 
 @{
     ViewBag.Title = "DetailsTour";
@@ -282,7 +282,7 @@
         </div>
 
         <div class="col-lg-3 d-flex justify-content-center">
-            <div class="card p-4 shadow rounded-4 border-0" style="max-width: 360px; width: 100%; max-height: 550px; overflow-y: auto;">
+            <div class="card p-4 shadow rounded-4 border-0" style="max-width: 360px; width: 100%; max-height: 650px; overflow-y: auto;">
                 <h4 class="mb-3 text-center fw-bold text-primary">Đặt Tour Ngay</h4>
 
                 <div class="text-center mb-2">
@@ -292,88 +292,220 @@
                     </span>
                 </div>
 
-                <div class="text-center mb-4">
+                <div class="text-center mb-3">
                     <small class="text-muted fst-italic">Mã tour: <span class="fw-semibold text-dark">@Model.ID_Tour</span></small>
                 </div>
 
+                <!-- Toggle Khách lẻ / Đoàn -->
+                <div class="btn-group w-100 mb-3" role="group">
+                    <input type="radio" class="btn-check" name="loaiDatToggle" id="radioKhachLe" checked>
+                    <label class="btn btn-outline-primary" for="radioKhachLe">
+                        <i class="bi bi-person-fill me-1"></i> Khách lẻ
+                    </label>
+                    <input type="radio" class="btn-check" name="loaiDatToggle" id="radioDoan">
+                    <label class="btn btn-outline-success" for="radioDoan">
+                        <i class="bi bi-people-fill me-1"></i> Đoàn (≥10)
+                    </label>
+                </div>
+
                 <form method="post" action="@Url.Action("DatTourTam", "Home")" id="formDatTour">
+                    <input type="hidden" name="TourId" value="@Model.ID_Tour" />
+                    <input type="hidden" name="LoaiDat" id="hiddenLoaiDat" value="Khách lẻ" />
+
+                    <!-- Dropdown chọn ngày khởi hành -->
                     <div class="mb-3">
-                        <label for="selectedDate" class="form-label fw-semibold">Chọn ngày khởi hành</label>
-                        <input type="date"
-                               class="form-control"
-                               id="selectedDate"
-                               name="SelectedDate"
-                               required
-                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        <label class="form-label fw-semibold">Chọn ngày khởi hành</label>
+                        <select class="form-select" id="selectedDateSelect" name="SelectedDate" required>
+                            <option value="">-- Đang tải lịch khởi hành... --</option>
+                        </select>
+                        <small class="text-muted" id="slotInfo"></small>
                     </div>
 
+                    <!-- Số lượng vé -->
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Số lượng vé</label>
+                        <label class="form-label fw-semibold">Số lượng <span id="lblLoai" class="text-muted">(người)</span></label>
                         <div class="input-group">
                             <button class="btn btn-outline-secondary" type="button" id="btnDecrement">-</button>
-                            <input type="number"
-                                   class="form-control text-center fw-bold"
-                                   id="ticketQuantity"
-                                   name="TicketQuantity"
-                                   value="1"
-                                   min="1"
-                                   max="@Model.SoLuongToiDa"
-                                   readonly />
+                            <input type="number" class="form-control text-center fw-bold"
+                                   id="ticketQuantity" name="TicketQuantity"
+                                   value="1" min="1" readonly />
                             <button class="btn btn-outline-secondary" type="button" id="btnIncrement">+</button>
                         </div>
-                        <small class="text-muted mt-1 d-block">Tối đa còn: @Model.SoLuongToiDa vé</small>
+                        <small id="validationMsg" class="text-danger d-none fw-semibold mt-1 d-block"></small>
+                        <small class="text-muted mt-1 d-block" id="slotRemaining"></small>
                     </div>
 
-                    <div class="mb-4">
+                    <!-- Tổng tiền -->
+                    <div class="mb-3">
                         <label class="form-label fw-semibold">Tổng tiền dự kiến</label>
-                        <div class="text-success fw-bold fs-5" id="totalPrice">
-                            @string.Format("{0:N0} VNĐ", Model.Gia)
+                        <div class="text-success fw-bold fs-5" id="totalPrice">-- VNĐ</div>
+                    </div>
+
+                    <!-- Thông tin trưởng đoàn (chỉ hiện khi chọn Đoàn) -->
+                    <div id="sectionDoan" class="d-none">
+                        <hr class="my-2">
+                        <div class="alert alert-info py-2 small mb-2">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Đặt đoàn sẽ ở trạng thái <strong>"Chờ xác nhận"</strong>. Nhân viên liên hệ trưởng đoàn trong 24 giờ.
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Họ tên trưởng đoàn <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="truongDoan" name="TruongDoan" placeholder="Nguyễn Văn A" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">SĐT trưởng đoàn <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="sdtTruongDoan" name="SdtTruongDoan" placeholder="09xxxxxxxx" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Ghi chú yêu cầu</label>
+                            <textarea class="form-control" name="GhiChuDoan" rows="2" placeholder="Yêu cầu đặc biệt, xe riêng..."></textarea>
                         </div>
                     </div>
 
-                    <input type="hidden" name="TourId" value="@Model.ID_Tour" />
-                    <input type="hidden" name="Gia" value="@Model.Gia" />
-                    <input type="hidden" name="TenTour" value="@Model.TenTour" />
-                    <input type="hidden" name="HinhAnh" value="@Model.HinhAnh" />
-
-                    <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">
+                    <button type="submit" class="btn btn-primary w-100 fw-semibold py-2" id="btnDatTour">
                         Đặt Tour
                     </button>
                 </form>
+
+                <!-- Chính sách hủy tour -->
+                <div class="mt-3 p-3 rounded-3" style="background:#fff8e1; border:1px solid #ffe082; font-size:0.82rem;">
+                    <div class="fw-bold text-warning mb-2">
+                        <i class="bi bi-shield-exclamation me-1"></i>Chính sách hủy tour
+                    </div>
+                    <ul class="mb-0 ps-3 text-secondary" style="line-height:1.7">
+                        <li>Yêu cầu hủy chỉ được gửi <strong>sau 5 ngày</strong> kể từ ngày đặt.</li>
+                        <li>Phải hủy trước ngày khởi hành <strong>ít nhất 7 ngày</strong>.</li>
+                        <li>Tỷ lệ hoàn tiền tùy theo thời điểm hủy (do nhân viên thông báo).</li>
+                        <li>Hoàn tiền qua <strong>chuyển khoản ngân hàng</strong>.</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
 
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const btnDecrement = document.getElementById('btnDecrement');
-                const btnIncrement = document.getElementById('btnIncrement');
-                const ticketQuantity = document.getElementById('ticketQuantity');
-                const totalPrice = document.getElementById('totalPrice');
-                const pricePerTicket = parseFloat("@Model.Gia");
+        document.addEventListener("DOMContentLoaded", function () {
+            const tourId = @Model.ID_Tour;
+            const pricePerTicket = @((Model.Gia ?? 0).ToString("F0", System.Globalization.CultureInfo.InvariantCulture));
+            const radioKhachLe  = document.getElementById('radioKhachLe');
+            const radioDoan     = document.getElementById('radioDoan');
+            const hiddenLoaiDat = document.getElementById('hiddenLoaiDat');
+            const sectionDoan   = document.getElementById('sectionDoan');
+            const ticketQty     = document.getElementById('ticketQuantity');
+            const btnDec        = document.getElementById('btnDecrement');
+            const btnInc        = document.getElementById('btnIncrement');
+            const totalPriceEl  = document.getElementById('totalPrice');
+            const validationMsg = document.getElementById('validationMsg');
+            const slotRemainingEl = document.getElementById('slotRemaining');
+            const selectDate    = document.getElementById('selectedDateSelect');
+            const btnDatTour    = document.getElementById('btnDatTour');
+            let maxSlot = 99;
+            let isDoan  = false;
 
-                btnDecrement.addEventListener('click', function () {
-                    let currentValue = parseInt(ticketQuantity.value);
-                    if (currentValue > 1) {
-                        ticketQuantity.value = currentValue - 1;
-                        updateTotal();
-                    }
-                });
+            // Load danh sách ngày khởi hành
+            function loadDates() {
+                var apiUrl = '@Url.Action("GetAvailableDates", "Home")';
 
-                btnIncrement.addEventListener('click', function () {
-                    let currentValue = parseInt(ticketQuantity.value);
-                    if (currentValue < parseInt("@Model.SoLuongToiDa")) {
-                        ticketQuantity.value = currentValue + 1;
-                        updateTotal();
-                    }
-                });
+                // Dùng API của Home để lấy ngày
+            fetch(apiUrl + '?tourId=' + tourId)
+                    .then(r => r.json())
+                    .then(data => {
+                        selectDate.innerHTML = '<option value="">-- Chọn ngày khởi hành --</option>';
+                        if (!data || data.length === 0) {
+                            selectDate.innerHTML = '<option value="">Hiện chưa có lịch khởi hành</option>';
+                            return;
+                        }
+                        data.forEach(function(item) {
+                            var d = new Date(item.ngay);
+                            var label = d.toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
+                            var conLaiText = '';
+                            if (!isDoan) {
+                                if (item.conLai <= 0) { return; } // Khách lẻ: bỏ qua ngày hết chỗ
+                                conLaiText = item.saptHet
+                                    ? ' – ⚠️ Sắp hết (' + item.conLai + ' chỗ)'
+                                    : ' – Còn ' + item.conLai + ' chỗ';
+                            } else {
+                                conLaiText = item.conLai > 0
+                                    ? ' – Còn ' + item.conLai + ' chỗ lẻ'
+                                    : ' – Hết slot lẻ (đoàn vẫn đặt được)';
+                            }
+                            var opt = document.createElement('option');
+                            opt.value = item.ngay;
+                            var badgeMua = item.tenMua ? ' [' + item.tenMua + ']' : '';
+                            opt.textContent = label + badgeMua + conLaiText;
+                            opt.dataset.conlai = item.conLai;
+                            opt.dataset.hesogia = item.heSoGia;
+                            selectDate.appendChild(opt);
+                        });
+                        onDateChange();
+                    })
+                    .catch(function() {
+                        selectDate.innerHTML = '<option value="">Lỗi tải lịch, thử lại sau</option>';
+                    });
+            }
 
-                function updateTotal() {
-                    let quantity = parseInt(ticketQuantity.value);
-                    let total = quantity * pricePerTicket;
-                    totalPrice.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
-                }
+            function onDateChange() {
+                var sel = selectDate.options[selectDate.selectedIndex];
+                if (!sel || !sel.dataset.conlai) { maxSlot = isDoan ? 999 : 1; return; }
+                var c = parseInt(sel.dataset.conlai);
+                var heSoGia = parseFloat(sel.dataset.hesogia) || 1.0;
+                window.currentHeSoGia = heSoGia;
+                maxSlot = isDoan ? 999 : (c > 0 ? c : 1);
+                slotRemainingEl.textContent = isDoan ? '' : ('Tối đa còn: ' + c + ' chỗ');
+                ticketQty.value = isDoan ? 10 : 1;
+                updateTotal();
+                validate();
+            }
+
+            selectDate.addEventListener('change', onDateChange);
+
+            // Toggle khách lẻ / đoàn
+            function onToggleChange() {
+                isDoan = radioDoan.checked;
+                hiddenLoaiDat.value = isDoan ? 'Đoàn' : 'Khách lẻ';
+                sectionDoan.classList.toggle('d-none', !isDoan);
+                document.getElementById('truongDoan').required = isDoan;
+                document.getElementById('sdtTruongDoan').required = isDoan;
+                ticketQty.value = isDoan ? 10 : 1;
+                loadDates();
+            }
+            radioKhachLe.addEventListener('change', onToggleChange);
+            radioDoan.addEventListener('change', onToggleChange);
+
+            // Tăng giảm số lượng
+            btnDec.addEventListener('click', function () {
+                var v = parseInt(ticketQty.value);
+                var minVal = isDoan ? 10 : 1;
+                if (v > minVal) { ticketQty.value = v - 1; updateTotal(); validate(); }
             });
+            btnInc.addEventListener('click', function () {
+                var v = parseInt(ticketQty.value);
+                if (v < maxSlot) { ticketQty.value = v + 1; updateTotal(); validate(); }
+            });
+
+            function validate() {
+                var qty = parseInt(ticketQty.value) || 0;
+                var msg = '';
+                if (isDoan && qty < 10) msg = 'Đặt đoàn tối thiểu 10 người.';
+                else if (!isDoan && qty > maxSlot) msg = 'Vượt quá số chỗ còn lại (' + maxSlot + ' chỗ).';
+                validationMsg.textContent = msg;
+                validationMsg.classList.toggle('d-none', !msg);
+                btnDatTour.disabled = !!msg;
+            }
+
+            function updateTotal() {
+                var qty = parseInt(ticketQty.value) || 0;
+                var heSo = window.currentHeSoGia || 1.0;
+                var total = qty * pricePerTicket * heSo;
+                totalPriceEl.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
+                if (heSo != 1.0) {
+                    totalPriceEl.innerHTML += ' <small class="text-danger">(Đã áp dụng giá mùa cao điểm/khuyến mãi)</small>';
+                }
+            }
+
+            // Load lần đầu
+            loadDates();
+        });
         </script>
 
     </div>

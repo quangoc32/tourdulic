@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
@@ -150,11 +150,23 @@
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyLichTrinh" ? "active" : "")" href="@Url.Action("Index", "QuanlyLichTrinh")">
                 <i class="bi bi-journal-check me-2"></i>Lịch Trình Tour
             </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyLichKhoiHanh" ? "active" : "")" href="@Url.Action("Index", "QuanlyLichKhoiHanh")">
+                <i class="bi bi-calendar-check-fill me-2"></i> Lịch Khởi Hành
+            </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyDatTour" ? "active" : "")" href="@Url.Action("DanhSachDatTour", "QuanlyDatTour")">
                 <i class="bi bi-journal-check me-2"></i> Quản lý Đặt Tour
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyNguoidung" ? "active" : "")" href="@Url.Action("Index", "QuanlyNguoidung")">
                 <i class="bi bi-people-fill me-2"></i> Quản lý Người dùng
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyMuaGia" ? "active" : "")" href="@Url.Action("Index", "QuanlyMuaGia")">
+                <i class="bi bi-tags me-2"></i> Quản lý Mùa Giá
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyChinhSachHuy" ? "active" : "")" href="@Url.Action("Index", "QuanlyChinhSachHuy")">
+                <i class="bi bi-shield-exclamation me-2"></i> Chính Sách Hủy
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyYeuCauHuy" ? "active" : "")" href="@Url.Action("Index", "QuanlyYeuCauHuy")">
+                <i class="bi bi-x-circle-fill me-2"></i> Yêu Cầu Hủy Tour
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyDiaDiem" ? "active" : "")" href="@Url.Action("Index", "QuanlyDiaDiem")">
                 <i class="bi bi-pin-map-fill me-2"></i> Quản lý Địa Điểm

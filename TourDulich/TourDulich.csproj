@@ -131,13 +131,17 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DangnhapController.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeAdminController.cs" />
+    <Compile Include="Areas\Admin\Controllers\QuanlyChinhSachHuyController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyDatTourController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyDiaDiemController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyDanhMucController.cs" />
+    <Compile Include="Areas\Admin\Controllers\QuanlyLichKhoiHanhController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyLienHeController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyLichTrinhController.cs" />
+    <Compile Include="Areas\Admin\Controllers\QuanlyMuaGiaController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyNguoidungController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyTourController.cs" />
+    <Compile Include="Areas\Admin\Controllers\QuanlyYeuCauHuyController.cs" />
     <Compile Include="Areas\Admin\Filters\AdminAuthorizeAttribute.cs" />
     <Compile Include="Controllers\GioiThieuController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -158,11 +162,16 @@
     <Compile Include="Models\ModelDB.cs" />
     <Compile Include="Models\NguoiDung.cs" />
     <Compile Include="Models\Tour.cs" />
+    <Compile Include="Models\ChinhSachHuy.cs" />
+    <Compile Include="Models\LichKhoiHanh.cs" />
     <Compile Include="Models\LienHe.cs" />
+    <Compile Include="Models\MuaGia.cs" />
+    <Compile Include="Models\YeuCauHuy.cs" />
     <Compile Include="ModelView\ChiTietLichSuTourView.cs" />
     <Compile Include="ModelView\DanhGiaView.cs" />
     <Compile Include="ModelView\DatTourView.cs" />
     <Compile Include="ModelView\DiaDiemView.cs" />
+    <Compile Include="ModelView\LichKhoiHanhView.cs" />
     <Compile Include="ModelView\LichSuDatTourView.cs" />
     <Compile Include="ModelView\LichTrinhTourView.cs" />
     <Compile Include="ModelView\ThanhToanView.cs" />
@@ -261,6 +270,17 @@
     <Content Include="Views\GioiThieu\Index.cshtml" />
     <Content Include="Views\Tintuc\Index.cshtml" />
     <Content Include="Views\LienHe\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyChinhSachHuy\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyChinhSachHuy\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyChinhSachHuy\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyLichKhoiHanh\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyLichKhoiHanh\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyLichKhoiHanh\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyMuaGia\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyMuaGia\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyMuaGia\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyYeuCauHuy\Index.cshtml" />
+    <Content Include="Scripts\migration_slot_price_cancel.sql" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

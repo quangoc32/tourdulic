@@ -1,0 +1,117 @@
+@model IEnumerable<TourDulich.Models.MuaGia>
+@{
+    ViewBag.Title = "Quản lý Mùa Giá";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-center mb-4 pt-2">💰 Quản lý Mùa Giá</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="d-flex justify-content-end mb-3">
+    <a href="@Url.Action("Create")" class="btn btn-success">
+        <i class="bi bi-plus-circle-fill me-1"></i> Thêm mùa giá
+    </a>
+</div>
+
+<div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>
+    Mùa giá áp dụng <strong>toàn site</strong>. Hệ số giá: <code>1.00</code> = giá gốc, <code>1.30</code> = +30%, <code>0.80</code> = giảm 20%.
+</div>
+
+<table class="table table-bordered table-hover text-center align-middle">
+    <thead class="thead-dark">
+        <tr>
+            <th>Tên mùa</th>
+            <th>Từ ngày</th>
+            <th>Đến ngày</th>
+            <th>Hệ số giá</th>
+            <th>Tác động</th>
+            <th>Trạng thái</th>
+            <th>Mô tả</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@(item.DangApDung ? "table-warning" : "")">
+                <td class="fw-bold">
+                    @item.TenMua
+                    @if (item.DangApDung)
+                    {
+                        <span class="badge bg-danger ms-1">Đang áp dụng</span>
+                    }
+                </td>
+                <td>@item.NgayBatDau.ToString("dd/MM/yyyy")</td>
+                <td>@item.NgayKetThuc.ToString("dd/MM/yyyy")</td>
+                <td><code>×@item.HeSoGia</code></td>
+                <td>
+                    @if (item.HeSoGia > 1)
+                    {
+                        <span class="badge bg-danger">🔺 +@(((item.HeSoGia - 1) * 100).ToString("0"))%</span>
+                    }
+                    else if (item.HeSoGia < 1)
+                    {
+                        <span class="badge bg-success">🔻 -@(((1 - item.HeSoGia) * 100).ToString("0"))%</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Giá gốc</span>
+                    }
+                </td>
+                <td>
+                    <button class="btn btn-sm @(item.IsActive ? "btn-success" : "btn-secondary") btnToggle"
+                            data-id="@item.ID_MuaGia">
+                        @(item.IsActive ? "Bật" : "Tắt")
+                    </button>
+                </td>
+                <td class="text-muted small text-start">@item.MoTa</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = item.ID_MuaGia })" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <button class="btn btn-danger btn-sm btnXoa" data-id="@item.ID_MuaGia">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+        @if (!Model.Any())
+        {
+            <tr><td colspan="8" class="text-muted py-4">Chưa có mùa giá nào.</td></tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+<script>
+$(function () {
+    $(".btnToggle").click(function () {
+        var id = $(this).data("id");
+        var btn = $(this);
+        $.post('@Url.Action("ToggleActive")', { id: id }, function (res) {
+            if (res.success) {
+                btn.text(res.isActive ? "Bật" : "Tắt");
+                btn.toggleClass("btn-success", res.isActive).toggleClass("btn-secondary", !res.isActive);
+            }
+        });
+    });
+
+    $(".btnXoa").click(function () {
+        if (!confirm("Xóa mùa giá này?")) return;
+        var id = $(this).data("id");
+        $.post('@Url.Action("Delete")', { id: id }, function (res) {
+            if (res.success) location.reload();
+            else alert("Lỗi: " + res.message);
+        });
+    });
+});
+</script>
+}

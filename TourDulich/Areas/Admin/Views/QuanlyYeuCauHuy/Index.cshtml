@@ -1,0 +1,205 @@
+@model IEnumerable<TourDulich.ModelView.YeuCauHuyView>
+@{
+    ViewBag.Title = "Xử lý Yêu Cầu Hủy Tour";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-center mb-4 pt-2">🚫 Yêu Cầu Hủy Tour</h2>
+
+@if (ViewBag.SoPending > 0)
+{
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Có <strong>@ViewBag.SoPending</strong> yêu cầu đang chờ xử lý!
+    </div>
+}
+
+<div class="mb-3 d-flex gap-2">
+    <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm @(ViewBag.TrangThai == null ? "active" : "")">Tất cả</a>
+    <a href="@Url.Action("Index", new { trangThai = "Chờ xử lý" })" class="btn btn-warning btn-sm @(ViewBag.TrangThai == "Chờ xử lý" ? "active" : "")">Chờ xử lý</a>
+    <a href="@Url.Action("Index", new { trangThai = "Chấp thuận" })" class="btn btn-success btn-sm @(ViewBag.TrangThai == "Chấp thuận" ? "active" : "")">Chấp thuận</a>
+    <a href="@Url.Action("Index", new { trangThai = "Từ chối" })" class="btn btn-danger btn-sm @(ViewBag.TrangThai == "Từ chối" ? "active" : "")">Từ chối</a>
+</div>
+
+<table class="table table-bordered table-hover align-middle">
+    <thead class="thead-dark text-center">
+        <tr>
+            <th>Khách hàng</th>
+            <th>Ngày gửi</th>
+            <th>Ngày KH sớm nhất</th>
+            <th>Còn lại</th>
+            <th>Tổng tiền đơn</th>
+            <th>Lý do</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <strong>@item.TenNguoiDung</strong><br/>
+                    <small class="text-muted">@item.SoDienThoai</small>
+                </td>
+                <td class="text-center">@(item.NgayGui?.ToString("dd/MM/yyyy HH:mm"))</td>
+                <td class="text-center">
+                    @if (item.NgayKhoiHanhSom.HasValue)
+                    {
+                        @item.NgayKhoiHanhSom.Value.ToString("dd/MM/yyyy")
+                    }
+                </td>
+                <td class="text-center">
+                    @if (item.SoNgayConLai.HasValue)
+                    {
+                        if (item.SoNgayConLai < 0)
+                        {
+                            <span class="badge bg-secondary">Đã qua</span>
+                        }
+                        else if (item.SoNgayConLai <= 3)
+                        {
+                            <span class="badge bg-danger">@item.SoNgayConLai ngày</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-info text-dark">@item.SoNgayConLai ngày</span>
+                        }
+                    }
+                </td>
+                <td class="text-center"><strong>@(item.TongTienDatTour?.ToString("N0"))</strong> đ</td>
+                <td class="small text-muted" style="max-width:200px">@item.LyDo</td>
+                <td class="text-center">
+                    @if (item.TrangThai == "Chờ xử lý")
+                    {
+                        <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                    }
+                    else if (item.TrangThai == "Chấp thuận")
+                    {
+                        <span class="badge bg-success">✅ Chấp thuận</span>
+                        <br/><small class="text-muted">Hoàn @item.PhanTramHoan% = @(item.TienHoan?.ToString("N0"))đ</small>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">❌ Từ chối</span>
+                    }
+                </td>
+                <td class="text-center">
+                    @if (item.TrangThai == "Chờ xử lý")
+                    {
+                        <button class="btn btn-primary btn-sm btnXuLy"
+                                data-id="@item.ID_YeuCauHuy"
+                                data-tongtien="@item.TongTienDatTour"
+                                data-songay="@item.SoNgayConLai"
+                                data-phantram="@item.PhanTramHoan"
+                                data-tienhoan="@item.TienHoan">
+                            <i class="bi bi-gear"></i> Xử lý
+                        </button>
+                    }
+                    else
+                    {
+                        <small class="text-muted">@(item.NgayXuLy?.ToString("dd/MM"))</small>
+                    }
+                </td>
+            </tr>
+        }
+        @if (!Model.Any())
+        {
+            <tr><td colspan="8" class="text-center text-muted py-4">Không có yêu cầu nào.</td></tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal xử lý -->
+<div class="modal fade" id="modalXuLy" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:15px">
+            <div class="modal-header bg-primary text-white" style="border-radius:15px 15px 0 0">
+                <h5 class="modal-title"><i class="bi bi-gear-fill me-2"></i>Xử lý yêu cầu hủy</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="xulY_Id" />
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Quyết định</label>
+                    <select class="form-select" id="xuly_TrangThai">
+                        <option value="Chấp thuận">✅ Chấp thuận — cho hủy</option>
+                        <option value="Từ chối">❌ Từ chối — giữ nguyên đơn</option>
+                    </select>
+                </div>
+                <div id="blockHoan">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">% Hoàn tiền (đã tính tự động)</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control bg-light" id="xuly_PhanTram" readonly />
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <small id="goiYChinhSach" class="text-info"></small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Số tiền hoàn (đ)</label>
+                        <input type="text" class="form-control bg-light text-danger fw-bold" id="xuly_TienHoan_Display" readonly />
+                        <input type="hidden" id="xuly_TienHoan" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ghi chú cho khách</label>
+                    <textarea class="form-control" id="xuly_GhiChu" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="btnXacNhanXuLy">
+                    <i class="bi bi-check-circle me-1"></i> Xác nhận
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+var tongTienHienTai = 0;
+
+$(".btnXuLy").click(function () {
+    var id       = $(this).data("id");
+    var phanTram = parseFloat($(this).data("phantram")) || 0;
+    var tienHoan = parseFloat($(this).data("tienhoan")) || 0;
+
+    $("#xulY_Id").val(id);
+    $("#xuly_GhiChu").val("");
+
+    // Hiển thị trực tiếp các giá trị đã được tính toán từ lúc gửi yêu cầu
+    $("#xuly_PhanTram").val(phanTram);
+    $("#xuly_TienHoan").val(tienHoan);
+    
+    // Định dạng số tiền hiển thị cho đẹp (VD: 1,500,000)
+    $("#xuly_TienHoan_Display").val(tienHoan.toLocaleString('vi-VN'));
+    $("#goiYChinhSach").text("Số tiền hoàn đã được hệ thống tính toán tự động lúc khách hàng gửi yêu cầu.");
+
+    $("#modalXuLy").modal("show");
+});
+
+$("#xuly_TrangThai").change(function () {
+    var isChapta = $(this).val() === "Chấp thuận";
+    $("#blockHoan").toggle(isChapta);
+});
+
+$("#btnXacNhanXuLy").click(function () {
+    var trangThai = $("#xuly_TrangThai").val();
+    $.post('@Url.Action("XuLy", "QuanlyYeuCauHuy", new { area = "Admin" })', {
+        ID_YeuCauHuy : $("#xulY_Id").val(),
+        TrangThai    : trangThai,
+        PhanTramHoan : trangThai === "Chấp thuận" ? $("#xuly_PhanTram").val() : 0,
+        TienHoan     : trangThai === "Chấp thuận" ? $("#xuly_TienHoan").val() : 0,
+        GhiChuAdmin  : $("#xuly_GhiChu").val()
+    }, function (res) {
+        if (res.success) {
+            $("#modalXuLy").modal("hide");
+            location.reload();
+        } else {
+            alert("Lỗi: " + res.message);
+        }
+    });
+});
+</script>
+}

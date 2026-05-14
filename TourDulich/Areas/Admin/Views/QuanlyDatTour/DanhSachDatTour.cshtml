@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "Quản lý Đặt Tour";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
@@ -18,6 +18,7 @@
             <th>Người Đặt</th>
             <th>Ngày Đặt</th>
             <th>Tổng Tiền</th>
+            <th>Loại đặt</th>
             <th>Trạng Thái</th>
             <th>Hành động</th>
         </tr>
@@ -25,27 +26,46 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>@item.TenNguoiDung</td>
+            <tr class="@(item.LaDoan ? "table-success" : "")"> 
+                <td>
+                    @item.TenNguoiDung
+                    @if (item.LaDoan && !string.IsNullOrEmpty(item.TruongDoan))
+                    {
+                        <br /><small class="text-muted"><i class="bi bi-person-badge me-1"></i>Trưởng đoàn: <strong>@item.TruongDoan</strong> – @item.SdtTruongDoan</small>
+                    }
+                </td>
                 <td>@item.NgayDat.ToString("dd/MM/yyyy")</td>
                 <td><strong>@item.TongTien.ToString("N0")</strong> VNĐ</td>
                 <td>
-                    @if (item.TrangThai == "Chờ xử lý")
+                    @if (item.LaDoan)
+                    {
+                        <span class="badge bg-success"><i class="bi bi-people-fill me-1"></i>Đoàn</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary"><i class="bi bi-person-fill me-1"></i>Khách lẻ</span>
+                    }
+                </td>
+                <td>
+                    @if (item.TrangThai == "Chờ xử lý" || item.TrangThai == "Yêu cầu đoàn - Chờ xác nhận")
                     {
                         <span class="badge" style="background-color: #f1c40f; color: #000;">@item.TrangThai</span>
                     }
                     else if (item.TrangThai == "Đã xác nhận")
                     {
-                        <span class="badge" style="background-color: #00ff21; color: #000;">@item.TrangThai</span>
+                        <span class="badge" style="background-color: #00c851; color: #fff;">@item.TrangThai</span>
                     }
                     else
                     {
-                <span class="badge" style="background-color: #ff0000; color: #000;">@item.TrangThai</span>
+                        <span class="badge" style="background-color: #ff0000; color: #fff;">@item.TrangThai</span>
                     }
                 </td>
                 <td>
                     <button class="btn btn-info btn-sm btnChiTiet" data-id="@item.ID_DatTour">Chi tiết</button>
-                    <button class="btn btn-warning btn-sm btnSuaTrangThai" data-id="@item.ID_DatTour">Cập nhật</button>
+                    @if (item.TrangThai != "Đã hủy")
+                    {
+                        <button class="btn btn-warning btn-sm btnSuaTrangThai" data-id="@item.ID_DatTour">Cập nhật</button>
+                    }
                     <button class="btn btn-danger btn-sm btnXoaDatTour" data-id="@item.ID_DatTour">Xóa</button>
                 </td>
             </tr>
@@ -79,6 +99,7 @@
                         <label class="form-label fw-bold">Trạng Thái</label>
                         <select name="TrangThai" class="form-select" id="inputTrangThai">
                             <option>Chờ xử lý</option>
+                            <option>Yêu cầu đoàn - Chờ xác nhận</option>
                             <option>Đã xác nhận</option>
                             <option>Đã hủy</option>
                         </select>

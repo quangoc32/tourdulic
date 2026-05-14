@@ -22,6 +22,10 @@ namespace TourDulich.Models
         public virtual DbSet<NguoiDung> NguoiDungs { get; set; }
         public virtual DbSet<Tour> Tours { get; set; }
         public virtual DbSet<LienHe> LienHes { get; set; }
+        public virtual DbSet<LichKhoiHanh> LichKhoiHanhs { get; set; }
+        public virtual DbSet<MuaGia> MuaGias { get; set; }
+        public virtual DbSet<ChinhSachHuy> ChinhSachHuys { get; set; }
+        public virtual DbSet<YeuCauHuy> YeuCauHuys { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

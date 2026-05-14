@@ -1,4 +1,4 @@
-﻿namespace TourDulich.Models
+namespace TourDulich.Models
 {
     using System;
     using System.Collections.Generic;
@@ -16,6 +16,7 @@
             DanhGias = new HashSet<DanhGia>();
             HinhAnhTours = new HashSet<HinhAnhTour>();
             LichTrinhTours = new HashSet<LichTrinhTour>();
+            LichKhoiHanhs = new HashSet<LichKhoiHanh>();
         }
 
         [Key]
@@ -68,5 +69,8 @@
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LichTrinhTour> LichTrinhTours { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LichKhoiHanh> LichKhoiHanhs { get; set; }
     }
 }

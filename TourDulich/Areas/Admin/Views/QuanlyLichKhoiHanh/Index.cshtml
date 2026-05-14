@@ -1,0 +1,234 @@
+@model IEnumerable<TourDulich.ModelView.LichKhoiHanhView>
+@{
+    ViewBag.Title = "Quản lý Lịch Khởi Hành";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-center mb-4 pt-2">🗓️ Quản lý Lịch Khởi Hành</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row mb-3 align-items-end g-2">
+    <div class="col-md-7">
+        <form method="get">
+            <label class="form-label fw-bold">Lọc theo thời gian và Tour</label>
+            <div class="d-flex gap-2">
+                <select name="thang" class="form-select w-auto">
+                    <option value="">-- Tất cả tháng --</option>
+                    @for (int i = 1; i <= 12; i++)
+                    {
+                        if (ViewBag.Thang == i)
+                        {
+                            <option value="@i" selected>Tháng @i</option>
+                        }
+                        else
+                        {
+                            <option value="@i">Tháng @i</option>
+                        }
+                    }
+                </select>
+                <select name="nam" class="form-select w-auto">
+                    <option value="">-- Tất cả năm --</option>
+                    @for (int i = DateTime.Now.Year - 1; i <= DateTime.Now.Year + 2; i++)
+                    {
+                        if (ViewBag.Nam == i)
+                        {
+                            <option value="@i" selected>Năm @i</option>
+                        }
+                        else
+                        {
+                            <option value="@i">Năm @i</option>
+                        }
+                    }
+                </select>
+                @Html.DropDownList("tourId", (SelectList)ViewBag.Tours, "-- Tất cả tour --", new { @class = "form-select" })
+                <button type="submit" class="btn btn-primary"><i class="bi bi-filter"></i> Lọc</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-auto ms-auto">
+        <a href="@Url.Action("Create")" class="btn btn-success me-2">
+            <i class="bi bi-plus-circle-fill me-1"></i> Thêm lịch
+        </a>
+        @if (ViewBag.TourId != null)
+        {
+            <button class="btn btn-outline-primary" id="btnBulkAdd">
+                <i class="bi bi-calendar-plus me-1"></i> Thêm nhiều ngày
+            </button>
+        }
+    </div>
+</div>
+
+<table class="table table-bordered table-hover text-center align-middle">
+    <thead class="thead-dark">
+        <tr>
+            <th>Tour</th>
+            <th>Ngày Khởi Hành</th>
+            <th>Giá Áp Dụng</th>
+            <th>Đã Đặt / Tổng</th>
+            <th>Còn Lại</th>
+            <th>Trạng Thái</th>
+            <th>Ghi Chú</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="text-start">@item.TenTour</td>
+                <td><strong>@item.NgayKhoiHanh.ToString("dd/MM/yyyy")</strong></td>
+                <td>
+                    @item.GiaThucTe.ToString("N0") VNĐ
+                    @if (item.HeSoGia != 1.0m)
+                    {
+                        <br /><span class="badge bg-danger">@item.TenMua (x@(item.HeSoGia))</span>
+                    }
+                </td>
+                <td>@item.SoLuongDaDat / @item.SoLuongToiDa</td>
+                <td>
+                    @if (item.SoLuongConLai <= 0)
+                    {
+                        <span class="badge bg-danger">Hết chỗ</span>
+                    }
+                    else if (item.SoLuongConLai <= 5)
+                    {
+                        <span class="badge bg-warning text-dark">⚠️ @item.SoLuongConLai chỗ</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">@item.SoLuongConLai chỗ</span>
+                    }
+                </td>
+                <td>
+                    @if (item.TrangThai == "Mở")
+                    {
+                        <span class="badge bg-success">Mở</span>
+                    }
+                    else if (item.TrangThai == "Đóng")
+                    {
+                        <span class="badge bg-secondary">Đóng</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">@item.TrangThai</span>
+                    }
+                </td>
+                <td class="text-muted small">@item.GhiChu</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = item.ID_LichKhoiHanh })" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    @if (item.SoLuongDaDat == 0)
+                    {
+                        <button class="btn btn-danger btn-sm btnXoa" data-id="@item.ID_LichKhoiHanh">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+        @if (!Model.Any())
+        {
+            <tr><td colspan="7" class="text-muted py-4">Chưa có lịch khởi hành nào.</td></tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal Bulk Add -->
+<div class="modal fade" id="modalBulkAdd" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:15px">
+            <div class="modal-header bg-primary text-white" style="border-radius:15px 15px 0 0">
+                <h5 class="modal-title"><i class="bi bi-calendar-plus me-2"></i>Thêm nhiều ngày cùng lúc</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="bulkTourId" value="@ViewBag.TourId" />
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Từ ngày</label>
+                    <input type="date" id="bulkTuNgay" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Đến ngày</label>
+                    <input type="date" id="bulkDenNgay" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Số lượng tối đa / ngày</label>
+                    <input type="number" id="bulkSoLuong" class="form-control" value="20" min="1" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Chỉ thêm các ngày trong tuần (bỏ trống = tất cả)</label>
+                    <div class="d-flex flex-wrap gap-2 mt-1">
+                        @foreach (var n in new[] { (1,"T.2"), (2,"T.3"), (3,"T.4"), (4,"T.5"), (5,"T.6"), (6,"T.7"), (0,"CN") })
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input bulkDay" type="checkbox" value="@n.Item1" id="day@(n.Item1)">
+                                <label class="form-check-label" for="day@(n.Item1)">@n.Item2</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmBulk">
+                    <i class="bi bi-check-circle me-1"></i> Tạo lịch
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+$(function () {
+    // Xóa lịch
+    $(document).on("click", ".btnXoa", function () {
+        if (!confirm("Xóa lịch khởi hành này?")) return;
+        var id = $(this).data("id");
+        $.post('@Url.Action("Delete")', { id: id }, function (res) {
+            if (res.success) location.reload();
+            else alert("Lỗi: " + res.message);
+        });
+    });
+
+    // Bulk add modal
+    $("#btnBulkAdd").click(function () {
+        $("#modalBulkAdd").modal("show");
+    });
+
+    $("#btnConfirmBulk").click(function () {
+        var tourId   = $("#bulkTourId").val();
+        var tuNgay   = $("#bulkTuNgay").val();
+        var denNgay  = $("#bulkDenNgay").val();
+        var soLuong  = $("#bulkSoLuong").val();
+        var days     = $(".bulkDay:checked").map(function(){ return $(this).val(); }).get().join(",");
+
+        if (!tuNgay || !denNgay) { alert("Vui lòng nhập khoảng ngày."); return; }
+
+        $(this).prop("disabled", true).html('<span class="spinner-border spinner-border-sm"></span> Đang tạo...');
+
+        $.post('@Url.Action("BulkCreate")', {
+            tourId: tourId, ngayBatDau: tuNgay, ngayKetThuc: denNgay,
+            soLuongToiDa: soLuong, ngayTrongTuan: days
+        }, function (res) {
+            if (res.success) {
+                alert("✅ Đã thêm " + res.soLuongThem + " lịch khởi hành!");
+                location.reload();
+            } else {
+                alert("Lỗi: " + res.message);
+            }
+        }).always(function(){
+            $("#btnConfirmBulk").prop("disabled", false).html('<i class="bi bi-check-circle me-1"></i> Tạo lịch');
+        });
+    });
+});
+</script>
+}

@@ -1,4 +1,4 @@
-﻿@model TourDulich.ModelView.TourView
+@model TourDulich.ModelView.TourView
 
 @{
     ViewBag.Title = "Sửa Tour";
@@ -29,7 +29,7 @@
 
                 <div class="form-group mb-3">
                     @Html.LabelFor(m => m.Gia, "Giá Tour (VNĐ)")
-                    @Html.TextBoxFor(m => m.Gia, new { @class = "form-control", type = "number", placeholder = "Nhập giá tour" })
+                    <input type="number" name="Gia" id="Gia" class="form-control" placeholder="Nhập giá tour" value="@(Model.Gia.HasValue ? Model.Gia.Value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) : "")" />
                     @Html.ValidationMessageFor(m => m.Gia, "", new { @class = "text-danger" })
                 </div>
 

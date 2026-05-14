@@ -13,6 +13,7 @@ namespace TourDulich.Models
         public DatTour()
         {
             ChiTietDatTours = new HashSet<ChiTietDatTour>();
+            YeuCauHuys = new HashSet<YeuCauHuy>();
         }
 
         [Key]
@@ -30,8 +31,26 @@ namespace TourDulich.Models
         [StringLength(500)]
         public string GhiChu { get; set; }
 
+        public bool CoYeuCauHuy { get; set; } = false;
+
+        /// <summary>Khách lẻ / Đoàn</summary>
+        [StringLength(20)]
+        public string LoaiDat { get; set; } = "Khách lẻ";
+
+        [StringLength(100)]
+        public string TruongDoan { get; set; }
+
+        [StringLength(20)]
+        public string SdtTruongDoan { get; set; }
+
+        [StringLength(500)]
+        public string GhiChuDoan { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietDatTour> ChiTietDatTours { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<YeuCauHuy> YeuCauHuys { get; set; }
 
         public virtual NguoiDung NguoiDung { get; set; }
     }

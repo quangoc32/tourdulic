@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -29,13 +29,18 @@ namespace TourDulich.Areas.Admin.Controllers
             var list = query
                 .Select(dt => new DatTourView
                 {
-                    ID_DatTour = dt.ID_DatTour,
-                    TenNguoiDung = dt.NguoiDung.HoTen,
-                    NgayDat = dt.NgayDat,
-                    TongTien = dt.TongTien,
-                    TrangThai = dt.TrangThai,
-                    GhiChu = dt.GhiChu
+                    ID_DatTour    = dt.ID_DatTour,
+                    TenNguoiDung  = dt.NguoiDung.HoTen,
+                    NgayDat       = dt.NgayDat,
+                    TongTien      = dt.TongTien,
+                    TrangThai     = dt.TrangThai,
+                    GhiChu        = dt.GhiChu,
+                    LoaiDat       = dt.LoaiDat,
+                    TruongDoan    = dt.TruongDoan,
+                    SdtTruongDoan = dt.SdtTruongDoan,
+                    GhiChuDoan    = dt.GhiChuDoan
                 }).ToList();
+
 
             ViewBag.SearchString = searchString;
 

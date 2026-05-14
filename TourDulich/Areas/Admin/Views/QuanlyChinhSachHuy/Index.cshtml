@@ -1,0 +1,81 @@
+@model IEnumerable<TourDulich.Models.ChinhSachHuy>
+@{
+    ViewBag.Title = "Chính sách Hủy Tour";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-center mb-4 pt-2">📋 Chính sách Hủy Tour</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="d-flex justify-content-end mb-3">
+    <a href="@Url.Action("Create")" class="btn btn-success">
+        <i class="bi bi-plus-circle-fill me-1"></i> Thêm chính sách
+    </a>
+</div>
+
+<div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>
+    Hệ thống sẽ áp dụng mức hoàn tiền cao nhất phù hợp với số ngày trước khởi hành.
+</div>
+
+<table class="table table-bordered table-hover text-center align-middle">
+    <thead class="thead-dark">
+        <tr>
+            <th>Hủy trước (ngày)</th>
+            <th>% Hoàn tiền</th>
+            <th>Mô tả</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderByDescending(c => c.SoNgayTuHuy))
+        {
+            <tr>
+                <td><strong>≥ @item.SoNgayTuHuy ngày</strong></td>
+                <td>
+                    @if (item.PhanTramHoan == 100)
+                    {
+                        <span class="badge bg-success fs-6">100%</span>
+                    }
+                    else if (item.PhanTramHoan == 0)
+                    {
+                        <span class="badge bg-danger fs-6">Không hoàn</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark fs-6">@item.PhanTramHoan%</span>
+                    }
+                </td>
+                <td class="text-start text-muted">@item.MoTa</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = item.ID_ChinhSach })" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <button class="btn btn-danger btn-sm btnXoa" data-id="@item.ID_ChinhSach">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+<script>
+$(".btnXoa").click(function () {
+    if (!confirm("Xóa chính sách này?")) return;
+    var id = $(this).data("id");
+    $.post('@Url.Action("Delete")', { id: id }, function (res) {
+        if (res.success) location.reload();
+        else alert("Lỗi: " + res.message);
+    });
+});
+</script>
+}
