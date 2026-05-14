@@ -3,11 +3,11 @@
   "WorkspaceRootPath": "D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|d:\\\u0111\u1ED3 \u00E1n c\u1EE7a quang\\tourdulich\\tourdulich\\tourdulich\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
       "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|d:\\\u0111\u1ED3 \u00E1n c\u1EE7a quang\\tourdulich\\tourdulich\\tourdulich\\areas\\admin\\controllers\\quanlylienhecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|D:\\\u0111\u1ED3 \u00E1n c\u1EE7a Quang\\TourDulich\\TourDulich\\tourdulich\\areas\\admin\\controllers\\quanlylienhecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C379173F-C510-4998-8426-665042F1DB2B}|TourDulich\\TourDulich.csproj|solutionrelative:tourdulich\\areas\\admin\\controllers\\quanlylienhecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -111,6 +111,10 @@
               "EditorCaption": ""
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "QuanlyLienHeController.cs",
@@ -120,8 +124,7 @@
               "RelativeToolTip": "TourDulich\\Areas\\Admin\\Controllers\\QuanlyLienHeController.cs",
               "ViewState": "AgIAADAAAAAAAAAAAAAAACYAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-07T17:18:16.9Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-07T17:18:16.9Z"
             },
             {
               "$type": "Document",
