@@ -20,6 +20,7 @@ namespace TourDulich.ModelView
         public string TruongDoan { get; set; }
         public string SdtTruongDoan { get; set; }
         public string GhiChuDoan { get; set; }
+        public bool CoTheThanhToan => TrangThai == AppConstants.TrangThaiDatTour.ChoThanhToan;
 
         public List<ChiTietLichSuTourView> ChiTietTours { get; set; }
 

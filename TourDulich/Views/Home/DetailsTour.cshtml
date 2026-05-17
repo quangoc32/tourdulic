@@ -321,6 +321,55 @@
                         <small class="text-muted" id="slotInfo"></small>
                     </div>
 
+                    @{
+                        var diemDonTours = ViewBag.DiemDonTours as List<TourDulich.ModelView.DiemDonTourView>;
+                    }
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Điểm đón</label>
+                        <select class="form-select" id="pickupMode" name="LoaiDiemDon" required>
+                            @if (diemDonTours != null && diemDonTours.Any())
+                            {
+                                foreach (var diemDon in diemDonTours)
+                                {
+                                    var label = diemDon.TenDiemDon;
+                                    if (!string.IsNullOrWhiteSpace(diemDon.TinhThanh))
+                                    {
+                                        label += " - " + diemDon.TinhThanh;
+                                    }
+                                    if (diemDon.PhuThu != 0)
+                                    {
+                                        label += " (" + (diemDon.PhuThu > 0 ? "+" : "") + string.Format("{0:N0} VNĐ", diemDon.PhuThu) + ")";
+                                    }
+                                    <option value="CoDinh" data-id="@diemDon.Id" data-phuthu="@diemDon.PhuThu.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+                                        @label
+                                    </option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="CoDinh" data-id="" data-phuthu="0">Điểm khởi hành chính: @Model.DiemKhoiHanh</option>
+                            }
+                            <option value="YeuCauKhac" data-id="" data-phuthu="0">Yêu cầu điểm đón khác</option>
+                        </select>
+                        <input type="hidden" id="diemDonId" name="DiemDonId" />
+                        <small class="text-muted">Nếu điểm đón chưa có trong danh sách, chọn yêu cầu khác để admin xác nhận.</small>
+                    </div>
+
+                    <div id="customPickupSection" class="d-none">
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Tỉnh/Thành muốn đón</label>
+                            <input type="text" class="form-control" id="tinhThanhDon" name="TinhThanhDon" placeholder="VD: Nam Định" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Địa chỉ đón cụ thể</label>
+                            <input type="text" class="form-control" id="diaChiDon" name="DiaChiDon" placeholder="VD: BigC Nam Định, bến xe..." />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Ghi chú điểm đón</label>
+                            <textarea class="form-control" name="GhiChuDiemDon" rows="2" placeholder="Thời gian thuận tiện, số người tại điểm đón..."></textarea>
+                        </div>
+                    </div>
+
                     <!-- Số lượng vé -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Số lượng <span id="lblLoai" class="text-muted">(người)</span></label>
@@ -399,8 +448,14 @@
             const slotRemainingEl = document.getElementById('slotRemaining');
             const selectDate    = document.getElementById('selectedDateSelect');
             const btnDatTour    = document.getElementById('btnDatTour');
+            const pickupMode    = document.getElementById('pickupMode');
+            const diemDonId     = document.getElementById('diemDonId');
+            const customPickupSection = document.getElementById('customPickupSection');
+            const tinhThanhDon  = document.getElementById('tinhThanhDon');
+            const diaChiDon     = document.getElementById('diaChiDon');
             let maxSlot = 99;
             let isDoan  = false;
+            let pickupFee = 0;
 
             // Load danh sách ngày khởi hành
             function loadDates() {
@@ -459,6 +514,18 @@
 
             selectDate.addEventListener('change', onDateChange);
 
+            function onPickupChange() {
+                var sel = pickupMode.options[pickupMode.selectedIndex];
+                var custom = sel && sel.value === 'YeuCauKhac';
+                customPickupSection.classList.toggle('d-none', !custom);
+                tinhThanhDon.required = custom;
+                diaChiDon.required = custom;
+                diemDonId.value = custom || !sel ? '' : (sel.dataset.id || '');
+                pickupFee = custom || !sel ? 0 : (parseFloat(sel.dataset.phuthu) || 0);
+                updateTotal();
+            }
+            pickupMode.addEventListener('change', onPickupChange);
+
             // Toggle khách lẻ / đoàn
             function onToggleChange() {
                 isDoan = radioDoan.checked;
@@ -496,14 +563,24 @@
             function updateTotal() {
                 var qty = parseInt(ticketQty.value) || 0;
                 var heSo = window.currentHeSoGia || 1.0;
-                var total = qty * pricePerTicket * heSo;
+                var selectedPickup = pickupMode.options[pickupMode.selectedIndex];
+                if (selectedPickup && selectedPickup.value === 'YeuCauKhac') {
+                    totalPriceEl.innerHTML = '<span class="text-warning">Chờ admin xác nhận giá</span>';
+                    return;
+                }
+
+                var total = qty * ((pricePerTicket * heSo) + pickupFee);
                 totalPriceEl.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
                 if (heSo != 1.0) {
                     totalPriceEl.innerHTML += ' <small class="text-danger">(Đã áp dụng giá mùa cao điểm/khuyến mãi)</small>';
                 }
+                if (pickupFee != 0) {
+                    totalPriceEl.innerHTML += ' <small class="text-primary">(Điểm đón: ' + (pickupFee > 0 ? '+' : '') + pickupFee.toLocaleString('vi-VN') + ' VNĐ/người)</small>';
+                }
             }
 
             // Load lần đầu
+            onPickupChange();
             loadDates();
         });
         </script>

@@ -21,10 +21,16 @@ namespace TourDulich.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DangKy(NguoiDung model)
+        public ActionResult DangKy(NguoiDung model, string XacNhanMatKhau)
         {
             if (ModelState.IsValid)
             {
+                if (model.MatKhau != XacNhanMatKhau)
+                {
+                    TempData["Error"] = "Mật khẩu xác nhận không khớp!";
+                    return View(model);
+                }
+
                 bool taiKhoanExists = _contextDB.NguoiDungs.Any(u => u.TaiKhoan == model.TaiKhoan);
                 bool emailExists = _contextDB.NguoiDungs.Any(u => u.Email == model.Email);
 

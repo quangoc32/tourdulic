@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using TourDulich.Models;
 using TourDulich.Areas.Admin.Filters;
+using TourDulich.ModelView;
+using TourDulich.Services;
 
 namespace TourDulich.Areas.Admin.Controllers
 {
@@ -12,6 +14,11 @@ namespace TourDulich.Areas.Admin.Controllers
     public class QuanlyLienHeController : Controller
     {
         private ModelDB _contextDB = new ModelDB();
+
+        private AdminEmailSettingStore EmailStore
+        {
+            get { return new AdminEmailSettingStore(Server.MapPath("~/App_Data/admin-email-settings.json")); }
+        }
 
         public ActionResult Index(string searchString)
         {
@@ -27,7 +34,89 @@ namespace TourDulich.Areas.Admin.Controllers
             var list = query.OrderByDescending(x => x.NgayGui).ToList();
             ViewBag.SearchString = searchString;
 
-            return View(list);
+            var model = new AdminEmailSettingPageView
+            {
+                LienHes = list,
+                EmailSetting = EmailStore.Get()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public JsonResult LuuCauHinhEmail(AdminEmailSettingView model)
+        {
+            try
+            {
+                EmailStore.SaveSmtp(model);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult LuuGmailNhan(AdminEmailRecipientView model)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(model.TenNguoiNhan) || string.IsNullOrWhiteSpace(model.Email))
+                    return Json(new { success = false, message = "Vui lòng nhập tên và Gmail nhận thông báo." });
+
+                if (model.Id > 0)
+                {
+                    if (!EmailStore.UpdateRecipient(model))
+                        return Json(new { success = false, message = "Không tìm thấy Gmail cần cập nhật." });
+                }
+                else
+                {
+                    EmailStore.AddRecipient(model);
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult GuiThuGmailAdmin()
+        {
+            try
+            {
+                var emailService = new LienHeEmailService(EmailStore);
+                string errorMessage;
+                if (!emailService.TrySendTestEmail(out errorMessage))
+                {
+                    return Json(new { success = false, message = errorMessage });
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult XoaGmailNhan(int id)
+        {
+            try
+            {
+                if (!EmailStore.DeleteRecipient(id))
+                    return Json(new { success = false, message = "Không tìm thấy Gmail cần xóa." });
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         [HttpPost]

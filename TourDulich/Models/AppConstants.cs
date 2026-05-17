@@ -14,6 +14,8 @@ namespace TourDulich.Models
             public const string DaXacNhan = "Đã xác nhận";
             public const string DaHuy = "Đã hủy";
             public const string YeuCauDoanChoXacNhan = "Yêu cầu đoàn - Chờ xác nhận";
+            public const string ChoXacNhanDiemDon = "Chờ xác nhận điểm đón";
+            public const string ChoThanhToan = "Chờ thanh toán";
         }
 
         public static class TrangThaiLichKhoiHanh

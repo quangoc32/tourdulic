@@ -1,3 +1,4 @@
+@using TourDulich.Models
 @{
     ViewBag.Title = "Quản lý Đặt Tour";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -26,12 +27,18 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr class="@(item.LaDoan ? "table-success" : "")"> 
+            bool canConfirmPickup = item.TrangThai == AppConstants.TrangThaiDatTour.ChoXacNhanDiemDon;
+            bool isPending = item.TrangThai == AppConstants.TrangThaiDatTour.ChoXuLy
+                || item.TrangThai == AppConstants.TrangThaiDatTour.YeuCauDoanChoXacNhan
+                || item.TrangThai == AppConstants.TrangThaiDatTour.ChoThanhToan
+                || canConfirmPickup;
+
+            <tr class="@(item.LaDoan ? "table-success" : "")">
                 <td>
                     @item.TenNguoiDung
                     @if (item.LaDoan && !string.IsNullOrEmpty(item.TruongDoan))
                     {
-                        <br /><small class="text-muted"><i class="bi bi-person-badge me-1"></i>Trưởng đoàn: <strong>@item.TruongDoan</strong> – @item.SdtTruongDoan</small>
+                        <br /><small class="text-muted"><i class="bi bi-person-badge me-1"></i>Trưởng đoàn: <strong>@item.TruongDoan</strong> - @item.SdtTruongDoan</small>
                     }
                 </td>
                 <td>@item.NgayDat.ToString("dd/MM/yyyy")</td>
@@ -47,11 +54,11 @@
                     }
                 </td>
                 <td>
-                    @if (item.TrangThai == "Chờ xử lý" || item.TrangThai == "Yêu cầu đoàn - Chờ xác nhận")
+                    @if (isPending)
                     {
                         <span class="badge" style="background-color: #f1c40f; color: #000;">@item.TrangThai</span>
                     }
-                    else if (item.TrangThai == "Đã xác nhận")
+                    else if (item.TrangThai == AppConstants.TrangThaiDatTour.DaXacNhan)
                     {
                         <span class="badge" style="background-color: #00c851; color: #fff;">@item.TrangThai</span>
                     }
@@ -62,7 +69,11 @@
                 </td>
                 <td>
                     <button class="btn btn-info btn-sm btnChiTiet" data-id="@item.ID_DatTour">Chi tiết</button>
-                    @if (item.TrangThai != "Đã hủy")
+                    @if (canConfirmPickup)
+                    {
+                        <button class="btn btn-success btn-sm btnXacNhanDiemDonDon" data-id="@item.ID_DatTour">Xác nhận điểm đón</button>
+                    }
+                    @if (item.TrangThai != AppConstants.TrangThaiDatTour.DaHuy)
                     {
                         <button class="btn btn-warning btn-sm btnSuaTrangThai" data-id="@item.ID_DatTour">Cập nhật</button>
                     }
@@ -98,10 +109,12 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Trạng Thái</label>
                         <select name="TrangThai" class="form-select" id="inputTrangThai">
-                            <option>Chờ xử lý</option>
-                            <option>Yêu cầu đoàn - Chờ xác nhận</option>
-                            <option>Đã xác nhận</option>
-                            <option>Đã hủy</option>
+                            <option>@AppConstants.TrangThaiDatTour.ChoXuLy</option>
+                            <option>@AppConstants.TrangThaiDatTour.ChoXacNhanDiemDon</option>
+                            <option>@AppConstants.TrangThaiDatTour.ChoThanhToan</option>
+                            <option>@AppConstants.TrangThaiDatTour.YeuCauDoanChoXacNhan</option>
+                            <option>@AppConstants.TrangThaiDatTour.DaXacNhan</option>
+                            <option>@AppConstants.TrangThaiDatTour.DaHuy</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -114,6 +127,37 @@
                     <button type="submit" class="btn btn-primary"><i class="bi bi-save-fill me-1"></i> Lưu thay đổi</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalXacNhanDiemDon" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-header bg-success text-white" style="border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title"><i class="bi bi-geo-alt-fill me-2"></i>Xác nhận điểm đón</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="inputDiemDonDatTourId" />
+                <div class="alert alert-info small">
+                    Nhập phụ thu theo mỗi người. Sau khi xác nhận, đơn sẽ chuyển sang <strong>Chờ thanh toán</strong>.
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Phụ thu điểm đón / người</label>
+                    <input type="number" class="form-control" id="inputPhuThuDiemDon" value="0" min="0" step="1000" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ghi chú cho khách</label>
+                    <textarea class="form-control" id="inputGhiChuDiemDon" rows="3" placeholder="VD: Xe có thể đón tại Gang Thép, phụ thu 100.000đ/người."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-success" id="btnSubmitXacNhanDiemDon">
+                    <i class="bi bi-check-circle me-1"></i>Xác nhận
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -140,63 +184,98 @@
 
 @section Scripts {
     <script>
-    $(document).ready(function () {
-        $(".btnChiTiet").click(function () {
-            var id = $(this).data("id");
-            $.get('@Url.Action("GetChiTietDatTourPartial", "QuanlyDatTour", new { area = "Admin" })', { id: id }, function (data) {
-                $("#contentChiTiet").html(data);
-                $("#modalChiTiet").modal("show");
+        $(document).ready(function () {
+            $(".btnChiTiet").click(function () {
+                var id = $(this).data("id");
+                $.get('@Url.Action("GetChiTietDatTourPartial", "QuanlyDatTour", new { area = "Admin" })', { id: id }, function (data) {
+                    $("#contentChiTiet").html(data);
+                    $("#modalChiTiet").modal("show");
+                });
+            });
+
+            $(".btnSuaTrangThai").click(function () {
+                const id = $(this).data("id");
+                $.get('@Url.Action("GetTrangThaiDatTour", "QuanlyDatTour", new { area = "Admin" })', { id: id }, function (res) {
+                    if (res.success) {
+                        $("#inputID").val(res.ID_DatTour);
+                        $("#inputTrangThai").val(res.TrangThai);
+                        $("#inputGhiChu").val(res.GhiChu);
+                        $("#modalSuaTrangThai").modal("show");
+                    } else {
+                        alert("Không lấy được dữ liệu.");
+                    }
+                });
+            });
+
+            $("#formSuaTrangThai").submit(function (e) {
+                e.preventDefault();
+                $.post('@Url.Action("CapNhatTrangThai", "QuanlyDatTour", new { area = "Admin" })', $(this).serialize(), function (res) {
+                    if (res.success) {
+                        alert("Cập nhật thành công!");
+                        $("#modalSuaTrangThai").modal("hide");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + res.message);
+                    }
+                });
+            });
+
+            let idXoa = 0;
+            $(document).on("click", ".btnXoaDatTour", function () {
+                idXoa = $(this).data("id");
+                $("#modalXacNhanXoa").modal("show");
+            });
+
+            $("#btnXacNhanXoa").click(function () {
+                $.post('@Url.Action("XoaDatTour", "QuanlyDatTour", new { area = "Admin" })', { id: idXoa }, function (res) {
+                    if (res.success) {
+                        $("#modalXacNhanXoa").modal("hide");
+                        alert("Xóa thành công!");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + res.message);
+                    }
+                });
+            });
+
+            $(document).on("click", ".btnXacNhanDiemDon", function () {
+                const box = $(this).closest(".pickup-confirm-box");
+                $.post('@Url.Action("XacNhanDiemDon", "QuanlyDatTour", new { area = "Admin" })', {
+                    idChiTietDatTour: box.find(".ct-id").val(),
+                    phuThuDiemDon: box.find(".pickup-fee").val(),
+                    ghiChuDiemDon: box.find(".pickup-note").val()
+                }, function (res) {
+                    if (res.success) {
+                        alert("Đã xác nhận điểm đón. Đơn đã chuyển sang chờ khách thanh toán.");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + res.message);
+                    }
+                });
+            });
+
+            $(document).on("click", ".btnXacNhanDiemDonDon", function () {
+                $("#inputDiemDonDatTourId").val($(this).data("id"));
+                $("#inputPhuThuDiemDon").val(0);
+                $("#inputGhiChuDiemDon").val("");
+                $("#modalXacNhanDiemDon").modal("show");
+            });
+
+            $("#btnSubmitXacNhanDiemDon").click(function () {
+                $.post('@Url.Action("XacNhanDiemDonTheoDon", "QuanlyDatTour", new { area = "Admin" })', {
+                    idDatTour: $("#inputDiemDonDatTourId").val(),
+                    phuThuDiemDon: $("#inputPhuThuDiemDon").val(),
+                    ghiChuDiemDon: $("#inputGhiChuDiemDon").val()
+                }, function (res) {
+                    if (res.success) {
+                        alert("Đã xác nhận điểm đón. Đơn đã chuyển sang chờ khách thanh toán.");
+                        $("#modalXacNhanDiemDon").modal("hide");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + res.message);
+                    }
+                });
             });
         });
-    });
-
-$(".btnSuaTrangThai").click(function () {
-    const id = $(this).data("id");
-
-    $.get('@Url.Action("GetTrangThaiDatTour", "QuanlyDatTour", new { area = "Admin" })', { id: id }, function (res) {
-        if (res.success) {
-            $("#inputID").val(res.ID_DatTour);
-            $("#inputTrangThai").val(res.TrangThai);
-            $("#inputGhiChu").val(res.GhiChu);
-            $("#modalSuaTrangThai").modal("show");
-        } else {
-            alert("Không lấy được dữ liệu.");
-        }
-    });
-});
-
-
-$("#formSuaTrangThai").submit(function (e) {
-    e.preventDefault();
-
-    $.post('@Url.Action("CapNhatTrangThai", "QuanlyDatTour", new { area = "Admin" })', $(this).serialize(), function (res) {
-        if (res.success) {
-            alert("Cập nhật thành công!");
-            $("#modalSuaTrangThai").modal("hide");
-            location.reload();
-        } else {
-            alert("Lỗi: " + res.message);
-        }
-    });
-});
-    let idXoa = 0;
-
-$(document).on("click", ".btnXoaDatTour", function () {
-    idXoa = $(this).data("id");
-    $("#modalXacNhanXoa").modal("show");
-});
-
-$("#btnXacNhanXoa").click(function () {
-    $.post('@Url.Action("XoaDatTour", "QuanlyDatTour", new { area = "Admin" })', { id: idXoa }, function (res) {
-        if (res.success) {
-            $("#modalXacNhanXoa").modal("hide");
-            alert("Xóa thành công!");
-            location.reload();
-        } else {
-            alert("Lỗi: " + res.message);
-        }
-    });
-});
-
     </script>
 }

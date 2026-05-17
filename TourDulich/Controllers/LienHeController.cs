@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TourDulich.Models;
+using TourDulich.Services;
 
 namespace TourDulich.Controllers
 {
@@ -32,6 +33,11 @@ namespace TourDulich.Controllers
 
                 _contextDB.LienHes.Add(model);
                 _contextDB.SaveChanges();
+
+                var emailStore = new AdminEmailSettingStore(Server.MapPath("~/App_Data/admin-email-settings.json"));
+                var emailService = new LienHeEmailService(emailStore);
+                string emailError;
+                emailService.TrySendContactNotification(model, out emailError);
 
                 return Json(new { success = true, message = "Gửi liên hệ thành công! Chúng tôi sẽ phản hồi sớm nhất." });
             }

@@ -6,6 +6,7 @@
             <th>Tour</th>
             <th>Ngày Khởi Hành</th>
             <th>Số Lượng Người</th>
+            <th>Điểm Đón</th>
             <th>Phương Thức Thanh Toán</th>
             <th>Giá</th>
         </tr>
@@ -17,10 +18,34 @@
                 <td>@ct.Tour.TenTour</td>
                 <td>@string.Format("{0:dd/MM/yyyy}", ct.NgayKhoiHanh)</td>
                 <td>@ct.SoLuongNguoi</td>
+                <td>
+                    <div class="fw-semibold">@ct.DiemDon</div>
+                    @if (!string.IsNullOrWhiteSpace(ct.DiaChiDon))
+                    {
+                        <div class="small text-muted">@ct.DiaChiDon</div>
+                    }
+                    @if (ct.CanXacNhanDiemDon)
+                    {
+                        <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                        <div class="mt-2 pickup-confirm-box">
+                            <input type="hidden" class="ct-id" value="@ct.ID_ChiTietDatTour" />
+                            <label class="small fw-semibold">Phụ thu/người</label>
+                            <input type="number" class="form-control form-control-sm pickup-fee" value="0" />
+                            <label class="small fw-semibold mt-1">Ghi chú admin</label>
+                            <textarea class="form-control form-control-sm pickup-note" rows="2">@ct.GhiChuDiemDon</textarea>
+                            <button type="button" class="btn btn-sm btn-success mt-2 btnXacNhanDiemDon">
+                                Xác nhận điểm đón
+                            </button>
+                        </div>
+                    }
+                    @if ((ct.PhuThuDiemDon ?? 0) != 0)
+                    {
+                        <div class="small text-primary">Phụ thu: @string.Format("{0:N0} VNĐ/người", ct.PhuThuDiemDon)</div>
+                    }
+                </td>
                 <td>@ct.PhuongThucThanhToan</td>
                 <td>@string.Format("{0:N0} VNĐ", ct.Gia)</td>
             </tr>
         }
     </tbody>
 </table>
-

@@ -1,0 +1,15 @@
+{
+  "GmailGui": "quangoc0302@gmail.com",
+  "MatKhauUngDung": "czgz swwp bxjw fmnc",
+  "TenNguoiGui": "Du Lịch Việt",
+  "BatThongBaoLienHe": true,
+  "NguoiNhans": [
+    {
+      "Id": 1,
+      "TenNguoiNhan": "Lại Hợp Quang",
+      "Email": "quang.laihop@amela.vn",
+      "KichHoat": true
+    }
+  ],
+  "DaCauHinhSmtp": true
+}

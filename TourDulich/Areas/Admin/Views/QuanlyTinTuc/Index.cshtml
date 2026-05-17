@@ -1,0 +1,137 @@
+@model List<TourDulich.ModelView.TinTucLinkView>
+
+@{
+    ViewBag.Title = "Quản lý tin tức";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-primary fw-bold mb-4">Quản lý tin tức</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white fw-semibold">
+        <i class="bi bi-plus-circle me-2"></i>Thêm bài viết/link hot search
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm("Them", "QuanlyTinTuc", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Tiêu đề</label>
+                    <input name="TieuDe" class="form-control" maxlength="200" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Nguồn</label>
+                    <input name="Nguon" class="form-control" maxlength="100" placeholder="Google Search, VnExpress, Traveloka..." />
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label fw-semibold">Mô tả ngắn</label>
+                    <textarea name="MoTaNgan" class="form-control" rows="2" maxlength="500" required></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Link bài viết</label>
+                    <input name="LinkBaiViet" type="url" class="form-control" required placeholder="https://..." />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Link ảnh đại diện</label>
+                    <input name="HinhAnh" type="url" class="form-control" placeholder="https://..." />
+                </div>
+                <div class="col-md-6 d-flex align-items-center gap-4">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="LaTinHot" name="LaTinHot" value="true" checked />
+                        <input type="hidden" name="LaTinHot" value="false" />
+                        <label class="form-check-label" for="LaTinHot">Tin hot</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="HienThi" name="HienThi" value="true" checked />
+                        <input type="hidden" name="HienThi" value="false" />
+                        <label class="form-check-label" for="HienThi">Hiển thị</label>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save me-1"></i>Lưu tin tức
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">Danh sách tin tức</h5>
+    @using (Html.BeginForm("Index", "QuanlyTinTuc", FormMethod.Get, new { @class = "d-flex gap-2" }))
+    {
+        <input name="searchString" value="@ViewBag.SearchString" class="form-control" placeholder="Tìm tin tức..." />
+        <button class="btn btn-outline-primary" type="submit">Tìm</button>
+    }
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th style="width: 90px;">Ảnh</th>
+                <th>Thông tin</th>
+                <th>Nguồn</th>
+                <th>Trạng thái</th>
+                <th class="text-end">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(item.HinhAnh))
+                        {
+                            <img src="@item.HinhAnh" alt="@item.TieuDe" style="width: 80px; height: 56px; object-fit: cover; border-radius: 6px;" />
+                        }
+                    </td>
+                    <td>
+                        <div class="fw-semibold">@item.TieuDe</div>
+                        <div class="text-muted small">@item.MoTaNgan</div>
+                        <a href="@item.LinkBaiViet" target="_blank" rel="noopener noreferrer" class="small">Mở link nguồn</a>
+                    </td>
+                    <td>@item.Nguon</td>
+                    <td>
+                        @if (item.LaTinHot)
+                        {
+                            <span class="badge bg-danger me-1">Hot</span>
+                        }
+                        @if (item.HienThi)
+                        {
+                            <span class="badge bg-success">Hiển thị</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Ẩn</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <a href="@Url.Action("Sua", "QuanlyTinTuc", new { id = item.Id })" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        @using (Html.BeginForm("Xoa", "QuanlyTinTuc", FormMethod.Post, new { @class = "d-inline" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa tin tức này?')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

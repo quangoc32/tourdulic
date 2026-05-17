@@ -30,6 +30,7 @@
             <th>Còn lại</th>
             <th>Tổng tiền đơn</th>
             <th>Lý do</th>
+            <th>Tài khoản hoàn</th>
             <th>Trạng thái</th>
             <th>Hành động</th>
         </tr>
@@ -68,6 +69,11 @@
                 </td>
                 <td class="text-center"><strong>@(item.TongTienDatTour?.ToString("N0"))</strong> đ</td>
                 <td class="small text-muted" style="max-width:200px">@item.LyDo</td>
+                <td class="small">
+                    <div><strong>@item.TenNganHang</strong></div>
+                    <div>STK: @item.SoTaiKhoanHoanTien</div>
+                    <div>CTK: @item.TenChuTaiKhoan</div>
+                </td>
                 <td class="text-center">
                     @if (item.TrangThai == "Chờ xử lý")
                     {
@@ -104,7 +110,7 @@
         }
         @if (!Model.Any())
         {
-            <tr><td colspan="8" class="text-center text-muted py-4">Không có yêu cầu nào.</td></tr>
+            <tr><td colspan="9" class="text-center text-muted py-4">Không có yêu cầu nào.</td></tr>
         }
     </tbody>
 </table>

@@ -1,53 +1,50 @@
-﻿
+@model List<TourDulich.ModelView.TinTucLinkView>
+
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Tin tức";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container my-5">
     <div class="text-center mb-5">
         <h3 class="fw-bold">Tin tức & Cẩm nang du lịch</h3>
-        <p class="text-muted">Cập nhật các thông tin mới nhất về du lịch, kinh nghiệm và mẹo hay khi đi tour</p>
+        <p class="text-muted">Cập nhật thông tin du lịch, kinh nghiệm và các chủ đề đang được quan tâm</p>
     </div>
 
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYfPf08vD2dhaQAnpljaaOmoEGyfb8uJx_UQ&s" class="card-img-top" alt="..." style="height: 200px; object-fit: cover;">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Khám phá Hạ Long mùa hè</h5>
-                    <p class="card-text text-muted small">Tận hưởng kỳ nghỉ tuyệt vời tại vịnh Hạ Long với các hoạt động chèo kayak, thăm hang động và nghỉ dưỡng tại resort cao cấp.</p>
-                    <a href="#" class="btn btn-sm btn-outline-primary mt-auto">Xem thêm</a>
-                </div>
-            </div>
-        </div>
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info text-center">Chưa có tin tức nào được hiển thị.</div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                var image = string.IsNullOrWhiteSpace(item.HinhAnh)
+                    ? "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80"
+                    : item.HinhAnh;
 
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvAf_HVIF08tV1n2aWcZRfoRXoxsrGeDmI8A&s" class="card-img-top" alt="..." style="height: 200px; object-fit: cover;">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Kinh nghiệm du lịch Cao Bằng</h5>
-                    <p class="card-text text-muted small">Khám phá vẻ đẹp thiên nhiên hùng vĩ, văn hóa bản địa và ẩm thực đặc sắc tại vùng đất phía Bắc Việt Nam.</p>
-                    <a href="#" class="btn btn-sm btn-outline-primary mt-auto">Xem thêm</a>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@image" class="card-img-top" alt="@item.TieuDe" style="height: 200px; object-fit: cover;">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                <h5 class="card-title mb-0">@item.TieuDe</h5>
+                                @if (item.LaTinHot)
+                                {
+                                    <span class="badge bg-danger">Hot</span>
+                                }
+                            </div>
+                            <p class="card-text text-muted small">@item.MoTaNgan</p>
+                            @if (!string.IsNullOrWhiteSpace(item.Nguon))
+                            {
+                                <div class="small text-secondary mb-3">Nguồn: @item.Nguon</div>
+                            }
+                            <a href="@item.LinkBaiViet" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary mt-auto">Xem thêm</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjaeewfJe9lxGZhyoLnxBd7KLMn_o-bylg8A&s" class="card-img-top" alt="..." style="height: 200px; object-fit: cover;">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Đi Đà Lạt không lo thiếu ảnh đẹp</h5>
-                    <p class="card-text text-muted small">Top các địa điểm chụp ảnh hot trend, quán cà phê đẹp và góc sống ảo thần thánh ở Đà Lạt đang được giới trẻ săn lùng.</p>
-                    <a href="#" class="btn btn-sm btn-outline-primary mt-auto">Xem thêm</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="text-center mt-4">
-        <a href="#" class="btn btn-primary px-4">Xem tất cả tin tức</a>
-    </div>
+    }
 </div>
-
-

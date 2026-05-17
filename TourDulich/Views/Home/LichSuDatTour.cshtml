@@ -97,7 +97,23 @@
                                                 }
                                             </td>
                                         }
-                                        <td>@ct.TenTour</td>
+                                        <td>
+                                            <div>@ct.TenTour</div>
+                                            @if (!string.IsNullOrWhiteSpace(ct.DiemDon))
+                                            {
+                                                <div class="small text-muted">
+                                                    Điểm đón: <strong>@ct.DiemDon</strong>
+                                                    @if (ct.CanXacNhanDiemDon)
+                                                    {
+                                                        <span class="badge bg-warning text-dark ms-1">Chờ xác nhận</span>
+                                                    }
+                                                </div>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(ct.DiaChiDon))
+                                            {
+                                                <div class="small text-muted">@ct.DiaChiDon</div>
+                                            }
+                                        </td>
                                         <td>@(ct.NgayKhoiHanh?.ToString("dd/MM/yyyy"))</td>
                                         @if (rowIndex == 0)
                                         {
@@ -121,6 +137,13 @@
                                         @if (rowIndex == 0)
                                         {
                                             <td rowspan="@rowCount">
+                                                @if (don.CoTheThanhToan)
+                                                {
+                                                    <a href="@Url.Action("ThanhToanDon", "Home", new { id = don.ID_DatTour })" class="btn btn-success btn-sm mb-2">
+                                                        <i class="bi bi-credit-card"></i> Thanh toán
+                                                    </a>
+                                                    <br />
+                                                }
                                                 @if (don.TrangThai == "Da huy")
                                                 {
                                                     <span class="badge bg-danger">Da huy</span>
@@ -252,6 +275,24 @@
                             </label>
                             <textarea name="LyDo" class="form-control" rows="2"
                                       placeholder="VD: Thay đổi kế hoạch, bận công việc đột xuất..." required></textarea>
+                        </div>
+
+                        <div class="border rounded p-3 bg-light-subtle">
+                            <div class="fw-bold mb-2">
+                                <i class="bi bi-bank me-1"></i> Tài khoản ngân hàng nhận hoàn tiền
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Ngân hàng <span class="text-danger">*</span></label>
+                                <input type="text" name="TenNganHang" class="form-control" placeholder="VD: Vietcombank, BIDV, Techcombank..." required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Số tài khoản <span class="text-danger">*</span></label>
+                                <input type="text" name="SoTaiKhoanHoanTien" class="form-control" placeholder="VD: 0123456789" required />
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label fw-semibold">Tên chủ tài khoản <span class="text-danger">*</span></label>
+                                <input type="text" name="TenChuTaiKhoan" class="form-control" placeholder="VD: NGUYEN VAN A" required />
+                            </div>
                         </div>
                     </div>
                     

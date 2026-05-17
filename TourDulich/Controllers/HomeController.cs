@@ -7,12 +7,18 @@ using TourDulich.Models;
 using TourDulich.ModelView;
 using System.Data.Entity;
 using System.Data;
+using TourDulich.Services;
 
 namespace TourDulich.Controllers
 {
     public class HomeController : Controller
     {
         private ModelDB _contextDB = new ModelDB();
+
+        private LienHeEmailService AdminEmailService
+        {
+            get { return new LienHeEmailService(new AdminEmailSettingStore(Server.MapPath("~/App_Data/admin-email-settings.json"))); }
+        }
         public ActionResult Index()
         {
             var listTour = (from t in _contextDB.Tours
@@ -121,6 +127,8 @@ namespace TourDulich.Controllers
 
 
             ViewBag.DanhGiaList = danhGiaList;
+            var diemDonStore = new DiemDonTourStore(Server.MapPath("~/App_Data/diemdon-tour.json"));
+            ViewBag.DiemDonTours = diemDonStore.GetByTour(id).Where(x => x.HienThi).ToList();
 
             int? userId = Session["ID_NguoiDung"] as int?;
 
@@ -142,7 +150,9 @@ namespace TourDulich.Controllers
         [HttpPost]
         public ActionResult DatTourTam(int TourId, DateTime SelectedDate, int TicketQuantity,
                                        string LoaiDat = AppConstants.LoaiDat.KhachLe,
-                                       string TruongDoan = "", string SdtTruongDoan = "", string GhiChuDoan = "")
+                                       string TruongDoan = "", string SdtTruongDoan = "", string GhiChuDoan = "",
+                                       string LoaiDiemDon = "CoDinh", int? DiemDonId = null,
+                                       string TinhThanhDon = "", string DiaChiDon = "", string GhiChuDiemDon = "")
         {
             var tour = (from t in _contextDB.Tours
                         join ha in _contextDB.HinhAnhTours on t.ID_Tour equals ha.ID_Tour
@@ -152,6 +162,7 @@ namespace TourDulich.Controllers
                             t.ID_Tour,
                             t.TenTour,
                             t.Gia,
+                            t.DiemKhoiHanh,
                             HinhAnh = ha.HinhAnh
                         }).FirstOrDefault();
 
@@ -222,6 +233,46 @@ namespace TourDulich.Controllers
                 ? Math.Round(giaGoc * muaApDung.HeSoGia, 0)
                 : giaGoc;
 
+            string diemDon = "Điểm khởi hành chính: " + tour.DiemKhoiHanh;
+            string diaChiDon = null;
+            string tinhThanhDon = null;
+            decimal phuThuDiemDon = 0;
+            bool canXacNhanDiemDon = false;
+
+            var diemDonStore = new DiemDonTourStore(Server.MapPath("~/App_Data/diemdon-tour.json"));
+            if (LoaiDiemDon == "YeuCauKhac")
+            {
+                if (string.IsNullOrWhiteSpace(TinhThanhDon) || string.IsNullOrWhiteSpace(DiaChiDon))
+                {
+                    TempData["Error"] = "Vui lòng nhập tỉnh/thành và địa chỉ điểm đón mong muốn.";
+                    return RedirectToAction("DetailsTour", new { id = TourId });
+                }
+
+                diemDon = "Yêu cầu điểm đón khác";
+                diaChiDon = DiaChiDon.Trim();
+                tinhThanhDon = TinhThanhDon.Trim();
+                canXacNhanDiemDon = true;
+            }
+            else if (DiemDonId.HasValue)
+            {
+                var selectedPickup = diemDonStore.Find(DiemDonId.Value);
+                if (selectedPickup == null || selectedPickup.ID_Tour != TourId || !selectedPickup.HienThi)
+                {
+                    TempData["Error"] = "Điểm đón không hợp lệ. Vui lòng chọn lại.";
+                    return RedirectToAction("DetailsTour", new { id = TourId });
+                }
+
+                LoaiDiemDon = selectedPickup.LaTuTuc ? "TuTuc" : "CoDinh";
+                diemDon = selectedPickup.TenDiemDon;
+                diaChiDon = selectedPickup.DiaChi;
+                tinhThanhDon = selectedPickup.TinhThanh;
+                phuThuDiemDon = selectedPickup.PhuThu;
+            }
+            else
+            {
+                diemDon = "Điểm khởi hành chính: " + tour.DiemKhoiHanh;
+            }
+
             var tourTam = new TourDaDatTamThoi
             {
                 TourId        = tour.ID_Tour,
@@ -235,13 +286,25 @@ namespace TourDulich.Controllers
                 LoaiDat       = laDoan ? AppConstants.LoaiDat.Doan : AppConstants.LoaiDat.KhachLe,
                 TruongDoan    = laDoan ? TruongDoan?.Trim() : null,
                 SdtTruongDoan = laDoan ? SdtTruongDoan?.Trim() : null,
-                GhiChuDoan    = laDoan ? GhiChuDoan?.Trim() : null
+                GhiChuDoan    = laDoan ? GhiChuDoan?.Trim() : null,
+                LoaiDiemDon = LoaiDiemDon,
+                DiemDon = diemDon,
+                DiaChiDon = diaChiDon,
+                TinhThanhDon = tinhThanhDon,
+                PhuThuDiemDon = phuThuDiemDon,
+                GhiChuDiemDon = GhiChuDiemDon?.Trim(),
+                CanXacNhanDiemDon = canXacNhanDiemDon
             };
 
             var dsTourTam = Session["DanhSachTourTamThoi"] as List<TourDaDatTamThoi>
                             ?? new List<TourDaDatTamThoi>();
 
-            var existingTour = dsTourTam.FirstOrDefault(t => t.TourId == tourTam.TourId && t.NgayDi == tourTam.NgayDi);
+            var existingTour = dsTourTam.FirstOrDefault(t =>
+                t.TourId == tourTam.TourId &&
+                t.NgayDi == tourTam.NgayDi &&
+                t.LoaiDiemDon == tourTam.LoaiDiemDon &&
+                t.DiemDon == tourTam.DiemDon &&
+                t.DiaChiDon == tourTam.DiaChiDon);
 
             if (existingTour != null)
             {
@@ -255,6 +318,13 @@ namespace TourDulich.Controllers
                     }
                 }
                 existingTour.SoLuong += tourTam.SoLuong;
+                existingTour.LoaiDiemDon = tourTam.LoaiDiemDon;
+                existingTour.DiemDon = tourTam.DiemDon;
+                existingTour.DiaChiDon = tourTam.DiaChiDon;
+                existingTour.TinhThanhDon = tourTam.TinhThanhDon;
+                existingTour.PhuThuDiemDon = tourTam.PhuThuDiemDon;
+                existingTour.GhiChuDiemDon = tourTam.GhiChuDiemDon;
+                existingTour.CanXacNhanDiemDon = tourTam.CanXacNhanDiemDon;
             }
             else
             {
@@ -288,6 +358,88 @@ namespace TourDulich.Controllers
 
             return RedirectToAction("XacNhanDatTour");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult GuiYeuCauXacNhanDiemDon()
+        {
+            var dsTourTam = Session["DanhSachTourTamThoi"] as List<TourDaDatTamThoi>;
+            if (dsTourTam == null || dsTourTam.Count == 0)
+            {
+                TempData["Error"] = "Bạn chưa chọn tour nào.";
+                return RedirectToAction("Index");
+            }
+
+            if (!dsTourTam.Any(t => t.CanXacNhanDiemDon))
+            {
+                return RedirectToAction("ThanhToan");
+            }
+
+            int? userId = Session["ID_NguoiDung"] as int?;
+            if (!userId.HasValue)
+            {
+                TempData["Error"] = "Bạn phải đăng nhập để gửi yêu cầu xác nhận điểm đón.";
+                return RedirectToAction("DangNhap", "NguoiDung");
+            }
+
+            try
+            {
+                decimal tongTienTamTinh = 0;
+                bool laDoan = dsTourTam.Any(t => t.LaDoan);
+                var itemDoan = dsTourTam.FirstOrDefault(t => t.LaDoan);
+
+                var datTour = new DatTour
+                {
+                    ID_NguoiDung = userId.Value,
+                    NgayDat = DateTime.Now,
+                    TongTien = tongTienTamTinh,
+                    TrangThai = AppConstants.TrangThaiDatTour.ChoXacNhanDiemDon,
+                    LoaiDat = laDoan ? AppConstants.LoaiDat.Doan : AppConstants.LoaiDat.KhachLe,
+                    TruongDoan = itemDoan?.TruongDoan,
+                    SdtTruongDoan = itemDoan?.SdtTruongDoan,
+                    GhiChuDoan = itemDoan?.GhiChuDoan,
+                    GhiChu = "Khách yêu cầu điểm đón khác. Admin cần xác nhận điểm đón và phụ thu trước khi thanh toán."
+                };
+
+                _contextDB.DatTours.Add(datTour);
+                _contextDB.SaveChanges();
+
+                foreach (var item in dsTourTam)
+                {
+                    _contextDB.ChiTietDatTours.Add(new ChiTietDatTour
+                    {
+                        ID_DatTour = datTour.ID_DatTour,
+                        ID_Tour = item.TourId,
+                        NgayKhoiHanh = item.NgayDi,
+                        SoLuongNguoi = item.SoLuong,
+                        Gia = item.GiaThucTe ?? item.Gia,
+                        PhuongThucThanhToan = "Chưa thanh toán",
+                        LoaiDiemDon = item.LoaiDiemDon,
+                        DiemDon = item.DiemDon,
+                        DiaChiDon = item.DiaChiDon,
+                        TinhThanhDon = item.TinhThanhDon,
+                        PhuThuDiemDon = item.PhuThuDiemDon,
+                        GhiChuDiemDon = item.GhiChuDiemDon,
+                        CanXacNhanDiemDon = item.CanXacNhanDiemDon
+                    });
+                }
+
+                _contextDB.SaveChanges();
+                SendAdminBookingEmail(datTour.ID_DatTour);
+                Session.Remove("DanhSachTourTamThoi");
+
+                TempData["Success"] = "Đã gửi yêu cầu xác nhận điểm đón. Nhân viên sẽ liên hệ bạn trước khi thanh toán.";
+                return RedirectToAction("LichSuDatTour");
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = ex.InnerException?.InnerException?.Message
+                    ?? ex.InnerException?.Message
+                    ?? ex.Message;
+                TempData["Error"] = "Lỗi khi gửi yêu cầu xác nhận điểm đón: " + errorMessage;
+                return RedirectToAction("XacNhanDatTour");
+            }
+        }
         public ActionResult ThanhToan()
         {
             
@@ -296,6 +448,12 @@ namespace TourDulich.Controllers
             {
                 TempData["Error"] = "Bạn chưa chọn tour nào để thanh toán.";
                 return RedirectToAction("Index");
+            }
+
+            if (dsTourTam.Any(t => t.CanXacNhanDiemDon))
+            {
+                TempData["Error"] = "Điểm đón của bạn cần admin xác nhận trước khi thanh toán.";
+                return RedirectToAction("XacNhanDatTour");
             }
 
            
@@ -331,6 +489,125 @@ namespace TourDulich.Controllers
             return View(model);
         }
 
+        public ActionResult ThanhToanDon(int id)
+        {
+            int? userId = Session["ID_NguoiDung"] as int?;
+            if (!userId.HasValue)
+            {
+                TempData["Error"] = "Bạn phải đăng nhập để thanh toán.";
+                return RedirectToAction("DangNhap", "NguoiDung");
+            }
+
+            var datTour = _contextDB.DatTours
+                .Include("ChiTietDatTours.Tour")
+                .FirstOrDefault(d => d.ID_DatTour == id && d.ID_NguoiDung == userId.Value);
+
+            if (datTour == null) return HttpNotFound();
+            if (datTour.TrangThai != AppConstants.TrangThaiDatTour.ChoThanhToan)
+            {
+                TempData["Error"] = "Đơn này chưa sẵn sàng để thanh toán.";
+                return RedirectToAction("LichSuDatTour");
+            }
+
+            var user = _contextDB.NguoiDungs.Find(userId.Value);
+            var model = new ThanhToanView
+            {
+                ID_DatTour = datTour.ID_DatTour,
+                PhuongThucThanhToan = AppConstants.ThanhToan.ChuyenKhoan,
+                UserInfo = user,
+                DanhSachTour = datTour.ChiTietDatTours.Select(ct => new TourDaDatTamThoi
+                {
+                    TourId = ct.ID_Tour ?? 0,
+                    TenTour = ct.Tour.TenTour,
+                    NgayDi = ct.NgayKhoiHanh ?? DateTime.Today,
+                    SoLuong = ct.SoLuongNguoi ?? 0,
+                    Gia = ct.Gia,
+                    GiaThucTe = ct.Gia,
+                    LoaiDiemDon = ct.LoaiDiemDon,
+                    DiemDon = ct.DiemDon,
+                    DiaChiDon = ct.DiaChiDon,
+                    TinhThanhDon = ct.TinhThanhDon,
+                    PhuThuDiemDon = ct.PhuThuDiemDon,
+                    GhiChuDiemDon = ct.GhiChuDiemDon,
+                    CanXacNhanDiemDon = ct.CanXacNhanDiemDon
+                }).ToList()
+            };
+
+            return View("ThanhToan", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult XacNhanThanhToanDon(int ID_DatTour)
+        {
+            int? userId = Session["ID_NguoiDung"] as int?;
+            if (!userId.HasValue)
+            {
+                TempData["Error"] = "Bạn phải đăng nhập để thanh toán.";
+                return RedirectToAction("DangNhap", "NguoiDung");
+            }
+
+            var datTour = _contextDB.DatTours
+                .Include("ChiTietDatTours")
+                .FirstOrDefault(d => d.ID_DatTour == ID_DatTour && d.ID_NguoiDung == userId.Value);
+
+            if (datTour == null) return HttpNotFound();
+            if (datTour.TrangThai != AppConstants.TrangThaiDatTour.ChoThanhToan)
+            {
+                TempData["Error"] = "Đơn này chưa sẵn sàng để thanh toán.";
+                return RedirectToAction("LichSuDatTour");
+            }
+            if (datTour.ChiTietDatTours.Any(c => c.CanXacNhanDiemDon))
+            {
+                TempData["Error"] = "Điểm đón của đơn này vẫn cần admin xác nhận.";
+                return RedirectToAction("LichSuDatTour");
+            }
+
+            using (var transaction = _contextDB.Database.BeginTransaction(IsolationLevel.Serializable))
+            {
+                try
+                {
+                    foreach (var item in datTour.ChiTietDatTours)
+                    {
+                        var lichUpdate = _contextDB.LichKhoiHanhs.FirstOrDefault(l =>
+                            l.ID_Tour == item.ID_Tour &&
+                            l.NgayKhoiHanh == item.NgayKhoiHanh &&
+                            l.TrangThai == AppConstants.TrangThaiLichKhoiHanh.Mo);
+
+                        if (lichUpdate == null)
+                            throw new InvalidOperationException("Ngày khởi hành không còn mở. Vui lòng liên hệ nhân viên.");
+
+                        var soLuong = item.SoLuongNguoi ?? 0;
+                        var conLai = lichUpdate.SoLuongToiDa - lichUpdate.SoLuongDaDat;
+                        if (soLuong > conLai)
+                            throw new InvalidOperationException($"Chỉ còn {conLai} chỗ cho ngày {item.NgayKhoiHanh:dd/MM/yyyy}.");
+
+                        lichUpdate.SoLuongDaDat += soLuong;
+                        if (lichUpdate.SoLuongDaDat >= lichUpdate.SoLuongToiDa)
+                            lichUpdate.TrangThai = AppConstants.TrangThaiLichKhoiHanh.HetCho;
+
+                        item.PhuongThucThanhToan = AppConstants.ThanhToan.ChuyenKhoan;
+                    }
+
+                    datTour.TongTien = datTour.ChiTietDatTours.Sum(c => ((c.Gia ?? 0) + (c.PhuThuDiemDon ?? 0)) * (c.SoLuongNguoi ?? 0));
+                    datTour.TrangThai = AppConstants.TrangThaiDatTour.ChoXuLy;
+                    datTour.GhiChu = "Khách đã xác nhận chuyển khoản sau khi admin xác nhận điểm đón.";
+                    _contextDB.SaveChanges();
+                    transaction.Commit();
+                    SendAdminBookingEmail(datTour.ID_DatTour);
+
+                    TempData["Success"] = "Thanh toán thành công! Đơn của bạn đang chờ xử lý.";
+                    return RedirectToAction("LichSuDatTour");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    TempData["Error"] = "Lỗi khi thanh toán: " + ex.Message;
+                    return RedirectToAction("LichSuDatTour");
+                }
+            }
+        }
+
         
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -357,11 +634,18 @@ namespace TourDulich.Controllers
                 return RedirectToAction("Index");
             }
 
+            if (dsTourTam.Any(t => t.CanXacNhanDiemDon))
+            {
+                TempData["Error"] = "Điểm đón của bạn cần admin xác nhận trước khi thanh toán.";
+                return RedirectToAction("XacNhanDatTour");
+            }
+
             try
             {
-                decimal tongTien = dsTourTam.Sum(t => (t.GiaThucTe ?? t.Gia ?? 0) * t.SoLuong);
+                decimal tongTien = dsTourTam.Sum(t => ((t.GiaThucTe ?? t.Gia ?? 0) + (t.PhuThuDiemDon ?? 0)) * t.SoLuong);
                 bool laDoan = dsTourTam.Any(t => t.LaDoan);
                 var itemDoan = dsTourTam.FirstOrDefault(t => t.LaDoan);
+                int newDatTourId;
 
                 using (var transaction = _contextDB.Database.BeginTransaction(IsolationLevel.Serializable))
                 {
@@ -416,15 +700,24 @@ namespace TourDulich.Controllers
                             NgayKhoiHanh        = item.NgayDi,
                             SoLuongNguoi        = item.SoLuong,
                             Gia                 = item.GiaThucTe ?? item.Gia,
-                            PhuongThucThanhToan = AppConstants.ThanhToan.ChuyenKhoan
+                            PhuongThucThanhToan = AppConstants.ThanhToan.ChuyenKhoan,
+                            LoaiDiemDon = item.LoaiDiemDon,
+                            DiemDon = item.DiemDon,
+                            DiaChiDon = item.DiaChiDon,
+                            TinhThanhDon = item.TinhThanhDon,
+                            PhuThuDiemDon = item.PhuThuDiemDon,
+                            GhiChuDiemDon = item.GhiChuDiemDon,
+                            CanXacNhanDiemDon = item.CanXacNhanDiemDon
                         };
                         _contextDB.ChiTietDatTours.Add(chiTiet);
                     }
 
                     _contextDB.SaveChanges();
+                    newDatTourId = datTour.ID_DatTour;
                     transaction.Commit();
                 }
 
+                SendAdminBookingEmail(newDatTourId);
                 Session.Remove("DanhSachTourTamThoi");
                 TempData["Success"] = laDoan
                     ? "Đặt tour đoàn thành công! Nhân viên sẽ liên hệ trưởng đoàn trong 24 giờ."
@@ -473,6 +766,14 @@ namespace TourDulich.Controllers
                     SoLuongNguoi = ct.SoLuongNguoi,
                     Gia = ct.Gia,
                     PhuongThucThanhToan = ct.PhuongThucThanhToan
+                    ,
+                    LoaiDiemDon = ct.LoaiDiemDon,
+                    DiemDon = ct.DiemDon,
+                    DiaChiDon = ct.DiaChiDon,
+                    TinhThanhDon = ct.TinhThanhDon,
+                    PhuThuDiemDon = ct.PhuThuDiemDon,
+                    GhiChuDiemDon = ct.GhiChuDiemDon,
+                    CanXacNhanDiemDon = ct.CanXacNhanDiemDon
                 }).ToList()
             }).ToList();
 
@@ -617,7 +918,7 @@ namespace TourDulich.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult GuiYeuCauHuy(int ID_DatTour, string LyDo)
+        public ActionResult GuiYeuCauHuy(int ID_DatTour, string LyDo, string TenNganHang, string SoTaiKhoanHoanTien, string TenChuTaiKhoan)
         {
             var userId = Session["ID_NguoiDung"] as int?;
             if (!userId.HasValue) return RedirectToAction("DangNhap", "NguoiDung");
@@ -656,11 +957,20 @@ namespace TourDulich.Controllers
             int phanTram = policy != null ? policy.PhanTramHoan : 0;
             decimal tienHoan = (phanTram / 100m) * (datTour.TongTien ?? 0);
 
+            if (string.IsNullOrWhiteSpace(TenNganHang) || string.IsNullOrWhiteSpace(SoTaiKhoanHoanTien) || string.IsNullOrWhiteSpace(TenChuTaiKhoan))
+            {
+                TempData["Error"] = "Vui lòng nhập đầy đủ thông tin tài khoản ngân hàng nhận hoàn tiền.";
+                return RedirectToAction("LichSuDatTour");
+            }
+
             // Gửi yêu cầu hủy chờ admin duyệt
             var yeuCau = new YeuCauHuy
             {
                 ID_DatTour = datTour.ID_DatTour,
                 LyDo = LyDo,
+                TenNganHang = TenNganHang.Trim(),
+                SoTaiKhoanHoanTien = SoTaiKhoanHoanTien.Trim(),
+                TenChuTaiKhoan = TenChuTaiKhoan.Trim(),
                 NgayGui = DateTime.Now,
                 TrangThai = AppConstants.TrangThaiYeuCauHuy.ChoXuLy,
                 PhanTramHoan = phanTram,
@@ -675,9 +985,49 @@ namespace TourDulich.Controllers
             datTour.CoYeuCauHuy = true;
 
             _contextDB.SaveChanges();
+            SendAdminCancelRequestEmail(yeuCau.ID_YeuCauHuy);
 
             TempData["Success"] = $"Đã gửi yêu cầu hủy tour! Yêu cầu của bạn đang được chờ xử lý. Bạn sẽ được hoàn {phanTram}% ({tienHoan:N0} VNĐ) sau khi admin xác nhận.";
             return RedirectToAction("LichSuDatTour");
+        }
+
+        private void SendAdminBookingEmail(int idDatTour)
+        {
+            try
+            {
+                var datTour = _contextDB.DatTours
+                    .Include("NguoiDung")
+                    .Include("ChiTietDatTours.Tour")
+                    .FirstOrDefault(d => d.ID_DatTour == idDatTour);
+
+                if (datTour == null) return;
+
+                string emailError;
+                AdminEmailService.TrySendBookingNotification(datTour, out emailError);
+            }
+            catch
+            {
+                // Không để lỗi email làm hỏng thao tác đặt tour của khách.
+            }
+        }
+
+        private void SendAdminCancelRequestEmail(int idYeuCauHuy)
+        {
+            try
+            {
+                var yeuCau = _contextDB.YeuCauHuys
+                    .Include("DatTour.NguoiDung")
+                    .FirstOrDefault(y => y.ID_YeuCauHuy == idYeuCauHuy);
+
+                if (yeuCau == null) return;
+
+                string emailError;
+                AdminEmailService.TrySendCancelRequestNotification(yeuCau, out emailError);
+            }
+            catch
+            {
+                // Không để lỗi email làm hỏng thao tác gửi yêu cầu hủy của khách.
+            }
         }
     }
 }

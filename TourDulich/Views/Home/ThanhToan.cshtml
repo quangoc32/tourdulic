@@ -3,14 +3,19 @@
 
 @{
     ViewBag.Title = "Thanh Toán Đặt Tour";
-    var tongTien = Model.DanhSachTour.Sum(t => (t.GiaThucTe ?? t.Gia ?? 0) * t.SoLuong);
-    var noiDungChuyenKhoan = "DAT TOUR " + Model.UserInfo.ID_NguoiDung;
+    var tongTien = Model.DanhSachTour.Sum(t => ((t.GiaThucTe ?? t.Gia ?? 0) + (t.PhuThuDiemDon ?? 0)) * t.SoLuong);
+    var noiDungChuyenKhoan = Model.ID_DatTour.HasValue ? "DAT TOUR " + Model.ID_DatTour.Value : "DAT TOUR " + Model.UserInfo.ID_NguoiDung;
+    var formAction = Model.ID_DatTour.HasValue ? Url.Action("XacNhanThanhToanDon", "Home") : Url.Action("ThanhToan", "Home");
 }
 
 <div class="container my-4">
     <h3 class="mb-4">Thông tin khách hàng</h3>
-    <form asp-action="ThanhToan" method="post" class="needs-validation" novalidate>
+    <form action="@formAction" method="post" class="needs-validation" novalidate>
         @Html.AntiForgeryToken()
+        @if (Model.ID_DatTour.HasValue)
+        {
+            <input type="hidden" name="ID_DatTour" value="@Model.ID_DatTour.Value" />
+        }
 
         <div class="row mb-3">
             <div class="col-md-6">
@@ -84,8 +89,21 @@
                             <td class="text-start">@tour.TenTour</td>
                             <td>@tour.NgayDi.ToString("dd/MM/yyyy")</td>
                             <td>@tour.SoLuong</td>
-                            <td class="text-end text-primary fw-semibold">@string.Format("{0:N0}₫", tour.GiaThucTe ?? tour.Gia)</td>
-                            <td class="text-end fw-bold text-success">@string.Format("{0:N0}₫", (tour.GiaThucTe ?? tour.Gia) * tour.SoLuong)</td>
+                            <td class="text-end text-primary fw-semibold">@string.Format("{0:N0}₫", (tour.GiaThucTe ?? tour.Gia) + (tour.PhuThuDiemDon ?? 0))</td>
+                            <td class="text-end fw-bold text-success">@string.Format("{0:N0}₫", tour.ThanhTienCoDiemDon)</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-start text-muted small">
+                                Điểm đón: <strong>@tour.DiemDon</strong>
+                                @if (!string.IsNullOrWhiteSpace(tour.DiaChiDon))
+                                {
+                                    <span> - @tour.DiaChiDon</span>
+                                }
+                                @if (tour.CanXacNhanDiemDon)
+                                {
+                                    <span class="badge bg-warning text-dark ms-1">Chờ admin xác nhận</span>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>

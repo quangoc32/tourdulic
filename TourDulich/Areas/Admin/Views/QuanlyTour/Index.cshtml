@@ -55,6 +55,7 @@
                 </td>
                 <td>
                     @Html.ActionLink("Sửa", "SuaTour", new { id = item.ID_Tour }, new { @class = "btn btn-sm btn-warning me-1" })
+                    <a href="@Url.Action("Index", "QuanlyDiemDonTour", new { tourId = item.ID_Tour })" class="btn btn-sm btn-info me-1 text-white">Điểm đón</a>
                     @using (Html.BeginForm("XoaTour", "QuanlyTour", new { id = item.ID_Tour }, FormMethod.Post, new { onsubmit = "return confirm('Bạn có chắc chắn muốn xóa tour này?');", style = "display:inline;" }))
                     {
                         <button type="submit" class="btn btn-sm btn-danger">Xóa</button>

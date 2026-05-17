@@ -84,6 +84,27 @@
             0% { transform: scale(1); opacity: 0.8; }
             100% { transform: scale(1.5); opacity: 0; }
         }
+
+        .navbar-search {
+            width: 280px;
+        }
+
+        .navbar-search .form-control {
+            border-radius: 22px 0 0 22px;
+            border-right: 0;
+            min-height: 42px;
+        }
+
+        .navbar-search .btn {
+            border-radius: 0 22px 22px 0;
+            min-width: 48px;
+        }
+
+        @@media (max-width: 991.98px) {
+            .navbar-search {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -131,18 +152,13 @@
 
 
                 <ul class="navbar-nav d-flex flex-row align-items-center gap-3">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-primary d-flex align-items-center" href="#" id="searchDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-                            <i class="bi bi-search fs-5"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end p-3 shadow-lg" aria-labelledby="searchDropdown" style="min-width: 300px; border-radius: 12px;">
-                            <li>
-                                <form action="@Url.Action("Index", "Tour")" method="get" class="d-flex">
-                                    <input type="text" name="searchString" class="form-control me-2" placeholder="Tìm kiếm tên tour..." value="@(ViewBag.SearchString ?? "")" required style="border-radius: 20px;">
-                                    <button type="submit" class="btn btn-primary" style="border-radius: 20px; padding: 5px 15px;"><i class="bi bi-search"></i></button>
-                                </form>
-                            </li>
-                        </ul>
+                    <li class="nav-item">
+                        <form action="@Url.Action("Index", "Tour")" method="get" class="navbar-search d-flex">
+                            <input type="text" name="searchString" class="form-control" placeholder="Tìm kiếm tên tour..." value="@(ViewBag.SearchString ?? "")" />
+                            <button type="submit" class="btn btn-primary" aria-label="Tìm kiếm">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
                     </li>
 
                     <li class="nav-item dropdown">
@@ -179,7 +195,7 @@
                             }
                         }
                         <a href="@Url.Action("XacNhanDatTour", "Home")" class="text-primary position-relative d-inline-block" style="padding-right: 10px;">
-                            <i class="bi bi-cart fs-4"></i>
+                            <i class="bi bi-airplane fs-4"></i>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 @soLuong
                             </span>

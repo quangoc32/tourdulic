@@ -1,0 +1,63 @@
+@model TourDulich.ModelView.TinTucLinkView
+
+@{
+    ViewBag.Title = "Sửa tin tức";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-primary fw-bold mb-4">Sửa tin tức</h2>
+
+@using (Html.BeginForm("Sua", "QuanlyTinTuc", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Tiêu đề</label>
+                    @Html.TextBoxFor(m => m.TieuDe, new { @class = "form-control", maxlength = "200", required = "required" })
+                    @Html.ValidationMessageFor(m => m.TieuDe, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Nguồn</label>
+                    @Html.TextBoxFor(m => m.Nguon, new { @class = "form-control", maxlength = "100" })
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label fw-semibold">Mô tả ngắn</label>
+                    @Html.TextAreaFor(m => m.MoTaNgan, new { @class = "form-control", rows = "3", maxlength = "500", required = "required" })
+                    @Html.ValidationMessageFor(m => m.MoTaNgan, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Link bài viết</label>
+                    @Html.TextBoxFor(m => m.LinkBaiViet, new { @class = "form-control", type = "url", required = "required" })
+                    @Html.ValidationMessageFor(m => m.LinkBaiViet, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Link ảnh đại diện</label>
+                    @Html.TextBoxFor(m => m.HinhAnh, new { @class = "form-control", type = "url" })
+                    @Html.ValidationMessageFor(m => m.HinhAnh, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-12 d-flex gap-4">
+                    <div class="form-check">
+                        @Html.CheckBoxFor(m => m.LaTinHot, new { @class = "form-check-input" })
+                        <label class="form-check-label" for="LaTinHot">Tin hot</label>
+                    </div>
+                    <div class="form-check">
+                        @Html.CheckBoxFor(m => m.HienThi, new { @class = "form-check-input" })
+                        <label class="form-check-label" for="HienThi">Hiển thị</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-end">
+            <a href="@Url.Action("Index", "QuanlyTinTuc")" class="btn btn-secondary">Quay lại</a>
+            <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-save me-1"></i>Cập nhật
+            </button>
+        </div>
+    </div>
+}

@@ -42,6 +42,9 @@ namespace TourDulich.ModelView
         public string SoDienThoai { get; set; }
         public DateTime? NgayGui { get; set; }
         public string LyDo { get; set; }
+        public string TenNganHang { get; set; }
+        public string SoTaiKhoanHoanTien { get; set; }
+        public string TenChuTaiKhoan { get; set; }
         public string TrangThai { get; set; }
         public int? PhanTramHoan { get; set; }
         public decimal? TienHoan { get; set; }
@@ -62,6 +65,9 @@ namespace TourDulich.ModelView
     {
         public int ID_DatTour { get; set; }
         public string LyDo { get; set; }
+        public string TenNganHang { get; set; }
+        public string SoTaiKhoanHoanTien { get; set; }
+        public string TenChuTaiKhoan { get; set; }
     }
 
     public class XuLyYeuCauHuyViewModel

@@ -134,12 +134,14 @@
     <Compile Include="Areas\Admin\Controllers\QuanlyChinhSachHuyController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyDatTourController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyDiaDiemController.cs" />
+    <Compile Include="Areas\Admin\Controllers\QuanlyDiemDonTourController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyDanhMucController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyLichKhoiHanhController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyLienHeController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyLichTrinhController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyMuaGiaController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyNguoidungController.cs" />
+    <Compile Include="Areas\Admin\Controllers\QuanlyTinTucController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyTourController.cs" />
     <Compile Include="Areas\Admin\Controllers\QuanlyYeuCauHuyController.cs" />
     <Compile Include="Areas\Admin\Filters\AdminAuthorizeAttribute.cs" />
@@ -171,16 +173,23 @@
     <Compile Include="ModelView\ChiTietLichSuTourView.cs" />
     <Compile Include="ModelView\DanhGiaView.cs" />
     <Compile Include="ModelView\DatTourView.cs" />
+    <Compile Include="ModelView\DiemDonTourView.cs" />
     <Compile Include="ModelView\DiaDiemView.cs" />
     <Compile Include="ModelView\LichKhoiHanhView.cs" />
     <Compile Include="ModelView\LichSuDatTourView.cs" />
     <Compile Include="ModelView\LichTrinhTourView.cs" />
     <Compile Include="ModelView\ThanhToanView.cs" />
+    <Compile Include="ModelView\AdminEmailSettingView.cs" />
+    <Compile Include="ModelView\TinTucLinkView.cs" />
     <Compile Include="ModelView\TourDaDatTamThoi.cs" />
     <Compile Include="ModelView\TourStatusView.cs" />
     <Compile Include="ModelView\TourView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\PasswordHasher.cs" />
+    <Compile Include="Services\DiemDonTourStore.cs" />
+    <Compile Include="Services\AdminEmailSettingStore.cs" />
+    <Compile Include="Services\LienHeEmailService.cs" />
+    <Compile Include="Services\TinTucLinkStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
@@ -282,7 +291,12 @@
     <Content Include="Areas\Admin\Views\QuanlyMuaGia\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\QuanlyMuaGia\Index.cshtml" />
     <Content Include="Areas\Admin\Views\QuanlyYeuCauHuy\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyTinTuc\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyTinTuc\Sua.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyDiemDonTour\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanlyDiemDonTour\Sua.cshtml" />
     <Content Include="Scripts\migration_slot_price_cancel.sql" />
+    <Content Include="Scripts\migration_pickup_points.sql" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

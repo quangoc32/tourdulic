@@ -1,0 +1,34 @@
+IF COL_LENGTH('ChiTietDatTour', 'LoaiDiemDon') IS NULL
+BEGIN
+    ALTER TABLE ChiTietDatTour ADD LoaiDiemDon NVARCHAR(30) NULL;
+END
+
+IF COL_LENGTH('ChiTietDatTour', 'DiemDon') IS NULL
+BEGIN
+    ALTER TABLE ChiTietDatTour ADD DiemDon NVARCHAR(150) NULL;
+END
+
+IF COL_LENGTH('ChiTietDatTour', 'DiaChiDon') IS NULL
+BEGIN
+    ALTER TABLE ChiTietDatTour ADD DiaChiDon NVARCHAR(250) NULL;
+END
+
+IF COL_LENGTH('ChiTietDatTour', 'TinhThanhDon') IS NULL
+BEGIN
+    ALTER TABLE ChiTietDatTour ADD TinhThanhDon NVARCHAR(100) NULL;
+END
+
+IF COL_LENGTH('ChiTietDatTour', 'PhuThuDiemDon') IS NULL
+BEGIN
+    ALTER TABLE ChiTietDatTour ADD PhuThuDiemDon DECIMAL(18, 2) NULL;
+END
+
+IF COL_LENGTH('ChiTietDatTour', 'GhiChuDiemDon') IS NULL
+BEGIN
+    ALTER TABLE ChiTietDatTour ADD GhiChuDiemDon NVARCHAR(500) NULL;
+END
+
+IF COL_LENGTH('ChiTietDatTour', 'CanXacNhanDiemDon') IS NULL
+BEGIN
+    ALTER TABLE ChiTietDatTour ADD CanXacNhanDiemDon BIT NOT NULL CONSTRAINT DF_ChiTietDatTour_CanXacNhanDiemDon DEFAULT 0;
+END

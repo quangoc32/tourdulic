@@ -93,6 +93,89 @@ namespace TourDulich.Areas.Admin.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+        [HttpPost]
+        public JsonResult XacNhanDiemDon(int idChiTietDatTour, decimal phuThuDiemDon, string ghiChuDiemDon)
+        {
+            try
+            {
+                var chiTiet = _contextDB.ChiTietDatTours.Find(idChiTietDatTour);
+                if (chiTiet == null)
+                    return Json(new { success = false, message = "Không tìm thấy chi tiết đặt tour." });
+
+                chiTiet.PhuThuDiemDon = phuThuDiemDon;
+                chiTiet.GhiChuDiemDon = ghiChuDiemDon;
+                chiTiet.CanXacNhanDiemDon = false;
+
+                var datTour = _contextDB.DatTours.Find(chiTiet.ID_DatTour);
+                if (datTour != null)
+                {
+                    bool conDiemDonCanXacNhan = _contextDB.ChiTietDatTours
+                        .Any(c => c.ID_DatTour == datTour.ID_DatTour && c.ID_ChiTietDatTour != idChiTietDatTour && c.CanXacNhanDiemDon);
+
+                    var chiTiets = _contextDB.ChiTietDatTours
+                        .Where(c => c.ID_DatTour == datTour.ID_DatTour)
+                        .ToList();
+
+                    datTour.TongTien = chiTiets.Sum(c => ((c.Gia ?? 0) + (c.PhuThuDiemDon ?? 0)) * (c.SoLuongNguoi ?? 0));
+                    datTour.GhiChu = string.IsNullOrWhiteSpace(ghiChuDiemDon)
+                        ? "Admin đã xác nhận điểm đón. Chờ khách thanh toán."
+                        : ghiChuDiemDon;
+
+                    if (!conDiemDonCanXacNhan)
+                    {
+                        datTour.TrangThai = AppConstants.TrangThaiDatTour.ChoThanhToan;
+                    }
+                }
+
+                _contextDB.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult XacNhanDiemDonTheoDon(int idDatTour, decimal phuThuDiemDon, string ghiChuDiemDon)
+        {
+            try
+            {
+                var datTour = _contextDB.DatTours.Find(idDatTour);
+                if (datTour == null)
+                    return Json(new { success = false, message = "Không tìm thấy đơn đặt tour." });
+
+                var chiTiets = _contextDB.ChiTietDatTours
+                    .Where(c => c.ID_DatTour == idDatTour)
+                    .ToList();
+
+                var diemDonCanXacNhan = chiTiets.Where(c => c.CanXacNhanDiemDon).ToList();
+                if (!diemDonCanXacNhan.Any())
+                    return Json(new { success = false, message = "Đơn này không có điểm đón cần xác nhận." });
+
+                foreach (var chiTiet in diemDonCanXacNhan)
+                {
+                    chiTiet.PhuThuDiemDon = phuThuDiemDon;
+                    chiTiet.GhiChuDiemDon = ghiChuDiemDon;
+                    chiTiet.CanXacNhanDiemDon = false;
+                }
+
+                datTour.TongTien = chiTiets.Sum(c => ((c.Gia ?? 0) + (c.PhuThuDiemDon ?? 0)) * (c.SoLuongNguoi ?? 0));
+                datTour.TrangThai = AppConstants.TrangThaiDatTour.ChoThanhToan;
+                datTour.GhiChu = string.IsNullOrWhiteSpace(ghiChuDiemDon)
+                    ? "Admin đã xác nhận điểm đón. Chờ khách thanh toán."
+                    : ghiChuDiemDon;
+
+                _contextDB.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
         [HttpPost]
         public JsonResult XoaDatTour(int id)
         {

@@ -3,9 +3,103 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-@model List<TourDulich.Models.LienHe>
+@model TourDulich.ModelView.AdminEmailSettingPageView
 
 <h2 class="text-center mb-4 pt-2 text-primary fw-bold">Quản lý Yêu cầu Liên hệ</h2>
+
+<div class="card shadow mb-4" style="border-radius: 15px; border: none;">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center" style="border-radius: 15px 15px 0 0;">
+        <div class="fw-bold"><i class="bi bi-envelope-at-fill me-2"></i>Gmail admin nhận thông báo liên hệ</div>
+        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalGmailNhan">
+            <i class="bi bi-plus-circle me-1"></i> Thêm Gmail admin
+        </button>
+    </div>
+    <div class="card-body">
+        <form id="formCauHinhEmail" class="row g-3 align-items-end mb-4">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Gmail gửi thông báo</label>
+                <input type="email" class="form-control" name="GmailGui" value="@Model.EmailSetting.GmailGui" placeholder="tencongty@gmail.com" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">App Password Gmail</label>
+                <input type="password" class="form-control" name="MatKhauUngDung" placeholder="Nhập mới nếu muốn đổi" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Tên người gửi</label>
+                <input type="text" class="form-control" name="TenNguoiGui" value="@Model.EmailSetting.TenNguoiGui" />
+            </div>
+            <div class="col-md-2">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="BatThongBaoLienHe" value="true" @(Model.EmailSetting.BatThongBaoLienHe ? "checked" : "") />
+                    <label class="form-check-label fw-semibold">Bật gửi Gmail</label>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-success w-100"><i class="bi bi-save"></i></button>
+            </div>
+            <div class="col-md-12 d-flex justify-content-end">
+                <button type="button" class="btn btn-outline-primary btn-sm" id="btnGuiThuGmailAdmin">
+                    <i class="bi bi-send-check me-1"></i> Gửi thử Gmail admin
+                </button>
+            </div>
+            <div class="col-12">
+                <div class="alert alert-info py-2 mb-0 small">
+                    Gmail gửi cần dùng <strong>App Password</strong>, không dùng mật khẩu đăng nhập Gmail thường. Khi khách gửi liên hệ, email sẽ được gửi tới các Gmail admin đang bật bên dưới.
+                </div>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Người nhận</th>
+                        <th>Gmail</th>
+                        <th>Trạng thái</th>
+                        <th style="width: 170px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var email in Model.EmailSetting.NguoiNhans)
+                    {
+                        <tr>
+                            <td>@email.TenNguoiNhan</td>
+                            <td>@email.Email</td>
+                            <td>
+                                @if (email.KichHoat)
+                                {
+                                    <span class="badge bg-success">Đang nhận</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Tạm tắt</span>
+                                }
+                            </td>
+                            <td>
+                                <button class="btn btn-warning btn-sm btnSuaGmailNhan"
+                                        data-id="@email.Id"
+                                        data-ten="@email.TenNguoiNhan"
+                                        data-email="@email.Email"
+                                        data-kichhoat="@email.KichHoat.ToString().ToLower()">
+                                    <i class="bi bi-pencil-square"></i> Sửa
+                                </button>
+                                <button class="btn btn-danger btn-sm btnXoaGmailNhan" data-id="@email.Id">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.EmailSetting.NguoiNhans.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3">Chưa có Gmail admin nhận thông báo.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <div class="d-flex justify-content-end mb-3">
     <form method="get" action="@Url.Action("Index", "QuanlyLienHe")" class="d-flex w-25">
@@ -28,7 +122,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.LienHes)
                     {
                         <tr>
                             <td>
@@ -64,7 +158,7 @@
                             </td>
                         </tr>
                     }
-                    @if (Model.Count == 0)
+                    @if (Model.LienHes.Count == 0)
                     {
                         <tr>
                             <td colspan="5" class="text-center py-4 text-muted">Không có yêu cầu liên hệ nào.</td>
@@ -72,6 +166,38 @@
                     }
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalGmailNhan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+            <form id="formGmailNhan">
+                <div class="modal-header bg-primary text-white" style="border-radius: 15px 15px 0 0;">
+                    <h5 class="modal-title"><i class="bi bi-envelope-plus-fill me-2"></i>Gmail admin nhận thông báo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" name="Id" id="gmailNhanId" value="0" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tên người nhận</label>
+                        <input type="text" class="form-control" name="TenNguoiNhan" id="gmailNhanTen" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Gmail</label>
+                        <input type="email" class="form-control" name="Email" id="gmailNhanEmail" required />
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="KichHoat" value="true" id="gmailNhanKichHoat" checked />
+                        <label class="form-check-label" for="gmailNhanKichHoat">Đang nhận thông báo</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Lưu Gmail</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -116,6 +242,72 @@
 
 @section Scripts {
     <script>
+        $("#formCauHinhEmail").submit(function (e) {
+            e.preventDefault();
+            $.post('@Url.Action("LuuCauHinhEmail", "QuanlyLienHe", new { area = "Admin" })', $(this).serialize(), function (res) {
+                if (res.success) {
+                    alert("Đã lưu cấu hình Gmail gửi thông báo.");
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + res.message);
+                }
+            });
+        });
+
+        $("#btnGuiThuGmailAdmin").click(function () {
+            const btn = $(this);
+            btn.prop("disabled", true).html('<span class="spinner-border spinner-border-sm me-1"></span>Đang gửi thử...');
+
+            $.post('@Url.Action("GuiThuGmailAdmin", "QuanlyLienHe", new { area = "Admin" })', function (res) {
+                if (res.success) {
+                    alert("Đã gửi thử Gmail thành công. Bạn kiểm tra hộp thư đến/spam trên điện thoại.");
+                } else {
+                    alert("Gửi thử thất bại: " + res.message);
+                }
+            }).always(function () {
+                btn.prop("disabled", false).html('<i class="bi bi-send-check me-1"></i> Gửi thử Gmail admin');
+            });
+        });
+
+        $('[data-bs-target="#modalGmailNhan"]').click(function () {
+            $("#gmailNhanId").val(0);
+            $("#gmailNhanTen").val("");
+            $("#gmailNhanEmail").val("");
+            $("#gmailNhanKichHoat").prop("checked", true);
+        });
+
+        $(document).on("click", ".btnSuaGmailNhan", function () {
+            $("#gmailNhanId").val($(this).data("id"));
+            $("#gmailNhanTen").val($(this).data("ten"));
+            $("#gmailNhanEmail").val($(this).data("email"));
+            $("#gmailNhanKichHoat").prop("checked", $(this).data("kichhoat") === true || $(this).data("kichhoat") === "true");
+            new bootstrap.Modal(document.getElementById("modalGmailNhan")).show();
+        });
+
+        $("#formGmailNhan").submit(function (e) {
+            e.preventDefault();
+            $.post('@Url.Action("LuuGmailNhan", "QuanlyLienHe", new { area = "Admin" })', $(this).serialize(), function (res) {
+                if (res.success) {
+                    alert("Đã lưu Gmail admin nhận thông báo.");
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + res.message);
+                }
+            });
+        });
+
+        $(document).on("click", ".btnXoaGmailNhan", function () {
+            if (!confirm("Bạn có chắc muốn xóa Gmail nhận thông báo này?")) return;
+            $.post('@Url.Action("XoaGmailNhan", "QuanlyLienHe", new { area = "Admin" })', { id: $(this).data("id") }, function (res) {
+                if (res.success) {
+                    alert("Đã xóa Gmail nhận thông báo.");
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + res.message);
+                }
+            });
+        });
+
         $(document).on("click", ".btnXemChiTiet", function () {
             var id = $(this).data("id");
             var hoten = $(this).data("hoten");

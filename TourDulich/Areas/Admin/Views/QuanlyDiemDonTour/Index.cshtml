@@ -1,0 +1,95 @@
+@model List<TourDulich.ModelView.DiemDonTourView>
+@{
+    var tour = ViewBag.Tour as TourDulich.Models.Tour;
+    ViewBag.Title = "Quản lý điểm đón";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-primary fw-bold mb-3">Điểm đón tour</h2>
+<div class="mb-4">
+    <a href="@Url.Action("Index", "QuanlyTour")" class="btn btn-outline-secondary btn-sm">Quay lại tour</a>
+    <span class="ms-2 fw-semibold">@tour.TenTour</span>
+</div>
+
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white fw-semibold">Thêm điểm đón cố định</div>
+    <div class="card-body">
+        @using (Html.BeginForm("Them", "QuanlyDiemDonTour", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ID_Tour" value="@tour.ID_Tour" />
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Tên điểm đón</label>
+                    <input name="TenDiemDon" class="form-control" required placeholder="VD: BigC Nam Định" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Tỉnh/Thành</label>
+                    <input name="TinhThanh" class="form-control" placeholder="VD: Nam Định" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Phụ thu/người</label>
+                    <input name="PhuThu" type="number" class="form-control" value="0" />
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold">Địa chỉ</label>
+                    <input name="DiaChi" class="form-control" placeholder="Địa chỉ cụ thể" />
+                </div>
+                <div class="col-md-4 d-flex align-items-end gap-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="LaTuTuc" name="LaTuTuc" value="true" />
+                        <input type="hidden" name="LaTuTuc" value="false" />
+                        <label class="form-check-label" for="LaTuTuc">Tự túc</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="HienThi" name="HienThi" value="true" checked />
+                        <input type="hidden" name="HienThi" value="false" />
+                        <label class="form-check-label" for="HienThi">Hiển thị</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary ms-auto">Thêm</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>Tên điểm đón</th>
+            <th>Tỉnh/Thành</th>
+            <th>Địa chỉ</th>
+            <th>Phụ thu</th>
+            <th>Trạng thái</th>
+            <th class="text-end">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="fw-semibold">@item.TenDiemDon</td>
+                <td>@item.TinhThanh</td>
+                <td>@item.DiaChi</td>
+                <td>@string.Format("{0:N0} VNĐ", item.PhuThu)</td>
+                <td>
+                    @if (item.LaTuTuc) { <span class="badge bg-info text-dark">Tự túc</span> }
+                    @if (item.HienThi) { <span class="badge bg-success">Hiển thị</span> } else { <span class="badge bg-secondary">Ẩn</span> }
+                </td>
+                <td class="text-end">
+                    <a href="@Url.Action("Sua", "QuanlyDiemDonTour", new { id = item.Id })" class="btn btn-sm btn-outline-primary">Sửa</a>
+                    @using (Html.BeginForm("Xoa", "QuanlyDiemDonTour", FormMethod.Post, new { @class = "d-inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <input type="hidden" name="tourId" value="@tour.ID_Tour" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa điểm đón này?')">Xóa</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

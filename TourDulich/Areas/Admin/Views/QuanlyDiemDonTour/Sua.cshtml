@@ -1,0 +1,52 @@
+@model TourDulich.ModelView.DiemDonTourView
+@{
+    var tour = ViewBag.Tour as TourDulich.Models.Tour;
+    ViewBag.Title = "Sửa điểm đón";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-primary fw-bold mb-3">Sửa điểm đón</h2>
+<div class="mb-4 fw-semibold">@tour.TenTour</div>
+
+@using (Html.BeginForm("Sua", "QuanlyDiemDonTour", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.ID_Tour)
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Tên điểm đón</label>
+                    @Html.TextBoxFor(m => m.TenDiemDon, new { @class = "form-control", required = "required" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Tỉnh/Thành</label>
+                    @Html.TextBoxFor(m => m.TinhThanh, new { @class = "form-control" })
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold">Địa chỉ</label>
+                    @Html.TextBoxFor(m => m.DiaChi, new { @class = "form-control" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Phụ thu/người</label>
+                    @Html.TextBoxFor(m => m.PhuThu, new { @class = "form-control", type = "number" })
+                </div>
+                <div class="col-md-12 d-flex gap-4">
+                    <div class="form-check">
+                        @Html.CheckBoxFor(m => m.LaTuTuc, new { @class = "form-check-input" })
+                        <label class="form-check-label" for="LaTuTuc">Tự túc</label>
+                    </div>
+                    <div class="form-check">
+                        @Html.CheckBoxFor(m => m.HienThi, new { @class = "form-check-input" })
+                        <label class="form-check-label" for="HienThi">Hiển thị</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-end">
+            <a href="@Url.Action("Index", "QuanlyDiemDonTour", new { tourId = Model.ID_Tour })" class="btn btn-secondary">Quay lại</a>
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
+        </div>
+    </div>
+}

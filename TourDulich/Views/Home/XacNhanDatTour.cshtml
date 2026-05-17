@@ -61,6 +61,25 @@ else
                                     <div>
                                         <div class="fw-semibold">@tour.TenTour</div>
                                         <div class="text-muted small fst-italic">Ngày đi: @tour.NgayDi.ToString("dd/MM/yyyy")</div>
+                                        <div class="text-muted small">
+                                            Điểm đón: <strong>@tour.DiemDon</strong>
+                                            @if (!string.IsNullOrWhiteSpace(tour.TinhThanhDon))
+                                            {
+                                                <span> - @tour.TinhThanhDon</span>
+                                            }
+                                            @if (tour.CanXacNhanDiemDon)
+                                            {
+                                                <span class="badge bg-warning text-dark ms-1">Chờ xác nhận</span>
+                                            }
+                                        </div>
+                                        @if (!string.IsNullOrWhiteSpace(tour.DiaChiDon))
+                                        {
+                                            <div class="text-muted small">Địa chỉ: @tour.DiaChiDon</div>
+                                        }
+                                        @if ((tour.PhuThuDiemDon ?? 0) != 0)
+                                        {
+                                            <div class="text-primary small">Phụ thu điểm đón: @string.Format("{0:N0}₫/người", tour.PhuThuDiemDon)</div>
+                                        }
                                         @using (Html.BeginForm("XoaTourTamThoi", "Home", FormMethod.Post))
                                         {
                                             <input type="hidden" name="TourId" value="@tour.TourId" />
@@ -70,7 +89,16 @@ else
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-center text-primary fw-semibold">@string.Format("{0:N0}₫", tour.Gia)</td>
+                            <td class="text-center text-primary fw-semibold">
+                                @if (tour.CanXacNhanDiemDon)
+                                {
+                                    <span class="text-muted">Chờ báo giá</span>
+                                }
+                                else
+                                {
+                                    @Html.Raw(string.Format("{0:N0}₫", (tour.GiaThucTe ?? tour.Gia) + (tour.PhuThuDiemDon ?? 0)))
+                                }
+                            </td>
                             <td class="text-center">
                                 <div class="d-inline-flex align-items-center border rounded px-2">
                                     <span class="px-2">-</span>
@@ -79,7 +107,14 @@ else
                                 </div>
                             </td>
                             <td class="text-center fw-bold text-success">
-                                @string.Format("{0:N0}₫", tour.Gia * tour.SoLuong)
+                                @if (tour.CanXacNhanDiemDon)
+                                {
+                                    <span class="text-muted">Chờ báo giá</span>
+                                }
+                                else
+                                {
+                                    @Html.Raw(string.Format("{0:N0}₫", tour.ThanhTienCoDiemDon))
+                                }
                             </td>
                         </tr>
                     }
@@ -87,15 +122,42 @@ else
             </table>
 
             <div class="text-end">
+                @{
+                    bool canXacNhanDiemDon = Model.Any(t => t.CanXacNhanDiemDon);
+                }
                 <h5 class="fw-bold">
-                    Tổng tiền:
-                    <span class="text-success">
-                        @string.Format("{0:N0}₫", Model.Sum(t => t.Gia * t.SoLuong))
-                    </span>
+                    @(canXacNhanDiemDon ? "Tổng tiền:" : "Tổng tiền:")
+                    @if (canXacNhanDiemDon)
+                    {
+                        <span class="text-warning">Chờ admin xác nhận giá</span>
+                    }
+                    else
+                    {
+                        <span class="text-success">
+                            @string.Format("{0:N0}₫", Model.Sum(t => t.ThanhTienCoDiemDon))
+                        </span>
+                    }
                 </h5>
-                <a href="@Url.Action("ThanhToan", "Home")" class="btn btn-success fw-semibold px-4 mt-3">
-                    <i class="bi bi-credit-card"></i> Thanh toán
-                </a>
+                @if (canXacNhanDiemDon)
+                {
+                    <div class="alert alert-warning text-start mt-3">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        Đơn này có điểm đón cần admin xác nhận. Bạn chưa cần thanh toán ở bước này.
+                    </div>
+                    using (Html.BeginForm("GuiYeuCauXacNhanDiemDon", "Home", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-warning fw-semibold px-4 mt-2">
+                            <i class="bi bi-send"></i> Gửi yêu cầu xác nhận điểm đón
+                        </button>
+                    }
+                }
+                else
+                {
+                    <a href="@Url.Action("ThanhToan", "Home")" class="btn btn-success fw-semibold px-4 mt-3">
+                        <i class="bi bi-credit-card"></i> Thanh toán
+                    </a>
+                }
 
             </div>
         }

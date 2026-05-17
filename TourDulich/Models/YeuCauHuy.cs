@@ -17,6 +17,15 @@ namespace TourDulich.Models
         [StringLength(500)]
         public string LyDo { get; set; }
 
+        [StringLength(100)]
+        public string TenNganHang { get; set; }
+
+        [StringLength(50)]
+        public string SoTaiKhoanHoanTien { get; set; }
+
+        [StringLength(150)]
+        public string TenChuTaiKhoan { get; set; }
+
         [StringLength(30)]
         public string TrangThai { get; set; } = AppConstants.TrangThaiYeuCauHuy.ChoXuLy; // Chờ xử lý / Chấp thuận / Từ chối
 

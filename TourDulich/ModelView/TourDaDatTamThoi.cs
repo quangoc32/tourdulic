@@ -24,5 +24,14 @@ namespace TourDulich.ModelView
         public string TruongDoan { get; set; }
         public string SdtTruongDoan { get; set; }
         public string GhiChuDoan { get; set; }
+
+        public string LoaiDiemDon { get; set; }
+        public string DiemDon { get; set; }
+        public string DiaChiDon { get; set; }
+        public string TinhThanhDon { get; set; }
+        public decimal? PhuThuDiemDon { get; set; }
+        public string GhiChuDiemDon { get; set; }
+        public bool CanXacNhanDiemDon { get; set; }
+        public decimal? ThanhTienCoDiemDon => SoLuong * ((GiaThucTe ?? Gia ?? 0) + (PhuThuDiemDon ?? 0));
     }
 }
