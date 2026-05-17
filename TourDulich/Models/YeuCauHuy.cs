@@ -18,7 +18,7 @@ namespace TourDulich.Models
         public string LyDo { get; set; }
 
         [StringLength(30)]
-        public string TrangThai { get; set; } = "Chờ xử lý"; // Chờ xử lý / Chấp thuận / Từ chối
+        public string TrangThai { get; set; } = AppConstants.TrangThaiYeuCauHuy.ChoXuLy; // Chờ xử lý / Chấp thuận / Từ chối
 
         public int? PhanTramHoan { get; set; }
 

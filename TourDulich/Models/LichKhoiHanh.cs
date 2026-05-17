@@ -23,7 +23,7 @@ namespace TourDulich.Models
         public int SoLuongConLai => SoLuongToiDa - SoLuongDaDat;
 
         [StringLength(20)]
-        public string TrangThai { get; set; } = "Mở"; // Mở / Đóng / Hết chỗ
+        public string TrangThai { get; set; } = AppConstants.TrangThaiLichKhoiHanh.Mo; // Mở / Đóng / Hết chỗ
 
         [StringLength(200)]
         public string GhiChu { get; set; }

@@ -35,7 +35,7 @@ namespace TourDulich.Models
 
         /// <summary>Khách lẻ / Đoàn</summary>
         [StringLength(20)]
-        public string LoaiDat { get; set; } = "Khách lẻ";
+        public string LoaiDat { get; set; } = AppConstants.LoaiDat.KhachLe;
 
         [StringLength(100)]
         public string TruongDoan { get; set; }

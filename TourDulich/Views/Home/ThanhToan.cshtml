@@ -1,7 +1,10 @@
-﻿@model TourDulich.ModelView.ThanhToanView
+@model TourDulich.ModelView.ThanhToanView
+@using TourDulich.Models
 
 @{
     ViewBag.Title = "Thanh Toán Đặt Tour";
+    var tongTien = Model.DanhSachTour.Sum(t => (t.GiaThucTe ?? t.Gia ?? 0) * t.SoLuong);
+    var noiDungChuyenKhoan = "DAT TOUR " + Model.UserInfo.ID_NguoiDung;
 }
 
 <div class="container my-4">
@@ -30,21 +33,35 @@
                 <input type="text" id="DiaChi" name="UserInfo.DiaChi" class="form-control" value="@Model.UserInfo.DiaChi" readonly />
             </div>
         </div>
-        <h3 class="mt-5 mb-3">Phương thức thanh toán</h3>
-        <div class="mb-4">
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="PhuongThucThanhToan" id="ptTienMat" value="Tiền mặt"
-                       @(Model.PhuongThucThanhToan == "Tiền mặt" ? "checked" : "") required />
-                <label class="form-check-label" for="ptTienMat">
-                    Tiền mặt
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="PhuongThucThanhToan" id="ptChuyenKhoan" value="Chuyển khoản"
-                       @(Model.PhuongThucThanhToan == "Chuyển khoản" ? "checked" : "") required />
-                <label class="form-check-label" for="ptChuyenKhoan">
-                    Chuyển khoản
-                </label>
+
+        <h3 class="mt-5 mb-3">Thanh toán chuyển khoản</h3>
+        <input type="hidden" name="PhuongThucThanhToan" value="@AppConstants.ThanhToan.ChuyenKhoan" />
+        <div class="border rounded p-3 mb-4 bg-light">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="fw-semibold text-muted">Ngân hàng</div>
+                    <div class="fs-5">@AppConstants.ThongTinChuyenKhoan.NganHang</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="fw-semibold text-muted">Số tài khoản</div>
+                    <div class="fs-5">@AppConstants.ThongTinChuyenKhoan.SoTaiKhoan</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="fw-semibold text-muted">Chủ tài khoản</div>
+                    <div class="fs-5">@AppConstants.ThongTinChuyenKhoan.ChuTaiKhoan</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="fw-semibold text-muted">Chi nhánh</div>
+                    <div class="fs-5">@AppConstants.ThongTinChuyenKhoan.ChiNhanh</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="fw-semibold text-muted">Số tiền</div>
+                    <div class="fs-5 text-success fw-bold">@string.Format("{0:N0}₫", tongTien)</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="fw-semibold text-muted">Nội dung chuyển khoản</div>
+                    <div class="fs-5 fw-bold">@noiDungChuyenKhoan</div>
+                </div>
             </div>
         </div>
 
@@ -67,8 +84,8 @@
                             <td class="text-start">@tour.TenTour</td>
                             <td>@tour.NgayDi.ToString("dd/MM/yyyy")</td>
                             <td>@tour.SoLuong</td>
-                            <td class="text-end text-primary fw-semibold">@string.Format("{0:N0}₫", tour.Gia)</td>
-                            <td class="text-end fw-bold text-success">@string.Format("{0:N0}₫", tour.Gia * tour.SoLuong)</td>
+                            <td class="text-end text-primary fw-semibold">@string.Format("{0:N0}₫", tour.GiaThucTe ?? tour.Gia)</td>
+                            <td class="text-end fw-bold text-success">@string.Format("{0:N0}₫", (tour.GiaThucTe ?? tour.Gia) * tour.SoLuong)</td>
                         </tr>
                     }
                 </tbody>
@@ -76,7 +93,7 @@
                     <tr>
                         <td colspan="4" class="text-end fw-bold fs-5">Tổng tiền:</td>
                         <td class="text-end fw-bold fs-5 text-success">
-                            @string.Format("{0:N0}₫", Model.DanhSachTour.Sum(t => t.Gia * t.SoLuong))
+                            @string.Format("{0:N0}₫", tongTien)
                         </td>
                     </tr>
                 </tfoot>
@@ -85,7 +102,7 @@
 
         <div class="text-center mt-4">
             <button type="submit" class="btn btn-success btn-lg px-5 fw-semibold">
-                <i class="bi bi-credit-card me-2"></i> Xác nhận thanh toán
+                <i class="bi bi-credit-card me-2"></i> Xác nhận đã chuyển khoản
             </button>
         </div>
     </form>

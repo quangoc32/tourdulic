@@ -23,12 +23,12 @@ namespace TourDulich.Areas.Admin.Controllers
             ViewBag.TourMienNam = _contextDB.Tours.Count(t => t.DanhMuc != null && t.DanhMuc.TenDanhMuc.Contains("Nam"));
 
             ViewBag.TotalDatTours = _contextDB.DatTours.Count();
-            ViewBag.PendingDatTours = _contextDB.DatTours.Count(d => d.TrangThai == "Chờ xử lý");
+            ViewBag.PendingDatTours = _contextDB.DatTours.Count(d => d.TrangThai == AppConstants.TrangThaiDatTour.ChoXuLy);
 
             var now = DateTime.Now;
             ViewBag.MonthlyRevenue = _contextDB.DatTours
                 .Where(d => d.NgayDat.HasValue && d.NgayDat.Value.Year == now.Year
-                    && d.NgayDat.Value.Month == now.Month && d.TrangThai == "Đã xác nhận")
+                    && d.NgayDat.Value.Month == now.Month && d.TrangThai == AppConstants.TrangThaiDatTour.DaXacNhan)
                 .Sum(d => (decimal?)d.TongTien) ?? 0;
 
             var recentDatTours = _contextDB.DatTours
@@ -58,7 +58,7 @@ namespace TourDulich.Areas.Admin.Controllers
             for (int i = 1; i <= 12; i++)
             {
                 var rev = _contextDB.DatTours
-                    .Where(d => d.NgayDat.HasValue && d.NgayDat.Value.Year == currentYear && d.NgayDat.Value.Month == i && d.TrangThai == "Đã xác nhận")
+                    .Where(d => d.NgayDat.HasValue && d.NgayDat.Value.Year == currentYear && d.NgayDat.Value.Month == i && d.TrangThai == AppConstants.TrangThaiDatTour.DaXacNhan)
                     .Sum(d => (decimal?)d.TongTien) ?? 0;
                 monthlyRevenueList.Add(rev);
             }
@@ -76,7 +76,7 @@ namespace TourDulich.Areas.Admin.Controllers
                 for (int i = 1; i <= 12; i++)
                 {
                     var rev = _contextDB.DatTours
-                        .Where(d => d.NgayDat.HasValue && d.NgayDat.Value.Year == year && d.NgayDat.Value.Month == i && d.TrangThai == "Đã xác nhận")
+                        .Where(d => d.NgayDat.HasValue && d.NgayDat.Value.Year == year && d.NgayDat.Value.Month == i && d.TrangThai == AppConstants.TrangThaiDatTour.DaXacNhan)
                         .Sum(d => (decimal?)d.TongTien) ?? 0;
                     monthlyRevenueList.Add(rev);
                 }

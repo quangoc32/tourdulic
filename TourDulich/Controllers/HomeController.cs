@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using TourDulich.Models;
 using TourDulich.ModelView;
 using System.Data.Entity;
+using System.Data;
 
 namespace TourDulich.Controllers
 {
@@ -140,7 +141,7 @@ namespace TourDulich.Controllers
 
         [HttpPost]
         public ActionResult DatTourTam(int TourId, DateTime SelectedDate, int TicketQuantity,
-                                       string LoaiDat = "Khách lẻ",
+                                       string LoaiDat = AppConstants.LoaiDat.KhachLe,
                                        string TruongDoan = "", string SdtTruongDoan = "", string GhiChuDoan = "")
         {
             var tour = (from t in _contextDB.Tours
@@ -157,7 +158,7 @@ namespace TourDulich.Controllers
             if (tour == null)
                 return HttpNotFound();
 
-            bool laDoan = LoaiDat == "Đoàn";
+            bool laDoan = LoaiDat == AppConstants.LoaiDat.Doan;
 
             // ── Validation riêng cho đoàn ────────────────────────────────────────
             if (laDoan && TicketQuantity < 10)
@@ -180,7 +181,7 @@ namespace TourDulich.Controllers
                 lich = _contextDB.LichKhoiHanhs.FirstOrDefault(l =>
                     l.ID_Tour == TourId &&
                     l.NgayKhoiHanh == SelectedDate.Date &&
-                    l.TrangThai == "Mở");
+                    l.TrangThai == AppConstants.TrangThaiLichKhoiHanh.Mo);
 
                 if (lich == null)
                 {
@@ -231,7 +232,7 @@ namespace TourDulich.Controllers
                 HinhAnh       = tour.HinhAnh,
                 NgayDi        = SelectedDate,
                 SoLuong       = TicketQuantity,
-                LoaiDat       = laDoan ? "Đoàn" : "Khách lẻ",
+                LoaiDat       = laDoan ? AppConstants.LoaiDat.Doan : AppConstants.LoaiDat.KhachLe,
                 TruongDoan    = laDoan ? TruongDoan?.Trim() : null,
                 SdtTruongDoan = laDoan ? SdtTruongDoan?.Trim() : null,
                 GhiChuDoan    = laDoan ? GhiChuDoan?.Trim() : null
@@ -316,6 +317,7 @@ namespace TourDulich.Controllers
             var model = new ThanhToanView
             {
                 DanhSachTour = dsTourTam,
+                PhuongThucThanhToan = AppConstants.ThanhToan.ChuyenKhoan,
                 UserInfo = new NguoiDung
                 {
                     ID_NguoiDung = user.ID_NguoiDung,
@@ -361,51 +363,66 @@ namespace TourDulich.Controllers
                 bool laDoan = dsTourTam.Any(t => t.LaDoan);
                 var itemDoan = dsTourTam.FirstOrDefault(t => t.LaDoan);
 
-                var datTour = new DatTour
+                using (var transaction = _contextDB.Database.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    ID_NguoiDung  = userId.Value,
-                    NgayDat       = DateTime.Now,
-                    TongTien      = tongTien,
-                    TrangThai     = laDoan ? "Yêu cầu đoàn - Chờ xác nhận" : "Chờ xử lý",
-                    LoaiDat       = laDoan ? "Đoàn" : "Khách lẻ",
-                    TruongDoan    = itemDoan?.TruongDoan,
-                    SdtTruongDoan = itemDoan?.SdtTruongDoan,
-                    GhiChuDoan    = itemDoan?.GhiChuDoan,
-                };
-
-                _contextDB.DatTours.Add(datTour);
-                _contextDB.SaveChanges();
-
-                foreach (var item in dsTourTam)
-                {
-                    var chiTiet = new ChiTietDatTour
+                    if (!laDoan)
                     {
-                        ID_DatTour          = datTour.ID_DatTour,
-                        ID_Tour             = item.TourId,
-                        NgayKhoiHanh        = item.NgayDi,
-                        SoLuongNguoi        = item.SoLuong,
-                        Gia                 = item.Gia,
-                        PhuongThucThanhToan = model.PhuongThucThanhToan
-                    };
-                    _contextDB.ChiTietDatTours.Add(chiTiet);
-                }
-                _contextDB.SaveChanges();
+                        var tongTheoLich = dsTourTam
+                            .GroupBy(t => new { t.TourId, NgayDi = t.NgayDi.Date })
+                            .Select(g => new { g.Key.TourId, g.Key.NgayDi, SoLuong = g.Sum(x => x.SoLuong) })
+                            .ToList();
 
-                // ── Trừ slot chỉ khi khách lẻ ────────────────────────────────
-                if (!laDoan)
-                {
-                    foreach (var item in dsTourTam)
-                    {
-                        var lichUpdate = _contextDB.LichKhoiHanhs.FirstOrDefault(l =>
-                            l.ID_Tour == item.TourId && l.NgayKhoiHanh == item.NgayDi.Date);
-                        if (lichUpdate != null)
+                        foreach (var item in tongTheoLich)
                         {
+                            var lichUpdate = _contextDB.LichKhoiHanhs.FirstOrDefault(l =>
+                                l.ID_Tour == item.TourId &&
+                                l.NgayKhoiHanh == item.NgayDi &&
+                                l.TrangThai == AppConstants.TrangThaiLichKhoiHanh.Mo);
+
+                            if (lichUpdate == null)
+                                throw new InvalidOperationException("Ngày khởi hành không còn mở. Vui lòng chọn ngày khác.");
+
+                            var conLai = lichUpdate.SoLuongToiDa - lichUpdate.SoLuongDaDat;
+                            if (item.SoLuong > conLai)
+                                throw new InvalidOperationException($"Chỉ còn {conLai} chỗ cho ngày {item.NgayDi:dd/MM/yyyy}.");
+
                             lichUpdate.SoLuongDaDat += item.SoLuong;
                             if (lichUpdate.SoLuongDaDat >= lichUpdate.SoLuongToiDa)
-                                lichUpdate.TrangThai = "Hết chỗ";
+                                lichUpdate.TrangThai = AppConstants.TrangThaiLichKhoiHanh.HetCho;
                         }
                     }
+
+                    var datTour = new DatTour
+                    {
+                        ID_NguoiDung  = userId.Value,
+                        NgayDat       = DateTime.Now,
+                        TongTien      = tongTien,
+                        TrangThai     = laDoan ? AppConstants.TrangThaiDatTour.YeuCauDoanChoXacNhan : AppConstants.TrangThaiDatTour.ChoXuLy,
+                        LoaiDat       = laDoan ? AppConstants.LoaiDat.Doan : AppConstants.LoaiDat.KhachLe,
+                        TruongDoan    = itemDoan?.TruongDoan,
+                        SdtTruongDoan = itemDoan?.SdtTruongDoan,
+                        GhiChuDoan    = itemDoan?.GhiChuDoan,
+                    };
+
+                    _contextDB.DatTours.Add(datTour);
                     _contextDB.SaveChanges();
+
+                    foreach (var item in dsTourTam)
+                    {
+                        var chiTiet = new ChiTietDatTour
+                        {
+                            ID_DatTour          = datTour.ID_DatTour,
+                            ID_Tour             = item.TourId,
+                            NgayKhoiHanh        = item.NgayDi,
+                            SoLuongNguoi        = item.SoLuong,
+                            Gia                 = item.GiaThucTe ?? item.Gia,
+                            PhuongThucThanhToan = AppConstants.ThanhToan.ChuyenKhoan
+                        };
+                        _contextDB.ChiTietDatTours.Add(chiTiet);
+                    }
+
+                    _contextDB.SaveChanges();
+                    transaction.Commit();
                 }
 
                 Session.Remove("DanhSachTourTamThoi");
@@ -444,7 +461,7 @@ namespace TourDulich.Controllers
                 TongTien = dt.TongTien,
                 TrangThai = dt.TrangThai,
                 CoYeuCauHuy = dt.CoYeuCauHuy,
-                TienHoan = dt.YeuCauHuys.Where(y => y.TrangThai == "Chấp thuận").Select(y => y.TienHoan).FirstOrDefault(),
+                TienHoan = dt.YeuCauHuys.Where(y => y.TrangThai == AppConstants.TrangThaiYeuCauHuy.ChapThuan).Select(y => y.TienHoan).FirstOrDefault(),
                 LoaiDat = dt.LoaiDat,
                 TruongDoan = dt.TruongDoan,
                 SdtTruongDoan = dt.SdtTruongDoan,
@@ -515,7 +532,7 @@ namespace TourDulich.Controllers
 
             var dates = _contextDB.LichKhoiHanhs
                 .Where(l => l.ID_Tour == tourId
-                         && l.TrangThai == "Mở"
+                         && l.TrangThai == AppConstants.TrangThaiLichKhoiHanh.Mo
                          && l.NgayKhoiHanh >= DateTime.Today
                          && l.SoLuongDaDat < l.SoLuongToiDa)
                 .OrderBy(l => l.NgayKhoiHanh)
@@ -557,7 +574,7 @@ namespace TourDulich.Controllers
             
             if (datTour == null) return Json(new { success = false, message = "Không tìm thấy đơn đặt tour" }, JsonRequestBehavior.AllowGet);
 
-            if (datTour.TrangThai == "Đã hủy" || datTour.CoYeuCauHuy)
+            if (datTour.TrangThai == AppConstants.TrangThaiDatTour.DaHuy || datTour.CoYeuCauHuy)
             {
                 return Json(new { success = false, message = "Đơn này đã được hủy hoặc đang chờ xử lý" }, JsonRequestBehavior.AllowGet);
             }
@@ -608,7 +625,7 @@ namespace TourDulich.Controllers
             var datTour = _contextDB.DatTours.Include("ChiTietDatTours.Tour")
                                     .FirstOrDefault(d => d.ID_DatTour == ID_DatTour && d.ID_NguoiDung == userId.Value);
 
-            if (datTour == null || datTour.TrangThai == "Đã hủy" || datTour.CoYeuCauHuy)
+            if (datTour == null || datTour.TrangThai == AppConstants.TrangThaiDatTour.DaHuy || datTour.CoYeuCauHuy)
             {
                 TempData["Error"] = "Đơn không hợp lệ hoặc đã được xử lý.";
                 return RedirectToAction("LichSuDatTour");
@@ -645,7 +662,7 @@ namespace TourDulich.Controllers
                 ID_DatTour = datTour.ID_DatTour,
                 LyDo = LyDo,
                 NgayGui = DateTime.Now,
-                TrangThai = "Chờ xử lý",
+                TrangThai = AppConstants.TrangThaiYeuCauHuy.ChoXuLy,
                 PhanTramHoan = phanTram,
                 TienHoan = tienHoan,
                 NgayXuLy = null,

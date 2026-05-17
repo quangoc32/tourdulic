@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using TourDulich.Models;
 
 namespace TourDulich.ModelView
 {
@@ -18,8 +19,8 @@ namespace TourDulich.ModelView
         public decimal? ThanhTien => SoLuong * (GiaThucTe ?? Gia);
 
         // Thông tin loại đặt
-        public string LoaiDat { get; set; } = "Khách lẻ";
-        public bool LaDoan => LoaiDat == "Đoàn";
+        public string LoaiDat { get; set; } = AppConstants.LoaiDat.KhachLe;
+        public bool LaDoan => LoaiDat == AppConstants.LoaiDat.Doan;
         public string TruongDoan { get; set; }
         public string SdtTruongDoan { get; set; }
         public string GhiChuDoan { get; set; }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TourDulich.Models;
+using TourDulich.Services;
 
 using TourDulich.Areas.Admin.Filters;
 
@@ -54,7 +55,7 @@ namespace TourDulich.Areas.Admin.Controllers
 
                 if (!string.IsNullOrEmpty(model.MatKhau))
                 {
-                    existing.MatKhau = model.MatKhau;
+                    existing.MatKhau = PasswordHasher.HashPassword(model.MatKhau);
                 }
 
                 _contextDB.SaveChanges();

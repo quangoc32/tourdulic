@@ -142,7 +142,7 @@ namespace TourDulich.Areas.Admin.Controllers
                                 NgayKhoiHanh = current,
                                 SoLuongToiDa = soLuongToiDa,
                                 SoLuongDaDat = 0,
-                                TrangThai = "Mở"
+                                TrangThai = AppConstants.TrangThaiLichKhoiHanh.Mo
                             });
                             soLuongThem++;
                         }

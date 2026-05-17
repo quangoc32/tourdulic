@@ -17,7 +17,7 @@ namespace TourDulich.ModelView
 
         // Loại đặt (Khách lẻ / Đoàn)
         public string LoaiDat { get; set; }
-        public bool LaDoan => LoaiDat == "Đoàn";
+        public bool LaDoan => LoaiDat == AppConstants.LoaiDat.Doan;
         public string TruongDoan { get; set; }
         public string SdtTruongDoan { get; set; }
         public string GhiChuDoan { get; set; }

@@ -15,6 +15,11 @@ namespace TourDulich.Areas.Admin.Controllers
     {
 
         private ModelDB _contextDB = new ModelDB();
+        private static readonly HashSet<string> AllowedImageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".jpg", ".jpeg", ".png", ".webp"
+        };
+        private const int MaxImageBytes = 5 * 1024 * 1024;
         public ActionResult Index(string searchString)
         {
             var listTourQuery = (from t in _contextDB.Tours
@@ -65,6 +70,15 @@ namespace TourDulich.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                ValidateTourImage(AnhDaiDien, "AnhDaiDien");
+                ValidateTourImages(AnhPhu, "AnhPhu");
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.ID_DanhMuc = new SelectList(_contextDB.DanhMucs.OrderBy(x => x.TenDanhMuc).ToList(), "ID_DanhMuc", "TenDanhMuc", formData.ID_DanhMuc);
+                    ViewBag.ID_DiaDiem = new SelectList(_contextDB.DiaDiems.OrderBy(x => x.TenDiaDiem).ToList(), "ID_DiaDiem", "TenDiaDiem", formData.ID_DiaDiem);
+                    return View(formData);
+                }
+
                 var tour = new Tour
                 {
                     TenTour = formData.TenTour,
@@ -88,9 +102,7 @@ namespace TourDulich.Areas.Admin.Controllers
 
                 if (AnhDaiDien != null && AnhDaiDien.ContentLength > 0)
                 {
-                    var fileName = System.IO.Path.GetFileName(AnhDaiDien.FileName);
-                    var path = Server.MapPath("~/Images/ImagesTour/" + fileName);
-                    AnhDaiDien.SaveAs(path);
+                    var fileName = SaveTourImage(AnhDaiDien);
 
                     var hinhAnhTour = new HinhAnhTour
                     {
@@ -107,9 +119,7 @@ namespace TourDulich.Areas.Admin.Controllers
                     {
                         if (file != null && file.ContentLength > 0)
                         {
-                            var fileName = System.IO.Path.GetFileName(file.FileName);
-                            var path = Server.MapPath("~/Images/ImagesTour/" + fileName);
-                            file.SaveAs(path);
+                            var fileName = SaveTourImage(file);
 
                             var hinhAnhTour = new HinhAnhTour
                             {
@@ -176,6 +186,16 @@ namespace TourDulich.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                ValidateTourImage(HinhAnhFile, "HinhAnhFile");
+                ValidateTourImages(HinhAnhFiles, "HinhAnhFiles");
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.ID_DanhMuc = new SelectList(_contextDB.DanhMucs.OrderBy(x => x.TenDanhMuc), "ID_DanhMuc", "TenDanhMuc", formData.ID_DanhMuc);
+                    ViewBag.ID_DiaDiem = new SelectList(_contextDB.DiaDiems.OrderBy(x => x.TenDiaDiem), "ID_DiaDiem", "TenDiaDiem", formData.ID_DiaDiem);
+                    formData.DanhSachHinhAnhTour = _contextDB.HinhAnhTours.Where(x => x.ID_Tour == formData.ID_Tour).ToList();
+                    return View(formData);
+                }
+
                 var tour = _contextDB.Tours.Find(formData.ID_Tour);
                 if (tour == null)
                     return HttpNotFound();
@@ -206,9 +226,7 @@ namespace TourDulich.Areas.Admin.Controllers
                         _contextDB.SaveChanges();
                     }
 
-                    var fileName = Path.GetFileName(HinhAnhFile.FileName);
-                    var path = Server.MapPath("~/Images/ImagesTour/" + fileName);
-                    HinhAnhFile.SaveAs(path);
+                    var fileName = SaveTourImage(HinhAnhFile);
 
                     var newMainImage = new HinhAnhTour
                     {
@@ -237,9 +255,7 @@ namespace TourDulich.Areas.Admin.Controllers
                     {
                         if (file != null && file.ContentLength > 0)
                         {
-                            var fileName = Path.GetFileName(file.FileName);
-                            var path = Server.MapPath("~/Images/ImagesTour/" + fileName);
-                            file.SaveAs(path);
+                            var fileName = SaveTourImage(file);
 
                             var hinhAnhTour = new HinhAnhTour
                             {
@@ -288,6 +304,44 @@ namespace TourDulich.Areas.Admin.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        private string SaveTourImage(HttpPostedFileBase file)
+        {
+            var extension = Path.GetExtension(file.FileName);
+            var fileName = Guid.NewGuid().ToString("N") + extension.ToLowerInvariant();
+            var uploadDir = Server.MapPath("~/Images/ImagesTour/");
+            Directory.CreateDirectory(uploadDir);
+            file.SaveAs(Path.Combine(uploadDir, fileName));
+
+            return fileName;
+        }
+
+        private void ValidateTourImages(IEnumerable<HttpPostedFileBase> files, string key)
+        {
+            if (files == null) return;
+
+            foreach (var file in files)
+            {
+                ValidateTourImage(file, key);
+            }
+        }
+
+        private void ValidateTourImage(HttpPostedFileBase file, string key)
+        {
+            if (file == null || file.ContentLength <= 0) return;
+
+            if (file.ContentLength > MaxImageBytes)
+            {
+                ModelState.AddModelError(key, "Ảnh vượt quá dung lượng cho phép 5MB.");
+                return;
+            }
+
+            var extension = Path.GetExtension(file.FileName);
+            if (string.IsNullOrWhiteSpace(extension) || !AllowedImageExtensions.Contains(extension))
+            {
+                ModelState.AddModelError(key, "Chỉ cho phép upload ảnh .jpg, .jpeg, .png hoặc .webp.");
+            }
         }
 
     }

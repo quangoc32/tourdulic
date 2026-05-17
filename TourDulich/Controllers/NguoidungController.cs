@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TourDulich.Models;
+using TourDulich.Services;
 
 namespace TourDulich.Controllers
 {
@@ -43,6 +44,7 @@ namespace TourDulich.Controllers
                 {
                     model.PhanQuyen = 1;
                     model.NgayTao = DateTime.Now;
+                    model.MatKhau = PasswordHasher.HashPassword(model.MatKhau);
 
                     _contextDB.NguoiDungs.Add(model);
                     _contextDB.SaveChanges();
@@ -70,10 +72,22 @@ namespace TourDulich.Controllers
         public ActionResult DangNhap(string taiKhoan, string matKhau)
         {
             var user = _contextDB.NguoiDungs
-                .FirstOrDefault(u => u.TaiKhoan == taiKhoan && u.MatKhau == matKhau && u.PhanQuyen == 1);
+                .FirstOrDefault(u => u.TaiKhoan == taiKhoan && u.PhanQuyen == 1);
 
             if (user != null)
             {
+                if (!PasswordHasher.VerifyPassword(user.MatKhau, matKhau))
+                {
+                    TempData["Error"] = "Tài khoản hoặc mật khẩu không đúng!";
+                    return View();
+                }
+
+                if (PasswordHasher.NeedsRehash(user.MatKhau))
+                {
+                    user.MatKhau = PasswordHasher.HashPassword(matKhau);
+                    _contextDB.SaveChanges();
+                }
+
                 Session["ID_NguoiDung"] = user.ID_NguoiDung;
                 Session["HoTen"] = user.HoTen;
                 Session["PhanQuyen"] = user.PhanQuyen;

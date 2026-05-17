@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using TourDulich.Models;
 
 namespace TourDulich.ModelView
 {
@@ -15,7 +16,7 @@ namespace TourDulich.ModelView
         public decimal? TienHoan { get; set; }
 
         public string LoaiDat { get; set; }
-        public bool LaDoan => LoaiDat == "Đoàn";
+        public bool LaDoan => LoaiDat == AppConstants.LoaiDat.Doan;
         public string TruongDoan { get; set; }
         public string SdtTruongDoan { get; set; }
         public string GhiChuDoan { get; set; }
@@ -35,7 +36,7 @@ namespace TourDulich.ModelView
 
         // Tổng hợp: được phép yêu cầu hủy
         public bool CoTheHuy => ConHon7NgayTruocKH
-                                 && TrangThai != "Đã hủy"
+                                 && TrangThai != AppConstants.TrangThaiDatTour.DaHuy
                                  && !CoYeuCauHuy;
 
         // Thông báo lý do không được hủy (hiển thị tooltip cho user)
@@ -43,7 +44,7 @@ namespace TourDulich.ModelView
         {
             get
             {
-                if (TrangThai == "Đã hủy" || CoYeuCauHuy) return null;
+                if (TrangThai == AppConstants.TrangThaiDatTour.DaHuy || CoYeuCauHuy) return null;
                 if (!ConHon7NgayTruocKH)
                 {
                     return "Đã quá thời hạn hủy (phải hủy trước 7 ngày khởi hành)";

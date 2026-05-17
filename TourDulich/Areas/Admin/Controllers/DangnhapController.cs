@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TourDulich.Models;
+using TourDulich.Services;
 
 namespace TourDulich.Areas.Admin.Controllers
 {
@@ -18,12 +19,18 @@ namespace TourDulich.Areas.Admin.Controllers
         [HttpPost]
         public ActionResult Index(string taiKhoan, string matKhau)
         {
-            var nguoiDung = _contextDB.NguoiDungs.FirstOrDefault(x => x.TaiKhoan == taiKhoan && x.MatKhau == matKhau);
+            var nguoiDung = _contextDB.NguoiDungs.FirstOrDefault(x => x.TaiKhoan == taiKhoan);
 
-            if (nguoiDung == null)
+            if (nguoiDung == null || !PasswordHasher.VerifyPassword(nguoiDung.MatKhau, matKhau))
             {
                 ViewBag.ThongBao = "Sai tài khoản hoặc mật khẩu!";
                 return View();
+            }
+
+            if (PasswordHasher.NeedsRehash(nguoiDung.MatKhau))
+            {
+                nguoiDung.MatKhau = PasswordHasher.HashPassword(matKhau);
+                _contextDB.SaveChanges();
             }
 
             Session["NguoiDung"] = nguoiDung;

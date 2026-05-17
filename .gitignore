@@ -1,0 +1,21 @@
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build outputs inside the web project
+TourDulich/bin/
+TourDulich/obj/
+
+# Local database/backup files
+*.bak
+*.mdf
+*.ldf
+
+# Logs and temporary files
+*.log
+*.tmp
+*.cache

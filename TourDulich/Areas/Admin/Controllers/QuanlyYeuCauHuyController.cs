@@ -42,7 +42,7 @@ namespace TourDulich.Areas.Admin.Controllers
                 }).ToList();
 
             ViewBag.TrangThai = trangThai;
-            ViewBag.SoPending = _db.YeuCauHuys.Count(y => y.TrangThai == "Chờ xử lý");
+            ViewBag.SoPending = _db.YeuCauHuys.Count(y => y.TrangThai == AppConstants.TrangThaiYeuCauHuy.ChoXuLy);
             return View(list);
         }
 
@@ -55,7 +55,7 @@ namespace TourDulich.Areas.Admin.Controllers
                 if (ycHuy == null)
                     return Json(new { success = false, message = "Không tìm thấy yêu cầu." });
 
-                if (ycHuy.TrangThai != "Chờ xử lý")
+                if (ycHuy.TrangThai != AppConstants.TrangThaiYeuCauHuy.ChoXuLy)
                     return Json(new { success = false, message = "Yêu cầu này đã được xử lý trước đó." });
 
                 ycHuy.TrangThai    = model.TrangThai;
@@ -69,9 +69,9 @@ namespace TourDulich.Areas.Admin.Controllers
                 {
                     datTour.CoYeuCauHuy = false;
 
-                    if (model.TrangThai == "Chấp thuận")
+                    if (model.TrangThai == AppConstants.TrangThaiYeuCauHuy.ChapThuan)
                     {
-                        datTour.TrangThai = "Đã hủy";
+                        datTour.TrangThai = AppConstants.TrangThaiDatTour.DaHuy;
                         datTour.GhiChu    = $"Đã hủy theo yêu cầu. Hoàn {model.PhanTramHoan}% = {model.TienHoan:N0}đ. " + model.GhiChuAdmin;
 
                         // Trả lại slot cho LichKhoiHanh
@@ -87,8 +87,8 @@ namespace TourDulich.Areas.Admin.Controllers
                                 if (lich.SoLuongDaDat < 0) lich.SoLuongDaDat = 0;
 
                                 // Mở lại lịch nếu đang "Hết chỗ"
-                                if (lich.TrangThai == "Hết chỗ")
-                                    lich.TrangThai = "Mở";
+                                if (lich.TrangThai == AppConstants.TrangThaiLichKhoiHanh.HetCho)
+                                    lich.TrangThai = AppConstants.TrangThaiLichKhoiHanh.Mo;
                             }
                         }
                     }
