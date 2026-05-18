@@ -1,4 +1,4 @@
-@using TourDulich.Models
+﻿@using TourDulich.Models
 @{
     ViewBag.Title = "Quản lý Đặt Tour";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -68,16 +68,25 @@
                     }
                 </td>
                 <td>
-                    <button class="btn btn-info btn-sm btnChiTiet" data-id="@item.ID_DatTour">Chi tiết</button>
-                    @if (canConfirmPickup)
+                    @if (isPending)
                     {
-                        <button class="btn btn-success btn-sm btnXacNhanDiemDonDon" data-id="@item.ID_DatTour">Xác nhận điểm đón</button>
+                        <button class="btn btn-primary btn-sm btnXuLyDatTour"
+                                data-id="@item.ID_DatTour"
+                                data-can-confirm-pickup="@canConfirmPickup.ToString().ToLower()"
+                                data-can-update="@((item.TrangThai != AppConstants.TrangThaiDatTour.DaHuy).ToString().ToLower())">
+                            <i class="bi bi-gear"></i> Xử lý
+                        </button>
                     }
-                    @if (item.TrangThai != AppConstants.TrangThaiDatTour.DaHuy)
+                    else
                     {
-                        <button class="btn btn-warning btn-sm btnSuaTrangThai" data-id="@item.ID_DatTour">Cập nhật</button>
+                        <button class="btn btn-info btn-sm btnXuLyDatTour"
+                                data-id="@item.ID_DatTour"
+                                data-can-confirm-pickup="false"
+                                data-can-update="false"
+                                data-readonly="true">
+                            <i class="bi bi-eye"></i> Chi tiết
+                        </button>
                     }
-                    <button class="btn btn-danger btn-sm btnXoaDatTour" data-id="@item.ID_DatTour">Xóa</button>
                 </td>
             </tr>
         }
@@ -88,10 +97,58 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content" style="border-radius: 15px;">
             <div class="modal-header bg-primary text-white" style="border-radius: 15px 15px 0 0;">
-                <h5 class="modal-title"><i class="bi bi-info-circle-fill me-2"></i>Chi Tiết Đặt Tour</h5>
+                <h5 class="modal-title"><i class="bi bi-gear-fill me-2"></i>Xử lý đơn đặt tour</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4" id="contentChiTiet"></div>
+            <div class="modal-body p-4">
+                <div id="contentChiTiet"></div>
+                <div id="inlineCapNhatTrangThai" class="mt-4 border rounded-3 bg-light p-3" style="display:none;">
+                    <input type="hidden" id="inlineInputID" />
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-pencil-square me-1"></i>Cập nhật trạng thái đơn</h6>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="btnHuyInlineCapNhat">
+                            <i class="bi bi-x-lg me-1"></i>Ẩn
+                        </button>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold">Trạng thái</label>
+                            <select class="form-select" id="inlineTrangThai">
+                                <option>@AppConstants.TrangThaiDatTour.ChoXuLy</option>
+                                <option>@AppConstants.TrangThaiDatTour.ChoXacNhanDiemDon</option>
+                                <option>@AppConstants.TrangThaiDatTour.ChoThanhToan</option>
+                                <option>@AppConstants.TrangThaiDatTour.YeuCauDoanChoXacNhan</option>
+                                <option>@AppConstants.TrangThaiDatTour.DaXacNhan</option>
+                                <option>@AppConstants.TrangThaiDatTour.DaHuy</option>
+                            </select>
+                        </div>
+                        <div class="col-md-7">
+                            <label class="form-label fw-bold">Ghi chú</label>
+                            <textarea class="form-control" id="inlineGhiChu" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end align-items-center gap-2 mt-3">
+                        <span class="text-success small fw-semibold me-auto" id="inlineCapNhatMessage" style="display:none;"></span>
+                        <button type="button" class="btn btn-primary btn-sm" id="btnLuuInlineCapNhat">
+                            <i class="bi bi-save-fill me-1"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <div class="text-muted small">Kiểm tra chi tiết trước khi cập nhật trạng thái hoặc xác nhận điểm đón.</div>
+                <div class="d-flex gap-2 flex-wrap justify-content-end">
+                    <button type="button" class="btn btn-success btn-sm" id="modalActionXacNhanDiemDon">
+                        <i class="bi bi-geo-alt-fill me-1"></i>Xác nhận điểm đón
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm" id="modalActionCapNhat">
+                        <i class="bi bi-pencil-square me-1"></i>Cập nhật trạng thái
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" id="modalActionXoa">
+                        <i class="bi bi-trash-fill me-1"></i>Xóa đơn
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -185,12 +242,105 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $(".btnChiTiet").click(function () {
-                var id = $(this).data("id");
-                $.get('@Url.Action("GetChiTietDatTourPartial", "QuanlyDatTour", new { area = "Admin" })', { id: id }, function (data) {
+            let currentDatTourId = 0;
+            let currentCanConfirmPickup = false;
+            let currentCanUpdate = false;
+            let currentReadOnly = false;
+            let idXoa = 0;
+            const statusDaXacNhan = '@AppConstants.TrangThaiDatTour.DaXacNhan';
+            const statusDaHuy = '@AppConstants.TrangThaiDatTour.DaHuy';
+
+            function anFormCapNhatTrangThai() {
+                $("#inlineCapNhatTrangThai").hide();
+                $("#inlineCapNhatMessage").hide().text("");
+            }
+
+            function taiLaiChiTietDatTour(callback) {
+                $.get('@Url.Action("GetChiTietDatTourPartial", "QuanlyDatTour", new { area = "Admin" })', { id: currentDatTourId }, function (data) {
                     $("#contentChiTiet").html(data);
+                    if (typeof callback === "function") {
+                        callback();
+                    }
+                });
+            }
+
+            $(".btnXuLyDatTour").click(function () {
+                var id = $(this).data("id");
+                currentDatTourId = id;
+                currentCanConfirmPickup = $(this).data("can-confirm-pickup") === true || $(this).data("can-confirm-pickup") === "true";
+                currentCanUpdate = $(this).data("can-update") === true || $(this).data("can-update") === "true";
+                currentReadOnly = $(this).data("readonly") === true || $(this).data("readonly") === "true";
+                anFormCapNhatTrangThai();
+
+                taiLaiChiTietDatTour(function () {
+                    $("#modalActionXacNhanDiemDon").toggle(!currentReadOnly && currentCanConfirmPickup);
+                    $("#modalActionCapNhat").toggle(!currentReadOnly && currentCanUpdate);
+                    $("#modalActionXoa").toggle(!currentReadOnly);
                     $("#modalChiTiet").modal("show");
                 });
+            });
+
+            $("#modalActionXacNhanDiemDon").click(function () {
+                $("#modalChiTiet").modal("hide");
+                $("#inputDiemDonDatTourId").val(currentDatTourId);
+                $("#inputPhuThuDiemDon").val(0);
+                $("#inputGhiChuDiemDon").val("");
+                $("#modalXacNhanDiemDon").modal("show");
+            });
+
+            $("#modalActionCapNhat").click(function () {
+                anFormCapNhatTrangThai();
+                $.get('@Url.Action("GetTrangThaiDatTour", "QuanlyDatTour", new { area = "Admin" })', { id: currentDatTourId }, function (res) {
+                    if (res.success) {
+                        $("#inlineInputID").val(res.ID_DatTour);
+                        $("#inlineTrangThai").val(res.TrangThai);
+                        $("#inlineGhiChu").val(res.GhiChu);
+                        $("#inlineCapNhatTrangThai").slideDown(150);
+                    } else {
+                        alert("Không lấy được dữ liệu.");
+                    }
+                });
+            });
+
+            $("#btnHuyInlineCapNhat").click(function () {
+                anFormCapNhatTrangThai();
+            });
+
+            $("#btnLuuInlineCapNhat").click(function () {
+                const trangThaiMoi = $("#inlineTrangThai").val();
+                const $button = $(this);
+                $button.prop("disabled", true).html('<span class="spinner-border spinner-border-sm me-1"></span>Đang lưu');
+
+                $.post('@Url.Action("CapNhatTrangThai", "QuanlyDatTour", new { area = "Admin" })', {
+                    ID_DatTour: $("#inlineInputID").val(),
+                    TrangThai: trangThaiMoi,
+                    GhiChu: $("#inlineGhiChu").val()
+                }, function (res) {
+                    if (res.success) {
+                        $("#inlineCapNhatMessage").text("Đã lưu trạng thái. Chi tiết đơn đã được cập nhật.").show();
+                        taiLaiChiTietDatTour(function () {
+                            if (trangThaiMoi === statusDaXacNhan || trangThaiMoi === statusDaHuy) {
+                                currentReadOnly = true;
+                                currentCanUpdate = false;
+                                currentCanConfirmPickup = false;
+                                $("#modalActionXacNhanDiemDon").hide();
+                                $("#modalActionCapNhat").hide();
+                                $("#modalActionXoa").hide();
+                                anFormCapNhatTrangThai();
+                            }
+                        });
+                    } else {
+                        alert("Lỗi: " + res.message);
+                    }
+                }).always(function () {
+                    $button.prop("disabled", false).html('<i class="bi bi-save-fill me-1"></i>Lưu thay đổi');
+                });
+            });
+
+            $("#modalActionXoa").click(function () {
+                $("#modalChiTiet").modal("hide");
+                idXoa = currentDatTourId;
+                $("#modalXacNhanXoa").modal("show");
             });
 
             $(".btnSuaTrangThai").click(function () {
@@ -220,7 +370,6 @@
                 });
             });
 
-            let idXoa = 0;
             $(document).on("click", ".btnXoaDatTour", function () {
                 idXoa = $(this).data("id");
                 $("#modalXacNhanXoa").modal("show");
@@ -279,3 +428,4 @@
         });
     </script>
 }
+

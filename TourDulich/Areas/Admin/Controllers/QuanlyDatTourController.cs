@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using TourDulich.Models;
 using TourDulich.ModelView;
 using TourDulich.Areas.Admin.Filters;
+using TourDulich.Services;
+using System.Data.Entity;
 
 namespace TourDulich.Areas.Admin.Controllers
 {
@@ -13,6 +15,11 @@ namespace TourDulich.Areas.Admin.Controllers
     public class QuanlyDatTourController : Controller
     {
         private ModelDB _contextDB = new ModelDB();
+
+        private LienHeEmailService EmailService
+        {
+            get { return new LienHeEmailService(new AdminEmailSettingStore(Server.MapPath("~/App_Data/admin-email-settings.json"))); }
+        }
 
         // GET: Admin/QuanlyDatTour
         public ActionResult DanhSachDatTour(string searchString)
@@ -85,6 +92,7 @@ namespace TourDulich.Areas.Admin.Controllers
                 datTour.TrangThai = TrangThai;
                 datTour.GhiChu = GhiChu;
                 _contextDB.SaveChanges();
+                SendBookingResultEmail(ID_DatTour);
 
                 return Json(new { success = true });
             }
@@ -129,6 +137,10 @@ namespace TourDulich.Areas.Admin.Controllers
                 }
 
                 _contextDB.SaveChanges();
+                if (datTour != null)
+                {
+                    SendBookingResultEmail(datTour.ID_DatTour);
+                }
                 return Json(new { success = true });
             }
             catch (Exception ex)
@@ -168,6 +180,7 @@ namespace TourDulich.Areas.Admin.Controllers
                     : ghiChuDiemDon;
 
                 _contextDB.SaveChanges();
+                SendBookingResultEmail(datTour.ID_DatTour);
                 return Json(new { success = true });
             }
             catch (Exception ex)
@@ -196,6 +209,26 @@ namespace TourDulich.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        private void SendBookingResultEmail(int idDatTour)
+        {
+            try
+            {
+                var datTour = _contextDB.DatTours
+                    .Include("NguoiDung")
+                    .Include("ChiTietDatTours.Tour")
+                    .FirstOrDefault(d => d.ID_DatTour == idDatTour);
+
+                if (datTour == null) return;
+
+                string errorMessage;
+                EmailService.TrySendBookingResultToCustomer(datTour, out errorMessage);
+            }
+            catch
+            {
+                // Không để lỗi email làm hỏng thao tác xử lý đơn của admin.
             }
         }
     }

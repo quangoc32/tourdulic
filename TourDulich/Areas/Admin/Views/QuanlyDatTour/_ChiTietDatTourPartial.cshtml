@@ -1,51 +1,173 @@
-﻿@model List<TourDulich.Models.ChiTietDatTour>
+@model List<TourDulich.Models.ChiTietDatTour>
 
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>Tour</th>
-            <th>Ngày Khởi Hành</th>
-            <th>Số Lượng Người</th>
-            <th>Điểm Đón</th>
-            <th>Phương Thức Thanh Toán</th>
-            <th>Giá</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var ct in Model)
-        {
-            <tr>
-                <td>@ct.Tour.TenTour</td>
-                <td>@string.Format("{0:dd/MM/yyyy}", ct.NgayKhoiHanh)</td>
-                <td>@ct.SoLuongNguoi</td>
-                <td>
-                    <div class="fw-semibold">@ct.DiemDon</div>
-                    @if (!string.IsNullOrWhiteSpace(ct.DiaChiDon))
-                    {
-                        <div class="small text-muted">@ct.DiaChiDon</div>
-                    }
-                    @if (ct.CanXacNhanDiemDon)
-                    {
-                        <span class="badge bg-warning text-dark">Chờ xác nhận</span>
-                        <div class="mt-2 pickup-confirm-box">
-                            <input type="hidden" class="ct-id" value="@ct.ID_ChiTietDatTour" />
-                            <label class="small fw-semibold">Phụ thu/người</label>
-                            <input type="number" class="form-control form-control-sm pickup-fee" value="0" />
-                            <label class="small fw-semibold mt-1">Ghi chú admin</label>
-                            <textarea class="form-control form-control-sm pickup-note" rows="2">@ct.GhiChuDiemDon</textarea>
-                            <button type="button" class="btn btn-sm btn-success mt-2 btnXacNhanDiemDon">
-                                Xác nhận điểm đón
-                            </button>
-                        </div>
-                    }
-                    @if ((ct.PhuThuDiemDon ?? 0) != 0)
-                    {
-                        <div class="small text-primary">Phụ thu: @string.Format("{0:N0} VNĐ/người", ct.PhuThuDiemDon)</div>
-                    }
-                </td>
-                <td>@ct.PhuongThucThanhToan</td>
-                <td>@string.Format("{0:N0} VNĐ", ct.Gia)</td>
-            </tr>
-        }
-    </tbody>
-</table>
+@{
+    var firstItem = Model.FirstOrDefault();
+    var datTour = firstItem == null ? null : firstItem.DatTour;
+    var nguoiDat = datTour == null ? null : datTour.NguoiDung;
+}
+
+<style>
+    .order-detail-panel {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .order-detail-header {
+        background: #e0f2fe;
+        color: #1e3a8a;
+        font-weight: 700;
+        padding: 12px 16px;
+    }
+
+    .order-detail-row {
+        display: grid;
+        grid-template-columns: 180px minmax(0, 1fr);
+        gap: 16px;
+        padding: 10px 16px;
+        border-top: 1px solid #edf2f7;
+        align-items: start;
+    }
+
+    .order-detail-label {
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    .order-detail-value {
+        color: #111827;
+        min-width: 0;
+    }
+
+    .tour-block {
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 14px;
+        overflow: hidden;
+    }
+
+    .pickup-confirm-box {
+        border: 1px solid #fde68a;
+        background: #fffbeb;
+        border-radius: 8px;
+        padding: 10px;
+        margin-top: 8px;
+    }
+</style>
+
+<div class="order-detail-panel mb-3">
+    <div class="order-detail-header">Thông tin người đặt</div>
+    <div class="order-detail-row">
+        <div class="order-detail-label">Họ tên</div>
+        <div class="order-detail-value fw-semibold">@(nguoiDat == null ? "" : nguoiDat.HoTen)</div>
+    </div>
+    <div class="order-detail-row">
+        <div class="order-detail-label">Email</div>
+        <div class="order-detail-value">@(nguoiDat == null ? "" : nguoiDat.Email)</div>
+    </div>
+    <div class="order-detail-row">
+        <div class="order-detail-label">Số điện thoại</div>
+        <div class="order-detail-value">@(nguoiDat == null ? "" : nguoiDat.SoDienThoai)</div>
+    </div>
+    <div class="order-detail-row">
+        <div class="order-detail-label">Địa chỉ</div>
+        <div class="order-detail-value">@(nguoiDat == null ? "" : nguoiDat.DiaChi)</div>
+    </div>
+    <div class="order-detail-row">
+        <div class="order-detail-label">Ngày đặt</div>
+        <div class="order-detail-value">@(datTour != null && datTour.NgayDat.HasValue ? datTour.NgayDat.Value.ToString("dd/MM/yyyy HH:mm") : "")</div>
+    </div>
+    <div class="order-detail-row">
+        <div class="order-detail-label">Trạng thái đơn</div>
+        <div class="order-detail-value"><span class="badge bg-warning text-dark">@(datTour == null ? "" : datTour.TrangThai)</span></div>
+    </div>
+    <div class="order-detail-row">
+        <div class="order-detail-label">Tổng tiền</div>
+        <div class="order-detail-value fw-bold text-danger">@string.Format("{0:N0} VNĐ", datTour == null ? 0 : (datTour.TongTien ?? 0))</div>
+    </div>
+    @if (datTour != null && !string.IsNullOrWhiteSpace(datTour.GhiChu))
+    {
+        <div class="order-detail-row">
+            <div class="order-detail-label">Ghi chú đơn</div>
+            <div class="order-detail-value">@datTour.GhiChu</div>
+        </div>
+    }
+    @if (datTour != null && !string.IsNullOrWhiteSpace(datTour.TruongDoan))
+    {
+        <div class="order-detail-row">
+            <div class="order-detail-label">Trưởng đoàn</div>
+            <div class="order-detail-value">@datTour.TruongDoan - @datTour.SdtTruongDoan</div>
+        </div>
+    }
+</div>
+
+@for (int i = 0; i < Model.Count; i++)
+{
+    var ct = Model[i];
+    var thanhTien = ((ct.Gia ?? 0) + (ct.PhuThuDiemDon ?? 0)) * (ct.SoLuongNguoi ?? 0);
+
+    <div class="tour-block">
+        <div class="order-detail-header">@(ct.Tour == null ? "Tour" : ct.Tour.TenTour)</div>
+        <div class="order-detail-row">
+            <div class="order-detail-label">Tour</div>
+            <div class="order-detail-value fw-semibold">@(ct.Tour == null ? "" : ct.Tour.TenTour)</div>
+        </div>
+        <div class="order-detail-row">
+            <div class="order-detail-label">Ngày khởi hành</div>
+            <div class="order-detail-value">@string.Format("{0:dd/MM/yyyy}", ct.NgayKhoiHanh)</div>
+        </div>
+        <div class="order-detail-row">
+            <div class="order-detail-label">Số lượng</div>
+            <div class="order-detail-value">@ct.SoLuongNguoi người</div>
+        </div>
+        <div class="order-detail-row">
+            <div class="order-detail-label">Giá tour / người</div>
+            <div class="order-detail-value">@string.Format("{0:N0} VNĐ", ct.Gia)</div>
+        </div>
+        <div class="order-detail-row">
+            <div class="order-detail-label">Điểm đón</div>
+            <div class="order-detail-value">
+                <div class="fw-semibold">@ct.DiemDon</div>
+                @if (!string.IsNullOrWhiteSpace(ct.TinhThanhDon))
+                {
+                    <div class="small text-muted">Tỉnh/Thành: @ct.TinhThanhDon</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(ct.DiaChiDon))
+                {
+                    <div class="small text-muted">Địa chỉ: @ct.DiaChiDon</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(ct.GhiChuDiemDon))
+                {
+                    <div class="small text-muted">Ghi chú: @ct.GhiChuDiemDon</div>
+                }
+                @if (ct.CanXacNhanDiemDon)
+                {
+                    <span class="badge bg-warning text-dark mt-1">Chờ xác nhận</span>
+                    <div class="pickup-confirm-box">
+                        <input type="hidden" class="ct-id" value="@ct.ID_ChiTietDatTour" />
+                        <label class="small fw-semibold">Phụ thu/người</label>
+                        <input type="number" class="form-control form-control-sm pickup-fee" value="0" />
+                        <label class="small fw-semibold mt-1">Ghi chú admin</label>
+                        <textarea class="form-control form-control-sm pickup-note" rows="2">@ct.GhiChuDiemDon</textarea>
+                        <button type="button" class="btn btn-sm btn-success mt-2 btnXacNhanDiemDon">
+                            Xác nhận điểm đón
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="order-detail-row">
+            <div class="order-detail-label">Phụ thu điểm đón</div>
+            <div class="order-detail-value">@string.Format("{0:N0} VNĐ/người", ct.PhuThuDiemDon ?? 0)</div>
+        </div>
+        <div class="order-detail-row">
+            <div class="order-detail-label">Thanh toán</div>
+            <div class="order-detail-value">@ct.PhuongThucThanhToan</div>
+        </div>
+        <div class="order-detail-row">
+            <div class="order-detail-label">Thành tiền</div>
+            <div class="order-detail-value fw-bold text-danger">@string.Format("{0:N0} VNĐ", thanhTien)</div>
+        </div>
+    </div>
+}

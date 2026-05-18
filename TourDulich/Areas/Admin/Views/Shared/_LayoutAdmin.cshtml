@@ -38,7 +38,7 @@
                 text-decoration: none;
                 display: block;
                 padding: 12px 20px;
-                margin: 8px 15px;
+                margin: 6px 15px;
                 border-radius: 15px;
                 transition: all 0.3s ease;
                 font-weight: 500;
@@ -50,6 +50,15 @@
                     transform: translateY(-3px);
                     box-shadow: 0 6px 15px rgba(0,0,0,0.2);
                 }
+
+        .sidebar-section-title {
+            color: rgba(255, 255, 255, 0.62);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 14px 24px 4px;
+        }
 
         .content-wrapper {
             margin-left: 250px;
@@ -106,6 +115,9 @@
 
         .admin-notification-wrap {
             position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .admin-notification-btn {
@@ -136,7 +148,20 @@
         }
 
         .dropdown-menu-end.admin-notification-panel[data-bs-popper] {
-            right: -120px;
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
+            margin-top: 8px;
+        }
+
+        @@media (max-width: 576px) {
+            .dropdown-menu-end.admin-notification-panel[data-bs-popper] {
+                position: fixed;
+                left: 12px;
+                right: 12px;
+                width: auto;
+                transform: none;
+            }
         }
 
         .notification-title {
@@ -214,35 +239,31 @@
                     var datTourNotifications = new List<TourDulich.Models.DatTour>();
                     var cancelNotifications = new List<TourDulich.Models.YeuCauHuy>();
                     var contactNotifications = new List<TourDulich.Models.LienHe>();
+                    var pendingDatTourStatuses = new[] {
+                        TourDulich.Models.AppConstants.TrangThaiDatTour.ChoXuLy,
+                        TourDulich.Models.AppConstants.TrangThaiDatTour.YeuCauDoanChoXacNhan,
+                        TourDulich.Models.AppConstants.TrangThaiDatTour.ChoXacNhanDiemDon
+                    };
 
                     try {
                         using(var db = new TourDulich.Models.ModelDB()) {
-                            var pendingDatTourStatuses = new[] {
-                                TourDulich.Models.AppConstants.TrangThaiDatTour.ChoXuLy,
-                                TourDulich.Models.AppConstants.TrangThaiDatTour.YeuCauDoanChoXacNhan,
-                                TourDulich.Models.AppConstants.TrangThaiDatTour.ChoXacNhanDiemDon
-                            };
-
                             pendingDatTourCount = db.DatTours.Count(d => pendingDatTourStatuses.Contains(d.TrangThai));
                             pendingCancelCount = db.YeuCauHuys.Count(y => y.TrangThai == TourDulich.Models.AppConstants.TrangThaiYeuCauHuy.ChoXuLy);
                             unreadContacts = db.LienHes.Count(l => l.TrangThai == "Chưa xử lý");
 
                             datTourNotifications = db.DatTours
                                 .Include("NguoiDung")
-                                .Where(d => pendingDatTourStatuses.Contains(d.TrangThai))
                                 .OrderByDescending(d => d.NgayDat)
                                 .Take(20)
                                 .ToList();
 
                             cancelNotifications = db.YeuCauHuys
                                 .Include("DatTour.NguoiDung")
-                                .Where(y => y.TrangThai == TourDulich.Models.AppConstants.TrangThaiYeuCauHuy.ChoXuLy)
                                 .OrderByDescending(y => y.NgayGui)
                                 .Take(20)
                                 .ToList();
 
                             contactNotifications = db.LienHes
-                                .Where(l => l.TrangThai == "Chưa xử lý")
                                 .OrderByDescending(l => l.NgayGui)
                                 .Take(20)
                                 .ToList();
@@ -268,11 +289,11 @@
                             <span class="badge bg-primary rounded-pill">@totalNotifications mới</span>
                         </div>
 
-                        @if (totalNotifications == 0)
+                        @if (!datTourNotifications.Any() && !cancelNotifications.Any() && !contactNotifications.Any())
                         {
                             <div class="notification-empty">
                                 <i class="bi bi-bell-slash d-block mb-2" style="font-size: 2rem;"></i>
-                                Chưa có thông báo mới
+                                Chưa có thông báo
                             </div>
                         }
                         else
@@ -288,16 +309,20 @@
                                 foreach (var item in datTourNotifications)
                                 {
                                     var customerName = item.NguoiDung != null ? item.NguoiDung.HoTen : "Khách hàng";
+                                    bool isUnread = pendingDatTourStatuses.Contains(item.TrangThai);
                                     renderedNotificationCount++;
                                     bool hideNotification = renderedNotificationCount > visibleNotificationLimit;
                                     <a class="notification-item @(hideNotification ? "admin-extra-notification d-none" : "")" href="@Url.Action("DanhSachDatTour", "QuanlyDatTour")">
                                         <span class="notification-icon bg-primary"><i class="bi bi-journal-check"></i></span>
                                         <span class="notification-text">
-                                            <strong>@customerName</strong> có đơn đặt tour cần xử lý.
+                                            <strong>@customerName</strong> @(isUnread ? "có đơn đặt tour cần xử lý." : "có cập nhật đơn đặt tour.")
                                             <span class="d-block text-muted">@item.TrangThai - @((item.TongTien ?? 0).ToString("N0")) VNĐ</span>
                                             <span class="notification-time">@(item.NgayDat.HasValue ? item.NgayDat.Value.ToString("dd/MM/yyyy HH:mm") : "")</span>
                                         </span>
-                                        <span class="notification-dot"></span>
+                                        @if (isUnread)
+                                        {
+                                            <span class="notification-dot"></span>
+                                        }
                                     </a>
                                 }
                             }
@@ -308,16 +333,20 @@
                                 foreach (var item in cancelNotifications)
                                 {
                                     var customerName = item.DatTour != null && item.DatTour.NguoiDung != null ? item.DatTour.NguoiDung.HoTen : "Khách hàng";
+                                    bool isUnread = item.TrangThai == TourDulich.Models.AppConstants.TrangThaiYeuCauHuy.ChoXuLy;
                                     renderedNotificationCount++;
                                     bool hideNotification = renderedNotificationCount > visibleNotificationLimit;
                                     <a class="notification-item @(hideNotification ? "admin-extra-notification d-none" : "")" href="@Url.Action("Index", "QuanlyYeuCauHuy")">
                                         <span class="notification-icon bg-danger"><i class="bi bi-x-circle"></i></span>
                                         <span class="notification-text">
-                                            <strong>@customerName</strong> vừa gửi yêu cầu hủy tour.
-                                            <span class="d-block text-muted">@item.LyDo</span>
+                                            <strong>@customerName</strong> @(isUnread ? "vừa gửi yêu cầu hủy tour." : "có cập nhật yêu cầu hủy tour.")
+                                            <span class="d-block text-muted">@item.TrangThai - @item.LyDo</span>
                                             <span class="notification-time">@item.NgayGui.ToString("dd/MM/yyyy HH:mm")</span>
                                         </span>
-                                        <span class="notification-dot"></span>
+                                        @if (isUnread)
+                                        {
+                                            <span class="notification-dot"></span>
+                                        }
                                     </a>
                                 }
                             }
@@ -327,16 +356,20 @@
                                 <div class="px-2 pt-2 pb-1 fw-bold text-muted small text-uppercase">Liên hệ</div>
                                 foreach (var item in contactNotifications)
                                 {
+                                    bool isUnread = item.TrangThai == "Chưa xử lý";
                                     renderedNotificationCount++;
                                     bool hideNotification = renderedNotificationCount > visibleNotificationLimit;
                                     <a class="notification-item @(hideNotification ? "admin-extra-notification d-none" : "")" href="@Url.Action("Index", "QuanlyLienHe")">
                                         <span class="notification-icon bg-info"><i class="bi bi-envelope"></i></span>
                                         <span class="notification-text">
-                                            <strong>@item.HoTen</strong> gửi liên hệ mới.
-                                            <span class="d-block text-muted">@item.TieuDe</span>
+                                            <strong>@item.HoTen</strong> @(isUnread ? "gửi liên hệ mới." : "đã có liên hệ được xử lý.")
+                                            <span class="d-block text-muted">@item.TrangThai - @item.TieuDe</span>
                                             <span class="notification-time">@(item.NgayGui.HasValue ? item.NgayGui.Value.ToString("dd/MM/yyyy HH:mm") : "")</span>
                                         </span>
-                                        <span class="notification-dot"></span>
+                                        @if (isUnread)
+                                        {
+                                            <span class="notification-dot"></span>
+                                        }
                                     </a>
                                 }
                             }
@@ -367,32 +400,31 @@
 
     <div class="sidebar">
         <nav class="nav flex-column">
+            <div class="sidebar-section-title">Tổng quan</div>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "HomeAdmin" ? "active" : "")" href="@Url.Action("Index", "HomeAdmin")">
                 <i class="bi bi-speedometer2 me-2"></i> Dashboard
             </a>
+
+            <div class="sidebar-section-title">Vận hành</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyDatTour" ? "active" : "")" href="@Url.Action("DanhSachDatTour", "QuanlyDatTour")">
+                <i class="bi bi-journal-check me-2"></i> Quản lý Đặt Tour
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyYeuCauHuy" ? "active" : "")" href="@Url.Action("Index", "QuanlyYeuCauHuy")">
+                <i class="bi bi-x-circle-fill me-2"></i> Yêu Cầu Hủy Tour
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyLienHe" ? "active" : "")" href="@Url.Action("Index", "QuanlyLienHe")">
+                <i class="bi bi-envelope-paper-fill me-2"></i> Quản lý Liên Hệ
+            </a>
+
+            <div class="sidebar-section-title">Dữ liệu tour</div>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyTour" ? "active" : "")" href="@Url.Action("Index", "QuanlyTour")">
                 <i class="bi bi-geo-alt-fill me-2"></i> Quản lý Tour
-            </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyLichTrinh" ? "active" : "")" href="@Url.Action("Index", "QuanlyLichTrinh")">
-                <i class="bi bi-journal-check me-2"></i>Lịch Trình Tour
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyLichKhoiHanh" ? "active" : "")" href="@Url.Action("Index", "QuanlyLichKhoiHanh")">
                 <i class="bi bi-calendar-check-fill me-2"></i> Lịch Khởi Hành
             </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyDatTour" ? "active" : "")" href="@Url.Action("DanhSachDatTour", "QuanlyDatTour")">
-                <i class="bi bi-journal-check me-2"></i> Quản lý Đặt Tour
-            </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyNguoidung" ? "active" : "")" href="@Url.Action("Index", "QuanlyNguoidung")">
-                <i class="bi bi-people-fill me-2"></i> Quản lý Người dùng
-            </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyMuaGia" ? "active" : "")" href="@Url.Action("Index", "QuanlyMuaGia")">
-                <i class="bi bi-tags me-2"></i> Quản lý Mùa Giá
-            </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyChinhSachHuy" ? "active" : "")" href="@Url.Action("Index", "QuanlyChinhSachHuy")">
-                <i class="bi bi-shield-exclamation me-2"></i> Chính Sách Hủy
-            </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyYeuCauHuy" ? "active" : "")" href="@Url.Action("Index", "QuanlyYeuCauHuy")">
-                <i class="bi bi-x-circle-fill me-2"></i> Yêu Cầu Hủy Tour
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyLichTrinh" ? "active" : "")" href="@Url.Action("Index", "QuanlyLichTrinh")">
+                <i class="bi bi-journal-check me-2"></i>Lịch Trình Tour
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyDiaDiem" ? "active" : "")" href="@Url.Action("Index", "QuanlyDiaDiem")">
                 <i class="bi bi-pin-map-fill me-2"></i> Quản lý Địa Điểm
@@ -400,13 +432,22 @@
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyDanhMuc" ? "active" : "")" href="@Url.Action("Index", "QuanlyDanhMuc")">
                 <i class="bi bi-tags-fill me-2"></i> Quản lý Danh Mục
             </a>
-            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyLienHe" ? "active" : "")" href="@Url.Action("Index", "QuanlyLienHe")">
-                <i class="bi bi-envelope-paper-fill me-2"></i> Quản lý Liên Hệ
+
+            <div class="sidebar-section-title">Cấu hình</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyMuaGia" ? "active" : "")" href="@Url.Action("Index", "QuanlyMuaGia")">
+                <i class="bi bi-tags me-2"></i> Quản lý Mùa Giá
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyChinhSachHuy" ? "active" : "")" href="@Url.Action("Index", "QuanlyChinhSachHuy")">
+                <i class="bi bi-shield-exclamation me-2"></i> Chính Sách Hủy
+            </a>
+
+            <div class="sidebar-section-title">Khách hàng & nội dung</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyNguoidung" ? "active" : "")" href="@Url.Action("Index", "QuanlyNguoidung")">
+                <i class="bi bi-people-fill me-2"></i> Quản lý Người dùng
             </a>
             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "QuanlyTinTuc" ? "active" : "")" href="@Url.Action("Index", "QuanlyTinTuc")">
                 <i class="bi bi-newspaper me-2"></i> Quản lý Tin tức
             </a>
-
         </nav>
     </div>
 

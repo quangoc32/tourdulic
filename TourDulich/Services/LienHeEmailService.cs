@@ -38,6 +38,20 @@ namespace TourDulich.Services
             return TrySend(subject, BuildCancelRequestEmailBody(yeuCauHuy), yeuCauHuy.DatTour?.NguoiDung?.Email, customerName, out errorMessage);
         }
 
+        public bool TrySendBookingResultToCustomer(DatTour datTour, out string errorMessage)
+        {
+            var customer = datTour.NguoiDung;
+            var subject = "[Du Lịch Việt] Cập nhật đơn đặt tour #" + datTour.ID_DatTour;
+            return TrySendToCustomer(customer?.Email, customer?.HoTen, subject, BuildCustomerBookingResultEmailBody(datTour), out errorMessage);
+        }
+
+        public bool TrySendCancelResultToCustomer(YeuCauHuy yeuCauHuy, out string errorMessage)
+        {
+            var customer = yeuCauHuy.DatTour?.NguoiDung;
+            var subject = "[Du Lịch Việt] Kết quả yêu cầu hủy tour #" + yeuCauHuy.ID_YeuCauHuy;
+            return TrySendToCustomer(customer?.Email, customer?.HoTen, subject, BuildCustomerCancelResultEmailBody(yeuCauHuy), out errorMessage);
+        }
+
         public bool TrySendTestEmail(out string errorMessage)
         {
             var subject = "[Du Lịch Việt] Kiểm tra gửi Gmail admin";
@@ -90,6 +104,59 @@ namespace TourDulich.Services
                         message.ReplyToList.Add(new MailAddress(replyToEmail, replyToName));
                     }
 
+                    message.Subject = subject;
+                    message.Body = body;
+                    message.IsBodyHtml = true;
+                    message.BodyEncoding = Encoding.UTF8;
+                    message.SubjectEncoding = Encoding.UTF8;
+
+                    using (var smtp = new SmtpClient("smtp.gmail.com", 587))
+                    {
+                        smtp.EnableSsl = true;
+                        smtp.UseDefaultCredentials = false;
+                        smtp.Credentials = new NetworkCredential(setting.GmailGui, setting.MatKhauUngDung);
+                        smtp.Send(message);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                return false;
+            }
+        }
+
+        private bool TrySendToCustomer(string customerEmail, string customerName, string subject, string body, out string errorMessage)
+        {
+            errorMessage = null;
+            var setting = _store.Get();
+
+            if (!setting.BatThongBaoLienHe)
+            {
+                errorMessage = "Chức năng gửi Gmail đang tắt.";
+                return false;
+            }
+
+            if (!setting.DaCauHinhSmtp)
+            {
+                errorMessage = "Chưa cấu hình Gmail gửi hoặc App Password.";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(customerEmail))
+            {
+                errorMessage = "Khách hàng chưa có email.";
+                return false;
+            }
+
+            try
+            {
+                using (var message = new MailMessage())
+                {
+                    message.From = new MailAddress(setting.GmailGui, setting.TenNguoiGui);
+                    message.To.Add(new MailAddress(customerEmail, customerName ?? "Khách hàng"));
                     message.Subject = subject;
                     message.Body = body;
                     message.IsBodyHtml = true;
@@ -192,6 +259,61 @@ namespace TourDulich.Services
                         <div style='white-space: pre-wrap; margin-top: 8px;'>{Encode(yeuCauHuy.LyDo)}</div>
                     </div>
                     <p style='margin-top: 16px; color: #64748b;'>Vui lòng vào trang quản trị để duyệt yêu cầu hủy.</p>
+                </div>";
+        }
+
+        private static string BuildCustomerBookingResultEmailBody(DatTour datTour)
+        {
+            var customer = datTour.NguoiDung;
+            var tourRows = string.Join("", datTour.ChiTietDatTours.Select(ct => $@"
+                <tr>
+                    <td style='padding: 8px; border-bottom: 1px solid #e5e7eb;'>{Encode(ct.Tour?.TenTour)}</td>
+                    <td style='padding: 8px; border-bottom: 1px solid #e5e7eb;'>{(ct.NgayKhoiHanh.HasValue ? ct.NgayKhoiHanh.Value.ToString("dd/MM/yyyy") : "")}</td>
+                    <td style='padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;'>{ct.SoLuongNguoi}</td>
+                </tr>"));
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; color: #111827; line-height: 1.5;'>
+                    <h2 style='color: #0d6efd;'>Cập nhật đơn đặt tour</h2>
+                    <p>Xin chào <strong>{Encode(customer?.HoTen)}</strong>,</p>
+                    <p>Đơn đặt tour <strong>#{datTour.ID_DatTour}</strong> của bạn đã được cập nhật.</p>
+                    <p><strong>Trạng thái hiện tại:</strong> {Encode(datTour.TrangThai)}</p>
+                    <p><strong>Tổng tiền:</strong> {((datTour.TongTien ?? 0).ToString("N0"))} VNĐ</p>
+                    <p><strong>Ghi chú:</strong> {Encode(datTour.GhiChu)}</p>
+                    <table style='border-collapse: collapse; width: 100%; margin-top: 14px;'>
+                        <thead>
+                            <tr style='background: #eff6ff;'>
+                                <th style='padding: 8px; text-align: left;'>Tour</th>
+                                <th style='padding: 8px; text-align: left;'>Ngày đi</th>
+                                <th style='padding: 8px;'>Số lượng</th>
+                            </tr>
+                        </thead>
+                        <tbody>{tourRows}</tbody>
+                    </table>
+                    <p style='margin-top: 16px; color: #64748b;'>Bạn có thể đăng nhập website để xem chi tiết đơn trong lịch sử đặt tour.</p>
+                </div>";
+        }
+
+        private static string BuildCustomerCancelResultEmailBody(YeuCauHuy yeuCauHuy)
+        {
+            var datTour = yeuCauHuy.DatTour;
+            var customer = datTour?.NguoiDung;
+
+            return $@"
+                <div style='font-family: Arial, sans-serif; color: #111827; line-height: 1.5;'>
+                    <h2 style='color: #dc3545;'>Kết quả yêu cầu hủy tour</h2>
+                    <p>Xin chào <strong>{Encode(customer?.HoTen)}</strong>,</p>
+                    <p>Yêu cầu hủy tour của đơn <strong>#{yeuCauHuy.ID_DatTour}</strong> đã được xử lý.</p>
+                    <p><strong>Kết quả:</strong> {Encode(yeuCauHuy.TrangThai)}</p>
+                    <p><strong>Tiền hoàn:</strong> {yeuCauHuy.PhanTramHoan}% - {((yeuCauHuy.TienHoan ?? 0).ToString("N0"))} VNĐ</p>
+                    <p><strong>Ghi chú từ admin:</strong> {Encode(yeuCauHuy.GhiChuAdmin)}</p>
+                    <div style='margin-top: 16px; padding: 14px; background: #f8fafc; border-left: 4px solid #0d6efd;'>
+                        <strong>Tài khoản hoàn tiền bạn đã cung cấp:</strong>
+                        <p style='margin: 8px 0 0 0;'><strong>Ngân hàng:</strong> {Encode(yeuCauHuy.TenNganHang)}</p>
+                        <p style='margin: 4px 0 0 0;'><strong>Số tài khoản:</strong> {Encode(yeuCauHuy.SoTaiKhoanHoanTien)}</p>
+                        <p style='margin: 4px 0 0 0;'><strong>Chủ tài khoản:</strong> {Encode(yeuCauHuy.TenChuTaiKhoan)}</p>
+                    </div>
+                    <p style='margin-top: 16px; color: #64748b;'>Nếu cần hỗ trợ thêm, vui lòng liên hệ bộ phận chăm sóc khách hàng.</p>
                 </div>";
         }
 

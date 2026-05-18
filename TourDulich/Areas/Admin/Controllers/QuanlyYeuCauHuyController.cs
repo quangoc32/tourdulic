@@ -4,6 +4,8 @@ using System.Web.Mvc;
 using TourDulich.Models;
 using TourDulich.ModelView;
 using TourDulich.Areas.Admin.Filters;
+using TourDulich.Services;
+using System.Data.Entity;
 
 namespace TourDulich.Areas.Admin.Controllers
 {
@@ -11,6 +13,11 @@ namespace TourDulich.Areas.Admin.Controllers
     public class QuanlyYeuCauHuyController : Controller
     {
         private ModelDB _db = new ModelDB();
+
+        private LienHeEmailService EmailService
+        {
+            get { return new LienHeEmailService(new AdminEmailSettingStore(Server.MapPath("~/App_Data/admin-email-settings.json"))); }
+        }
 
         public ActionResult Index(string trangThai)
         {
@@ -98,11 +105,31 @@ namespace TourDulich.Areas.Admin.Controllers
                 }
 
                 _db.SaveChanges();
+                SendCancelResultEmail(ycHuy.ID_YeuCauHuy);
                 return Json(new { success = true });
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        private void SendCancelResultEmail(int idYeuCauHuy)
+        {
+            try
+            {
+                var yeuCau = _db.YeuCauHuys
+                    .Include("DatTour.NguoiDung")
+                    .FirstOrDefault(y => y.ID_YeuCauHuy == idYeuCauHuy);
+
+                if (yeuCau == null) return;
+
+                string errorMessage;
+                EmailService.TrySendCancelResultToCustomer(yeuCau, out errorMessage);
+            }
+            catch
+            {
+                // Không để lỗi email làm hỏng thao tác xử lý yêu cầu hủy của admin.
             }
         }
     }
